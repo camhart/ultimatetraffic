@@ -1,0 +1,26 @@
+Simulator inputs
+
+Car arrival file
+
+timestamp	lane	startspeed	startposition	endposition
+
+timestamp - time the vehicle arrives at
+lane - initial lane the vehicle arrives in
+startspeed - meters per second
+startposition - coordinate start position
+endposition - coordinate end position (optional)
+direction - 0/1 (optional)
+
+
+
+Light configuration file
+
+light_position	light_type
+
+light_position - position of the light
+light_type - type of light (timed, ultimate, etc.)
+
+
+Simulator outputs
+
+see gui input

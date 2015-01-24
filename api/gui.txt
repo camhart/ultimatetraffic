@@ -1,0 +1,5 @@
+The gui takes a file with the following format:
+
+timestamp	car_id	lane	coordinate	direction
+
+
