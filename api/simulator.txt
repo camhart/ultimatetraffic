@@ -2,9 +2,9 @@ Simulator inputs
 
 Car arrival file
 
-timestamp	lane	startspeed	startposition	endposition
+timestamp	lane	startspeed	startposition	endposition direction
 
-timestamp - time the vehicle arrives at
+timestamp - time the vehicle arrives at (in milliseconds)
 lane - initial lane the vehicle arrives in
 startspeed - meters per second
 startposition - coordinate start position
@@ -13,12 +13,14 @@ direction - 0/1 (optional)
 
 
 
-Light configuration file
+Grid configuration file
 
-light_position	light_type
+light_position	light_type  arguments...(green time, red time, initial offset, initial color)
 
 light_position - position of the light
 light_type - type of light (timed, ultimate, etc.)
+initial offset - time until first color change
+initial color - green/red
 
 
 Simulator outputs
