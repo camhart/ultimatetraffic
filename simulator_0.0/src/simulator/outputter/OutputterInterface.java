@@ -5,7 +5,7 @@ import simulator.models.StopLight;
 
 public interface OutputterInterface {
 
-	public void initialize();
+	public void initialize(Object... newParam);
 	
 	public void addCarOutput(Car car);
 	

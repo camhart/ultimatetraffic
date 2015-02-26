@@ -12,7 +12,7 @@ import simulator.models.StopLight;
 
 class SQLiteOutputter implements OutputterInterface{
 	
-	private static final int OUTPUTS_UNTIL_COMMIT = 100;
+	private static final int OUTPUTS_UNTIL_COMMIT = 1000;
 	private int outputCount;
 	
 	private static SQLiteOutputter sqlOut; 
@@ -127,9 +127,18 @@ class SQLiteOutputter implements OutputterInterface{
 	
 	static class SQLite {
 		private static final String JDBC_DRIVER = "org.sqlite.JDBC";;
-		private static final String DATABASE_PATH = "jdbc:sqlite:db.sqlite";
+		private static final String DATABASE_PATH = "jdbc:sqlite:";
 		
 		private static Connection connection;
+		
+		private static String databaseName = "db.sqlite";
+		
+		public static void setDatabaseName(String newName) {
+			SQLite.databaseName = newName;
+		}
+		public static String getDatabaseName() {
+			return databaseName;
+		}
 		
 		public static void initializeDatabase() {
 			try {
@@ -149,7 +158,7 @@ class SQLiteOutputter implements OutputterInterface{
 					connection.close();
 				}
 				
-				connection = DriverManager.getConnection(DATABASE_PATH);
+				connection = DriverManager.getConnection(DATABASE_PATH + getDatabaseName());
 				connection.setAutoCommit(false);
 				return true;
 			} catch (SQLException e) {
@@ -188,7 +197,9 @@ class SQLiteOutputter implements OutputterInterface{
 	}
 
 	@Override
-	public void initialize() {
+	public void initialize(Object... params) {
+		String databaseName = (String)params[0];
+		SQLite.setDatabaseName(databaseName);
 		SQLite.initializeDatabase();
 		SQLiteOutputter.getOutputter().startTransaction();
 		SQLiteOutputter.getOutputter().createTables();

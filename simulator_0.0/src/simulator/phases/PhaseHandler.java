@@ -4,20 +4,20 @@ import simulator.models.Car;
 import simulator.error.Error;
 import simulator.models.StopLight;
 
-public abstract class Phase {
+public abstract class PhaseHandler {
 	/**
 	 * This needs to do EVERYTHING with the car... does it have all the knowledge it needs?
 	 * 
 	 * @param car
 	 * @param upcomingLight
 	 */
-	public abstract void handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(Car car, StopLight upcomingLight);
+	public abstract void handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(Car car, StopLight currentLight);
 	
-	public static Phase buildPhase(int phaseNumber) {
+	public static PhaseHandler buildPhase(int phaseNumber) {
 		if(phaseNumber == 0)
-			return new Phase0();
+			return new Phase0Handler();
 		else if(phaseNumber == 1)
-			return new Phase1();
+			return new Phase1Handler();
 		else {
 			throw new Error("");
 		}

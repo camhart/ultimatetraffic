@@ -2,8 +2,9 @@ package simulator.phases;
 
 import simulator.models.Car;
 import simulator.models.StopLight;
+import simulator.outputter.Outputter;
 
-public class Phase1 extends Phase  {
+public class Phase1Handler extends PhaseHandler  {
 
 	public double setTargetSpeed(Car car, StopLight light) {
 		//set the cars target speed
@@ -24,8 +25,10 @@ public class Phase1 extends Phase  {
 
 	@Override
 	public void handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(
-			Car car, StopLight upcomingLight) {
-		// TODO Auto-generated method stub		
+			Car car, StopLight currentLight) {
+		
+		//if the car moved, have it add output to the outputter
+		Outputter.getOutputter().addCarOutput(car);
 	}
 
 }

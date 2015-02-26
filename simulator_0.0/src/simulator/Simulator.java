@@ -8,20 +8,29 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 import simulator.outputter.Outputter;
-import simulator.phases.Phase0;
-import simulator.phases.Phase1;
-import simulator.phases.Phase;
+import simulator.phases.Phase0Handler;
+import simulator.phases.Phase1Handler;
+import simulator.phases.PhaseHandler;
 import simulator.models.Car;
 import simulator.models.StopLight;
 
 public class Simulator {
 	
+	private static Object[] outputterParams;
 	private static Simulator sim;
+	/**
+	 * This is a singleton object.  Always use this to gain access to the simulator.
+	 * @return
+	 */
 	public static Simulator getSimulator() {
 		if(sim == null) {
-			sim = new Simulator();
+			sim = new Simulator(outputterParams);
 		}
 		return sim;
+	}
+	
+	public static void setOutputterConfig(Object... params) {
+		Simulator.outputterParams = params;
 	}
 	
 	//this value must always be a lot of 0's, and a single ending 1.  
@@ -35,19 +44,44 @@ public class Simulator {
 	
 	StopLight lastLight;
 	StopLight firstLight;
-	Phase phase;
+	PhaseHandler phase;
 	
 	HashMap<Double, ArrayList<Car>> carArrivalMap;
 	
-	private Simulator() {
+	/**
+	 * Private constructor
+	 */
+	private Simulator(Object... outputterParams) {
 		carArrivalMap = new HashMap<Double, ArrayList<Car>>();
-		Outputter.getOutputter().initialize();
+		Outputter.getOutputter().initialize(outputterParams);
 	}
 	
+	/**
+	 * Setter to set total number of iterations the simulator should run
+	 * @param numberOfIterations
+	 */
 	public void setNumberOfIterations(int numberOfIterations) {
 		this.numberOfIterations = numberOfIterations;
 	}
 	
+	/**
+	 * Loads cars from the cars file, and places them into the carArrivalMap.
+	 * The map's keys are the iteration number the car arrives on.  The maps
+	 * value is an arraylist of cars that arrive at that iteration.
+	 * 
+	 * Note that the input car file gives a timestamp that the cars arrive at.
+	 * 	This method converts that to iteration number doing timestamp / TIME_PER_ITERATION
+	 * 
+	 * Car file is formatted where each line represents data for a car.  Each
+	 * 	line has comma seperated values in the following order:
+	 * 		timestamp	lane	startspeed	startposition	endposition direction
+	 * 
+	 * 	Example:
+	 * 		4.731366995,1,19.25124403,0,5956.8,0
+	 * 		5.897902291,2,19.25687255,0,5956.8,0
+	 * 
+	 * @param carsFile
+	 */
 	public void loadCars(File carsFile) {
 		StringBuffer precision = new StringBuffer();
 		char[] chars = ("" + this.TIME_PER_ITERATION).toCharArray();
@@ -88,6 +122,21 @@ public class Simulator {
 		}
 	}
 	
+	/**
+	 * Loads the lights file.  Builds the double linked list and sets
+	 * 	firstLight and lastLight values.
+	 * 
+	 * Within the light file each line represents data for a light.
+	 * 	The data within each line is comma seperated values in the
+	 * 	following order:
+	 * 		lightPosition, lightType, timeAsGreen, timeAsRed, initialOffset, initialColor
+	 * 
+	 * 	Examples:
+	 * 		636.6,timed,40,30,0,green
+	 *		995.8,timed,30,20,0,green
+	 *		1409.9,timed,30,20,0,green
+	 * @param lightsFile
+	 */
 	public void loadLights(File lightsFile) {
 		ArrayList<StopLight> lights = new ArrayList<StopLight>();
 		try {
@@ -113,7 +162,20 @@ public class Simulator {
 		
 	}
 	
-	public StopLight findStopLightForArrivingCar(Car car) {
+	/**
+	 * When a car is first arriving into our system, it needs to be put
+	 * 	onto the appropriate stoplight's lane object.  This method will
+	 * 	find the appropriate stop light by comparing the car's starting
+	 * 	position with the stopLights position.  It will then return that
+	 * 	light.
+	 * 
+	 * 	This method allows us to have cars enter the system at random
+	 * 	spots along the road (as opposed to just the beginning of the
+	 * 	corridor).
+	 * @param car
+	 * @return
+	 */
+	private StopLight findStopLightForArrivingCar(Car car) {
 		StopLight curLight = this.firstLight;
 		while(curLight.getPosition() < car.getArrivalPosition()) {
 			curLight = curLight.getNextLight();
@@ -121,25 +183,34 @@ public class Simulator {
 		return curLight;
 	}
 	
+	
+	/**
+	 * This method takes cars from the carArrivalMap and places them into
+	 * the appropriate lane of the stop light they're supposed to be on.
+	 * @param currentIteration
+	 */
 	public void handleArrivingCars(double currentIteration) {
 		ArrayList<Car> cars = this.carArrivalMap.get(currentIteration);
 		if(cars != null) {
 			Car c;
 			for(int i = 0; i < cars.size(); i++) {
 				c = cars.get(i);
-				if(c.getLane() == 0) {
+				if(c.getLane() == 1) {
 					findStopLightForArrivingCar(c).getLane1().addCar(c);
 				}
-				else if(c.getLane() == 1) {
+				else if(c.getLane() == 2) {
 					findStopLightForArrivingCar(c).getLane2().addCar(c);
 				}
 				else
-					throw new Error("this shouldn't be happening");
-				System.out.println(findStopLightForArrivingCar(c).getLane1().getCarsInLane());
+					throw new Error("this shouldn't be happening : " + c.getLane());
+				System.out.println(findStopLightForArrivingCar(c).getLane1().getNumberCarsInLane());
 			}
 		}
 	}
 	
+	/**
+	 * Runs the simulator for specified number of iterations.
+	 */
 	public void run() {
 		
 		while(currentIteration < numberOfIterations) {
@@ -165,22 +236,44 @@ public class Simulator {
 		}
 		
 		Outputter.getOutputter().close();
-		
 	}
 	
-
-	private void setPhase(Phase phase) {
+	/**
+	 * Sets the phase for the simulator.
+	 * @param phase
+	 */
+	public void setPhase(PhaseHandler phase) {
 		this.phase = phase;
 	}
+	
+	/**
+	 * get the current iteration from the simulator
+	 * @return
+	 */
+	public int getCurrentIteration() {
+		return this.currentIteration;
+	}
 
+	/**
+	 * Main method to run our simulator, loading files from prompt
+	 * args should be
+	 * 	phase number, number of iterations to run,
+	 * 	 path to cars file, path to lights file
+	 * 
+	 *  Exmaple:
+	 *  	0 60000 config/cars.csv config/lights.csv
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		
-		Phase phase = Phase.buildPhase(Integer.parseInt(args[0]));
+		PhaseHandler phase = PhaseHandler.buildPhase(Integer.parseInt(args[0]));
 		
 		int iterationCount = Integer.parseInt(args[1]);
 		
 		File carsFile = new File(args[2]);
 		File stopLightFile = new File(args[3]);
+		
+		Simulator.setOutputterConfig("db_phase_0.sqlite");
 		
 		Simulator simulator = Simulator.getSimulator();
 		
@@ -193,9 +286,5 @@ public class Simulator {
 		
 		simulator.run();
 		
-	}
-
-	public int getCurrentIteration() {
-		return this.currentIteration;
 	}
 }
