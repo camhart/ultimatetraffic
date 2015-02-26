@@ -1,0 +1,196 @@
+package simulator.outputter;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import simulator.Simulator;
+import simulator.models.Car;
+import simulator.models.StopLight;
+
+class SQLiteOutputter implements OutputterInterface{
+	
+	private static final int OUTPUTS_UNTIL_COMMIT = 100;
+	private int outputCount;
+	
+	private static SQLiteOutputter sqlOut; 
+	
+	//singleton
+	public static SQLiteOutputter getOutputter() {
+		if(sqlOut == null) {
+			sqlOut = new SQLiteOutputter();
+		}
+		return sqlOut;
+	}
+	
+	private SQLiteOutputter() {
+		outputCount = OUTPUTS_UNTIL_COMMIT;
+		SQLite.initializeDatabase();
+	}
+	
+	public void startTransaction() {
+		SQLite.startTransaction();
+	}
+
+	public void handleCommit() {
+		if(outputCount == 0) {
+			SQLite.endTransaction(true);
+			SQLite.startTransaction();
+			outputCount = OUTPUTS_UNTIL_COMMIT;
+		} else {
+			outputCount--;
+		}
+	}
+	
+	public void endTransaction() {
+		SQLite.endTransaction(true);
+	}
+
+	@Override
+	public void addLightOutput(StopLight light) {
+		Connection con = SQLite.getConnection();
+		try {
+			PreparedStatement ps = con.prepareStatement("INSERT INTO light_output (id, iterationCount, position, color) VALUES (?, ?, ?, ?);");
+			
+			ps.setInt(1, light.getId());
+			ps.setInt(2,  Simulator.getSimulator().getCurrentIteration());
+			ps.setDouble(3, light.getPosition());
+			ps.setString(4, light.getCurrentColor().toString());
+			
+			ps.execute();
+			
+			ps.close();
+			
+			handleCommit();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void addCarOutput(Car car) {
+		Connection con = SQLite.getConnection();
+		try {
+			PreparedStatement ps = con.prepareStatement("INSERT INTO car_output (id, iterationCount, position) VALUES (?, ?, ?);");
+			
+			ps.setInt(1, car.getId());
+			ps.setInt(2,  Simulator.getSimulator().getCurrentIteration());
+			ps.setDouble(3, car.getPosition());
+			
+			ps.execute();
+			
+			ps.close();
+			
+			handleCommit();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void createTables() {
+		String carTable = "CREATE TABLE car_output (" +
+				"id INTEGER not NULL," + 
+				"iterationCount INTEGER not NULL," +
+				"position REAL not NULL" +
+				");";
+		
+		String lightTable = "CREATE TABLE light_output (" +
+				"id INTEGER not NULL," + 
+				"iterationCount INTEGER not NULL," +
+				"position REAL not NULL," +
+				"color VARCHAR(6)" +
+				");";
+		
+		try {
+			Statement statement = SQLite.getConnection().createStatement();
+			statement.executeUpdate(carTable);
+			
+			statement = SQLite.getConnection().createStatement();
+			statement.executeUpdate(lightTable);
+		} catch (SQLException e) {
+			if(!e.getMessage().equals("table car_output already exists"))
+				e.printStackTrace();
+		}
+		
+		try {
+			Statement statement = SQLite.getConnection().createStatement();
+			statement.executeUpdate(lightTable);
+		} catch (SQLException e) {
+			if(!e.getMessage().equals("table light_output already exists"))
+				e.printStackTrace();
+		}
+	}
+	
+	static class SQLite {
+		private static final String JDBC_DRIVER = "org.sqlite.JDBC";;
+		private static final String DATABASE_PATH = "jdbc:sqlite:db.sqlite";
+		
+		private static Connection connection;
+		
+		public static void initializeDatabase() {
+			try {
+				Class.forName(JDBC_DRIVER);
+			} catch(ClassNotFoundException e) {
+				System.out.println("Class not found...");
+			}		
+		}
+		
+		public static Connection getConnection() {
+			return connection;
+		}	
+		
+		public static boolean startTransaction() {
+			try {
+				if (connection != null && !connection.isClosed()) {
+					connection.close();
+				}
+				
+				connection = DriverManager.getConnection(DATABASE_PATH);
+				connection.setAutoCommit(false);
+				return true;
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return false;
+		}
+		
+		public static void endTransaction(boolean commit) {
+			try {		
+				if (connection == null || connection.isClosed()) {
+					System.out.println("endTransaction null / is closed");
+					return;
+				}
+				else if (commit) {
+					connection.commit();
+				}
+				connection.close();
+			} catch (SQLException e) {
+				System.out.println("SQLException in endTransation: " + e.getMessage());
+				e.printStackTrace();
+			}
+//			System.out.println("ending transaction");
+		}
+	}
+
+	@Override
+	public void close() {
+		this.endTransaction();
+		try {
+			SQLite.getConnection().close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void initialize() {
+		SQLite.initializeDatabase();
+		SQLiteOutputter.getOutputter().startTransaction();
+		SQLiteOutputter.getOutputter().createTables();
+	}
+}

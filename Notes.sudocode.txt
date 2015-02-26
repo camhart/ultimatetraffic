@@ -1,0 +1,56 @@
+
+
+Algorithm
+	input currentCar
+				currentSpeed
+	input distanceToNextIntersection, nextCars(2 lanes), nextIntersectionLightTimings
+	return targetSpeed and lane
+
+car.move();
+
+Custom treeset (laneofcars)
+	-> canChangeLane(car position) return true/false;
+	
+
+	
+
+adjustForAcceleration
+	inputs
+		speed = targetSpeed
+		curSpeed = car current speed
+		distanceToNextLight = distance to next light
+	output
+		speed adjusted for acceleration
+			(if we're going 30 mps, and we want to go 45 mps, adjusted speed would be 43 mps (with large distance))
+
+			
+hitRedLight - at this speed and this distance I'll make it to the light in y time, will it be red at that time?
+
+
+
+@ intersection do
+
+  speed = MAX_SPEED;
+  
+  adjustedSpeed = adjustForAcceleration(speed, curSpeed, distanceToNextLight);  //get average speed between now and next light
+  
+  while(hitRedLight(adjustedSpeed, distanceToNextLight) && speed > MIN_SPEED){
+    speed -= DECELERATION;
+	adjustedSpeed = adjustForAcceleration(speed, curSpeed, distanceToNextLight);  //get average speed between now and next light
+  }
+  
+  newLane = car.curLane;
+  
+  while(hitNextCar(speed, curSpeed, newLane)){
+    newLane = newLane.otherLane;
+    if(hitNextCar(speed, curSpeed, newLane){
+      newLane = car.curLane;
+      speed -= DECELERATION;
+    }
+    else{break;} //unneeded, but saves a function call
+  }
+  
+  //will happen outside algorithm
+  car.updateSpeed(speed);
+  car.updateLane(newLane);
+  
