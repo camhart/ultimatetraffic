@@ -1,5 +1,6 @@
 package simulator.models;
 
+import java.util.Iterator;
 import java.util.TreeSet;
 
 public class Lane {
@@ -12,12 +13,9 @@ public class Lane {
 		cars = new TreeSet<Car>();
 	}
 	
-	public void addCar(Car car) {
-		cars.add(car);
-	}
-	
-	public Car removeLastCar() {
-		return cars.last();
+	public boolean addCar(Car car) {
+		
+		return cars.add(car);
 	}
 	
 	public boolean canChangeLane(Car car) {
@@ -33,15 +31,18 @@ public class Lane {
 	}
 	
 	public void changeLane(Car car) {
-		
+		throw new Error("unimplemented");
 	}
-
-	public Car getCar(int index) {
-		// TODO Auto-generated method stub
-		return null;
+	
+	public int getCarsInLane() {
+		return this.cars.size();
 	}
 
 	public boolean removeCar(Car car) {
 		return cars.remove(car);
+	}
+
+	public Iterator<Car> getIterable() {
+		return cars.iterator();
 	}
 }

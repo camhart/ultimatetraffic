@@ -1,5 +1,7 @@
 package simulator.models;
 
+import java.util.Iterator;
+
 import simulator.models.StopLight.Color;
 import simulator.outputter.Outputter;
 import simulator.phases.Phase;
@@ -87,20 +89,22 @@ public class StopLight {
 		this.handleLightColors(timePerIteration);
 		
 		int carIndex = 0;
-		Car lane1Car = lane1.getCar(carIndex);
-		Car lane2Car = lane2.getCar(carIndex);
+		Iterator<Car> lane1Iter = lane1.getIterable();
+		Iterator<Car> lane2Iter = lane2.getIterable();
+		Car lane1Car = null;
+		Car lane2Car = null;
 		
-		while(lane1Car != null || lane2Car != null) {
+		while(lane1Iter.hasNext() || lane2Iter.hasNext()) {
 			carIndex++;
 			
-			if(lane1Car != null) {
+			if(lane1Iter.hasNext()) {
+				lane1Car = lane1Iter.next();
 				phase.handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(lane1Car, nextLight);
-				lane1Car = lane1.getCar(carIndex);
 			}
 			
-			if(lane2Car != null) {
+			if(lane2Iter.hasNext()) {
+				lane2Car = lane2Iter.next();
 				phase.handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(lane2Car, nextLight);
-				lane2Car = lane2.getCar(carIndex);
 			}	
 		}
 	}

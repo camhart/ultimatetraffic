@@ -1,11 +1,12 @@
 package simulator.models;
 
-import java.util.Comparator;
-
-public class Car implements Comparator<Car> {
+//import java.util.Comparator;
+//Comparator<Car>
+public class Car implements Comparable {
 	
 	private double arrivalTime;
 	private double position;
+	private double arrivalPosition;
 	private double destination;
 	private int currentLane;
 	private int lane;
@@ -18,6 +19,7 @@ public class Car implements Comparator<Car> {
 		this.lane = Integer.parseInt(values[1]);
 		this.currentSpeed = Double.parseDouble(values[2]);
 		this.position = Double.parseDouble(values[3]);
+		this.arrivalPosition = this.position;
 		this.destination = Double.parseDouble(values[4]);
 		this.direction = Integer.parseInt(values[5]);
 	
@@ -29,6 +31,12 @@ public class Car implements Comparator<Car> {
 
 	public double getPosition() {
 		return position;
+	}
+	
+	public void setPosition(double position, Lane lane) {
+		lane.removeCar(this);
+		this.position = position;
+		lane.addCar(this);
 	}
 
 	public boolean hasFinished() {
@@ -49,18 +57,39 @@ public class Car implements Comparator<Car> {
 		return 0;
 	}
 
+//	@Override
+//	public int compare(Car o1, Car o2) {
+//		//this needs tested
+//		// http://docs.oracle.com/javase/8/docs/api/java/util/Comparator.html
+//		if(o1 == null )
+//			return -1;
+//		else if(o2 == null)
+//			return 1;
+//		else {
+//			if(o1.getPosition() < o2.getPosition())
+//				return -1;
+//			else if(o1.getPosition() > o2.getPosition())
+//				return 1;
+//			else
+//				return 0;
+//		}
+//	}
+
+	public double getArrivalPosition() {
+		return this.arrivalPosition;
+	}
+
 	@Override
-	public int compare(Car o1, Car o2) {
-		//this needs tested
-		// http://docs.oracle.com/javase/8/docs/api/java/util/Comparator.html
-		if(o1 == null )
+	public int compareTo(Object other) {
+		if(other == null )
 			return -1;
-		else if(o2 == null)
+		else if(other.getClass() != this.getClass())
 			return 1;
 		else {
-			if(o1.getPosition() < o2.getPosition())
+			Car oCar = (Car)other;
+			if(this.getPosition() < oCar.getPosition())
 				return -1;
-			else if(o1.getPosition() > o2.getPosition())
+			else if(this.getPosition() > oCar.getPosition())
 				return 1;
 			else
 				return 0;

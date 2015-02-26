@@ -76,8 +76,10 @@ public class Simulator {
 								Simulator.TIME_PER_ITERATION));
 
 				curList = carArrivalMap.get(key);
-				if(curList == null)
+				if(curList == null) {
 					curList = new ArrayList<Car>();
+					carArrivalMap.put(key,  curList);
+				}
 				curList.add(curCar);
 			}
 		} catch (FileNotFoundException e) {
@@ -111,19 +113,30 @@ public class Simulator {
 		
 	}
 	
+	public StopLight findStopLightForArrivingCar(Car car) {
+		StopLight curLight = this.firstLight;
+		while(curLight.getPosition() < car.getArrivalPosition()) {
+			curLight = curLight.getNextLight();
+		}
+		return curLight;
+	}
+	
 	public void handleArrivingCars(double currentIteration) {
 		ArrayList<Car> cars = this.carArrivalMap.get(currentIteration);
 		if(cars != null) {
-			Car[] carArr = (Car[]) cars.toArray();
-			for(Car c : carArr) {
-				if(c.getLane() == 0)
-					firstLight.getLane1().addCar(c);
-				else if(c.getLane() == 1)
-					firstLight.getLane2().addCar(c);
+			Car c;
+			for(int i = 0; i < cars.size(); i++) {
+				c = cars.get(i);
+				if(c.getLane() == 0) {
+					findStopLightForArrivingCar(c).getLane1().addCar(c);
+				}
+				else if(c.getLane() == 1) {
+					findStopLightForArrivingCar(c).getLane2().addCar(c);
+				}
 				else
 					throw new Error("this shouldn't be happening");
+				System.out.println(findStopLightForArrivingCar(c).getLane1().getCarsInLane());
 			}
-				
 		}
 	}
 	
