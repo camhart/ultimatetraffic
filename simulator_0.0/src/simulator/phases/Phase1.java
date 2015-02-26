@@ -25,8 +25,7 @@ public class Phase1 extends Phase  {
 	@Override
 	public void handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(
 			Car car, StopLight upcomingLight) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 }

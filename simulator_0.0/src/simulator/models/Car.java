@@ -1,6 +1,8 @@
 package simulator.models;
 
-public class Car {
+import java.util.Comparator;
+
+public class Car implements Comparator<Car> {
 	
 	private double arrivalTime;
 	private double position;
@@ -45,6 +47,24 @@ public class Car {
 	public int getId() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public int compare(Car o1, Car o2) {
+		//this needs tested
+		// http://docs.oracle.com/javase/8/docs/api/java/util/Comparator.html
+		if(o1 == null )
+			return -1;
+		else if(o2 == null)
+			return 1;
+		else {
+			if(o1.getPosition() < o2.getPosition())
+				return -1;
+			else if(o1.getPosition() > o2.getPosition())
+				return 1;
+			else
+				return 0;
+		}
 	}
 
 }

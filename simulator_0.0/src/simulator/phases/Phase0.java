@@ -8,6 +8,6 @@ public class Phase0 extends Phase {
 	@Override
 	public void handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(
 			Car car, StopLight upcomingLight) {
-		// TODO Auto-generated method stub
+		System.out.println("Phase0 car");
 	}
 }

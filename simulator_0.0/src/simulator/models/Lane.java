@@ -9,7 +9,7 @@ public class Lane {
 	private TreeSet<Car> cars;
 	
 	public Lane() {
-		
+		cars = new TreeSet<Car>();
 	}
 	
 	public void addCar(Car car) {
