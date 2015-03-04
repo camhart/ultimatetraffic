@@ -3,6 +3,7 @@ package simulator.phases;
 import simulator.models.Car;
 import simulator.models.StopLight;
 
+
 public class Phase1 extends Phase  {
 
 	public double setTargetSpeed(Car car, StopLight light) {
@@ -38,7 +39,37 @@ public class Phase1 extends Phase  {
 	}
 	
 	public void algorithm(Car car, StopLight light){
+		double newSpeed = MAX_SPEED;
 		
+		double distanceToLight = light.getPosition() - car.getPosition();
+		
+		while(car.hitRedLight(newSpeed, distanceToLight)){	//TODO: Must be defined and work...
+			if(newSpeed > DECELERATION){
+				newSpeed -= DECELERATION;
+			}
+			else{
+				newSpeed = newSpeed*0.9;
+			}
+		}
+		
+		int laneNum = car.getLane();
+		
+		while(car.hitNextCar(newSpeed, laneNum)){
+			laneNum = otherLane;//TODO: fix this
+			if(car.hitNextCar(newSpeed, laneNum)){
+				laneNum = car.getLane();
+				if(newSpeed > DECELERATION){
+					newSpeed -= DECELERATION;
+				}
+				else{
+					newSpeed = newSpeed*0.9;
+				}
+			}
+			else{break;}	//unneeded, but saves a function call
+		}
+		
+		//TODO: updateSpeed(newSpeed);
+		//TODO: updateLane(laneNum);
 	}
 
 }

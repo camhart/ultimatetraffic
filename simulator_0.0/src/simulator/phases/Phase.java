@@ -11,6 +11,10 @@ public abstract class Phase {
 	 * @param car
 	 * @param upcomingLight
 	 */
+	
+	final public double MAX_SPEED = 25;
+	final public double DECELERATION = 0.5;
+	
 	public abstract void handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(Car car, StopLight upcomingLight);
 	
 	public static Phase buildPhase(int phaseNumber) {

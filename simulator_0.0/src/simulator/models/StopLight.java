@@ -142,13 +142,21 @@ public class StopLight {
 		
 	}
 	
-	public boolean isLightGreen() {
-		if(this.currentColor == GREEN) {
-			return true;
+	public boolean isLightGreenAtTime(double time) {
+		boolean willBeGreen = true;
+		double newTimeUntilChange = timeUntilChange;
+		while(time > newTimeUntilChange){
+			time -= newTimeUntilChange;
+			if(this.currentColor == Color.GREEN) {
+				willBeGreen = true;
+				newTimeUntilChange = timeAsRed;
+			}
+			else{
+				willBeGreen = false;
+				newTimeUntilChange = timeAsGreen;
+			}
 		}
-		else {
-		return false;
-		}
+		return willBeGreen;
 	}
 
 	public void setPrevLight(StopLight stopLight) {
