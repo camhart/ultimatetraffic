@@ -25,10 +25,73 @@ public class Phase1Handler extends PhaseHandler  {
 
 	@Override
 	public void handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(
-			Car car, StopLight currentLight) {
+			Car car, StopLight light) {
+		//TODO: Fix this to move cars according to physics!
+		double carPosition = car.moveCarForward(); //TODO: Could we use 'changeSpeed' from Josh's code here?
 		
-		//if the car moved, have it add output to the outputter
-		Outputter.getOutputter().addCarOutput(car);
+		//TODO: this needs to go somewhere--probably in the other file: Outputter.getOutputter().addCarOutput(car);
+		
+		double lightPosition = light.getPosition();
+		if(carPosition >= lightPosition){	//TODO: (eventually) adjust for other direction later ( will be <= )
+			algorithm(car, light.getNextLight());
+			//TODO: move car to the next light's lane list here!
+		}
+		
+	}
+	
+	public void algorithm(Car car, StopLight light){
+		double newSpeed = MAX_SPEED;
+		
+		double distanceToLight = light.getPosition() - car.getPosition();
+		double theoreticalTimeToLight = car.getTimeTo(newSpeed, distanceToLight);	//TODO: Function must be created
+		
+		while(!light.isLightGreenAtTime(theoreticalTimeToLight)){
+			if(newSpeed > DECELERATION){
+				newSpeed -= DECELERATION;
+			}
+			else{
+				newSpeed = newSpeed*0.9;
+			}
+			theoreticalTimeToLight = car.getTimeTo(newSpeed, distanceToLight);
+		}
+		
+		int laneNum = car.getLane();
+		
+		while(car.hitNextCar(theoreticalTimeToLight)){	//TODO: Function must be created
+			int otherLane = car.getOtherLane();
+			
+			boolean changedLanes = false;
+			if(car.getLane() == 1) {
+				if(light.getLane2().canChangeLane(car)) {
+					//can change lanes
+					car.setLane(otherLane);	//TODO: Does this work as the code is currently written or do we need to actually mess with the 'Lane' object?
+					changedLanes = true;
+				}
+			} else {
+				if(light.getLane1().canChangeLane(car)) {
+					car.setLane(otherLane);	//TODO: Does this work as the code is currently written or do we need to actually mess with the 'Lane' object?
+					changedLanes = true;
+				}
+			}
+			
+			if(changedLanes) {
+//				I ask because 'setPosition' sets the lane differently
+				if(car.hitNextCar(theoreticalTimeToLight)){
+					car.setLane(laneNum);
+					if(newSpeed > DECELERATION){
+						newSpeed -= DECELERATION;
+					}
+					else{
+						newSpeed = newSpeed*0.9;
+					}
+					theoreticalTimeToLight = car.getTimeTo(newSpeed, distanceToLight);
+				}
+				else{break;}	//unneeded, but saves a function call
+			}
+		}
+		
+		car.giveChangeSpeedCommand(newSpeed);	//TODO: Merge Josh's code--this exists in Josh's Car class
+		car.setLane(laneNum);
 	}
 
 }

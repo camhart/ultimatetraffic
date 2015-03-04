@@ -83,7 +83,7 @@ public class StopLight {
 		return lane2;
 	}
 	
-	
+
 	/**
 	 * This handles all of the timing portions of the stoplight.
 	 * 	It decrements the timeUntilColorChange variable.  It
@@ -222,6 +222,23 @@ public class StopLight {
 		// TODO Auto-generated method stub
 		this.currentColor = color;
 		
+	}
+	
+	public boolean isLightGreenAtTime(double time) {
+		boolean willBeGreen = true;
+		double newTimeUntilChange = timeUntilColorChange;
+		while(time > newTimeUntilChange){
+			time -= newTimeUntilChange;
+			if(this.currentColor == Color.GREEN) {
+				willBeGreen = true;
+				newTimeUntilChange = timeAsRed;
+			}
+			else{
+				willBeGreen = false;
+				newTimeUntilChange = timeAsGreen;
+			}
+		}
+		return willBeGreen;
 	}
 
 	public void setPrevLight(StopLight stopLight) {

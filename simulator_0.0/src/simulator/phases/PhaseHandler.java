@@ -5,6 +5,11 @@ import simulator.error.Error;
 import simulator.models.StopLight;
 
 public abstract class PhaseHandler {
+	
+	
+	final public double MAX_SPEED = 25;
+	final public double DECELERATION = 0.5;
+	
 	/**
 	 * This needs to do EVERYTHING with the car... does it have all the knowledge it needs?
 	 * 

@@ -54,9 +54,6 @@ public class Car implements Comparable {
 	}
 	
 	public void setPosition(double position, Lane lane) {
-		//this removeCar and addCar has to happen to ensure
-		//	the elements in the tree remain in the correct order.
-		//	Otherwise crap breaks and its bad.
 		this.position = position;
 	}
 
@@ -64,13 +61,21 @@ public class Car implements Comparable {
 		return this.getPosition() >= this.destination;
 	}
 	
+	public int getOtherLane(){
+		if(this.currentLane == 1)
+			return 2;
+		else
+			return 1;
+	}
+	
+	
 	/**
 	 * Should be set whenever a car changes lanes
 	 * @param lane
 	 */
-	public void setLane(int lane, Lane laneObj) {
+	public void setLane(int lane) {
 		this.currentLane = lane;
-		this.currentLaneObj = laneObj;
+//		this.currentLaneObj = laneObj;
 	}
 	
 	
@@ -110,6 +115,30 @@ public class Car implements Comparable {
 
 	public double getDestination() {
 		return this.destination;
+	}
+
+
+	public double moveCarForward() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+	public double getTimeTo(double newSpeed, double distanceToLight) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+	public boolean hitNextCar(double theoreticalTimeToLight) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	public void giveChangeSpeedCommand(double newSpeed) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
