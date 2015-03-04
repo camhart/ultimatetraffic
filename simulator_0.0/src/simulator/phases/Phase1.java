@@ -2,6 +2,7 @@ package simulator.phases;
 
 import simulator.models.Car;
 import simulator.models.StopLight;
+import simulator.outputter.Outputter;
 
 
 public class Phase1 extends Phase  {
@@ -29,7 +30,7 @@ public class Phase1 extends Phase  {
 		//TODO: Fix this to move cars according to physics!
 		double carPosition = car.moveCarForward(); //TODO: Could we use 'changeSpeed' from Josh's code here?
 		
-		//TODO: this needs to go somewhere--probably in the other file: Outputter.getOutputter().addCarOutput(car);
+		Outputter.getOutputter().addCarOutput(car);
 		
 		double lightPosition = light.getPosition();
 		if(carPosition >= lightPosition){	//TODO: (eventually) adjust for other direction later ( will be <= )
