@@ -1,14 +1,17 @@
 package simulator.models;
 
+import simulator.Simulator;
+
 //import java.util.Comparator;
 //Comparator<Car>
-public class Car implements Comparable {
+public class CarManager implements Comparable {
 	
 	
 	public static final int CAR_CUSHION = 30; 
 	
 	private double arrivalTime;
-	private double position;
+//	private double position;
+	private Car car;
 
 	private double arrivalPosition;
 	private double destination;
@@ -30,17 +33,18 @@ public class Car implements Comparable {
 	 * car input file and creates a car object out of it.
 	 * @param configString
 	 */
-	public Car(String configString) {
+	public CarManager(String configString) {
 		String[] values = configString.split(",");
 		this.arrivalTime = Double.parseDouble(values[0]);
 		this.currentLane = Integer.parseInt(values[1]);
 		this.currentSpeed = Double.parseDouble(values[2]);
-		this.position = Double.parseDouble(values[3]);
-		this.arrivalPosition = this.position;
+		this.arrivalPosition = Double.parseDouble(values[3]);
 		this.destination = Double.parseDouble(values[4]);
 		this.direction = Integer.parseInt(values[5]);
 		
 		this.id = CarIdGenerator.generateId();
+		
+		this.car = new Car(this.currentSpeed, Simulator.TIME_PER_ITERATION, this.arrivalPosition);
 	
 	}
 	
@@ -50,11 +54,19 @@ public class Car implements Comparable {
 	}
 
 	public double getPosition() {
-		return position;
+		return this.car.getPosition();
+	}
+	
+	public double getAcceleration() {
+		return this.car.getAcceleration();
+	}
+	
+	public double getVelocity() {
+		return this.car.getVelocity();
 	}
 	
 	public void setPosition(double position, Lane lane) {
-		this.position = position;
+		this.car.setPosition(position);
 	}
 
 	public boolean hasFinished() {
@@ -75,7 +87,6 @@ public class Car implements Comparable {
 	 */
 	public void setLane(int lane) {
 		this.currentLane = lane;
-//		this.currentLaneObj = laneObj;
 	}
 	
 	
@@ -102,7 +113,7 @@ public class Car implements Comparable {
 		else if(other.getClass() != this.getClass())
 			return 1;
 		else {
-			Car oCar = (Car)other;
+			CarManager oCar = (CarManager)other;
 			if(this.getPosition() < oCar.getPosition())
 				return -1;
 			else if(this.getPosition() > oCar.getPosition())
@@ -119,26 +130,22 @@ public class Car implements Comparable {
 
 
 	public double moveCarForward() {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new RuntimeException("unimplemented");
 	}
 
 
 	public double getTimeTo(double newSpeed, double distanceToLight) {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new RuntimeException("unimplemented");
 	}
 
 
 	public boolean hitNextCar(double theoreticalTimeToLight) {
-		// TODO Auto-generated method stub
-		return false;
+		throw new RuntimeException("unimplemented");
 	}
 
 
 	public void giveChangeSpeedCommand(double newSpeed) {
-		// TODO Auto-generated method stub
-		
+		this.car.command(newSpeed, Simulator.TIME_PER_ITERATION);
 	}
 
 }

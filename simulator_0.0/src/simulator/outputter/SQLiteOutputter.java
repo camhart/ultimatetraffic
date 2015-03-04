@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import simulator.Simulator;
-import simulator.models.Car;
+import simulator.models.CarManager;
 import simulator.models.StopLight;
 
 class SQLiteOutputter implements OutputterInterface{
@@ -71,7 +71,7 @@ class SQLiteOutputter implements OutputterInterface{
 	}
 
 	@Override
-	public void addCarOutput(Car car) {
+	public void addCarOutput(CarManager car) {
 		Connection con = SQLite.getConnection();
 		try {
 			PreparedStatement ps = con.prepareStatement("INSERT INTO car_output (id, iterationCount, position) VALUES (?, ?, ?);");

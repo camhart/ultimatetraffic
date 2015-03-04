@@ -121,13 +121,13 @@ public class StopLight {
 		
 		this.handleLightColors(timePerIteration);
 		
-		Iterator<Car> lane1Iter = lane1.getIterable();
-		Iterator<Car> lane2Iter = lane2.getIterable();
-		Car lane1Car = null;
-		Car lane2Car = null;
+		Iterator<CarManager> lane1Iter = lane1.getIterable();
+		Iterator<CarManager> lane2Iter = lane2.getIterable();
+		CarManager lane1Car = null;
+		CarManager lane2Car = null;
 		
-		ArrayList<Car> lane1Removes = new ArrayList<Car>();
-		ArrayList<Car> lane2Removes = new ArrayList<Car>();
+		ArrayList<CarManager> lane1Removes = new ArrayList<CarManager>();
+		ArrayList<CarManager> lane2Removes = new ArrayList<CarManager>();
 		
 		while(lane1Iter.hasNext() || lane2Iter.hasNext()) {
 			
@@ -171,10 +171,10 @@ public class StopLight {
 			}	
 		}
 		
-		for(Car c : lane1Removes) {
+		for(CarManager c : lane1Removes) {
 			this.lane1.removeCar(c);
 		}
-		for(Car c : lane2Removes) {
+		for(CarManager c : lane2Removes) {
 			this.lane2.removeCar(c);
 		}
 	}
@@ -183,7 +183,7 @@ public class StopLight {
 	 * Should only be called when a car reaches it's destination
 	 * @param car
 	 */
-	public void removeCarFromLane(Car car) {
+	public void removeCarFromLane(CarManager car) {
 		assert car.getPosition() >= car.getDestination() : "Car hasn't finished traveling...";
 		
 		if(car.getLane() == 0) {

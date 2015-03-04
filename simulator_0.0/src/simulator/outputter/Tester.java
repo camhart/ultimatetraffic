@@ -2,7 +2,7 @@ package simulator.outputter;
 
 import java.sql.SQLException;
 
-import simulator.models.Car;
+import simulator.models.CarManager;
 import simulator.models.StopLight;
 import simulator.outputter.SQLiteOutputter.SQLite;
 
@@ -17,7 +17,7 @@ public class Tester {
 		light.setColor(StopLight.Color.GREEN);
 
 		for(int c = 0; c < 100; c++) {
-			so.addCarOutput(new Car("0,1,15,0,5956.8,0"));
+			so.addCarOutput(new CarManager("0,1,15,0,5956.8,0"));
 			so.addLightOutput(light);
 		}
 		so.endTransaction();

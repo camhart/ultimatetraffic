@@ -1,6 +1,6 @@
 package simulator.phases;
 
-import simulator.models.Car;
+import simulator.models.CarManager;
 import simulator.error.Error;
 import simulator.models.StopLight;
 
@@ -16,7 +16,7 @@ public abstract class PhaseHandler {
 	 * @param car - car that needs something done to it
 	 * @param currentLight - light the car is approaching (and who's lane the car is currently in)
 	 */
-	public abstract void handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(Car car, StopLight currentLight);
+	public abstract void handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(CarManager car, StopLight currentLight);
 	
 	public static PhaseHandler buildPhase(int phaseNumber) {
 		if(phaseNumber == 0)
@@ -33,7 +33,7 @@ public abstract class PhaseHandler {
 	 * @param car - car that we need to check if it's finished
 	 * @param light - light the car might be removed from if it's finished
 	 */
-	public void handlePotentialCarFinish(Car car, StopLight light) {
+	public void handlePotentialCarFinish(CarManager car, StopLight light) {
 		//I imagine this method will be shared between phase0 and phase1, so I put it here
 		if(car.hasFinished())
 			light.removeCarFromLane(car);

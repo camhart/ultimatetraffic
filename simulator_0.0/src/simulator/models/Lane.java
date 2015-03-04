@@ -9,10 +9,10 @@ public class Lane {
 	Lane otherLane;
 	
 //	private TreeSet<Car> cars;
-	private LinkedList<Car> cars;
+	private LinkedList<CarManager> cars;
 	
 	public Lane() {
-		cars = new LinkedList<Car>();
+		cars = new LinkedList<CarManager>();
 	}
 	
 	/**
@@ -20,7 +20,7 @@ public class Lane {
 	 * @param car
 	 * @return
 	 */
-	public boolean addCar(Car car) {
+	public boolean addCar(CarManager car) {
 		
 		return cars.add(car);
 	}
@@ -31,19 +31,19 @@ public class Lane {
 	 * @param car
 	 * @return
 	 */
-	public boolean canChangeLane(Car car) {
-		Iterator<Car> iter = cars.iterator();
-		Car curCar = null;
+	public boolean canChangeLane(CarManager car) {
+		Iterator<CarManager> iter = cars.iterator();
+		CarManager curCar = null;
 		while(iter.hasNext()) {
 			curCar = iter.next();
-			if(Math.abs(curCar.getPosition() - car.getPosition()) < Car.CAR_CUSHION) {
+			if(Math.abs(curCar.getPosition() - car.getPosition()) < CarManager.CAR_CUSHION) {
 				return false;
 			}
 		}
 		return true;
 	}
 	
-	public boolean removeCar(Car car) {
+	public boolean removeCar(CarManager car) {
 		return this.cars.remove(car);
 	}
 	
@@ -51,7 +51,7 @@ public class Lane {
 	 * Have everything in here for the car to change lanes
 	 * @param car
 	 */
-	public void changeLane(Car car) {
+	public void changeLane(CarManager car) {
 		throw new Error("unimplemented");
 	}
 	
@@ -64,7 +64,7 @@ public class Lane {
 	 * this lane.
 	 * @return
 	 */
-	public Iterator<Car> getIterable() {
+	public Iterator<CarManager> getIterable() {
 		return cars.iterator();
 	}
 }

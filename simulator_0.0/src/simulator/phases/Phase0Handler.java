@@ -1,6 +1,6 @@
 package simulator.phases;
 
-import simulator.models.Car;
+import simulator.models.CarManager;
 import simulator.models.StopLight;
 import simulator.outputter.Outputter;
 
@@ -8,7 +8,7 @@ public class Phase0Handler extends PhaseHandler {
 	
 	@Override
 	public void handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(
-			Car car, StopLight currentLight) {
+			CarManager car, StopLight currentLight) {
 		
 		
 		//delete all of this stuff

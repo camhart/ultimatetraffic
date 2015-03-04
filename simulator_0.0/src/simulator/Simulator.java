@@ -11,7 +11,7 @@ import simulator.outputter.Outputter;
 import simulator.phases.Phase0Handler;
 import simulator.phases.Phase1Handler;
 import simulator.phases.PhaseHandler;
-import simulator.models.Car;
+import simulator.models.CarManager;
 import simulator.models.StopLight;
 
 public class Simulator {
@@ -46,13 +46,13 @@ public class Simulator {
 	StopLight firstLight;
 	PhaseHandler phase;
 	
-	HashMap<Double, ArrayList<Car>> carArrivalMap;
+	HashMap<Double, ArrayList<CarManager>> carArrivalMap;
 	
 	/**
 	 * Private constructor
 	 */
 	private Simulator(Object... outputterParams) {
-		carArrivalMap = new HashMap<Double, ArrayList<Car>>();
+		carArrivalMap = new HashMap<Double, ArrayList<CarManager>>();
 		Outputter.getOutputter().initialize(outputterParams);
 	}
 	
@@ -98,10 +98,10 @@ public class Simulator {
 		
 		try {
 			Scanner scanner = new Scanner(carsFile);
-			Car curCar = null;
-			ArrayList<Car> curList = null;
+			CarManager curCar = null;
+			ArrayList<CarManager> curList = null;
 			while(scanner.hasNextLine()) {
-				curCar = new Car(scanner.nextLine());
+				curCar = new CarManager(scanner.nextLine());
 				
 				//ghetto hax way of forcing specific precision on a double...
 				//cars will only show up at precision equivalent to TIME_PER_ITERATION
@@ -111,7 +111,7 @@ public class Simulator {
 
 				curList = carArrivalMap.get(key);
 				if(curList == null) {
-					curList = new ArrayList<Car>();
+					curList = new ArrayList<CarManager>();
 					carArrivalMap.put(key,  curList);
 				}
 				curList.add(curCar);
@@ -175,7 +175,7 @@ public class Simulator {
 	 * @param car
 	 * @return
 	 */
-	private StopLight findStopLightForArrivingCar(Car car) {
+	private StopLight findStopLightForArrivingCar(CarManager car) {
 		StopLight curLight = this.firstLight;
 		while(curLight.getPosition() < car.getArrivalPosition()) {
 			curLight = curLight.getNextLight();
@@ -190,9 +190,9 @@ public class Simulator {
 	 * @param currentIteration
 	 */
 	public void handleArrivingCars(double currentIteration) {
-		ArrayList<Car> cars = this.carArrivalMap.get(currentIteration);
+		ArrayList<CarManager> cars = this.carArrivalMap.get(currentIteration);
 		if(cars != null) {
-			Car c;
+			CarManager c;
 			for(int i = 0; i < cars.size(); i++) {
 				c = cars.get(i);
 				if(c.getLane() == 1) {

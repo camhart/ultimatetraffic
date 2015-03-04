@@ -1,12 +1,12 @@
 package simulator.phases;
 
-import simulator.models.Car;
+import simulator.models.CarManager;
 import simulator.models.StopLight;
 import simulator.outputter.Outputter;
 
 public class Phase1Handler extends PhaseHandler  {
 
-	public double setTargetSpeed(Car car, StopLight light) {
+	public double setTargetSpeed(CarManager car, StopLight light) {
 		//set the cars target speed
 		// car.getCurrentSpeed() should give you the cars currentSpeed
 		// car.getPosition() will give you the car's position
@@ -19,13 +19,13 @@ public class Phase1Handler extends PhaseHandler  {
 		return 0;		
 	}
 	
-	public void moveCar(Car car) {
+	public void moveCar(CarManager car) {
 		//update cars position
 	}
 
 	@Override
 	public void handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(
-			Car car, StopLight light) {
+			CarManager car, StopLight light) {
 		//TODO: Fix this to move cars according to physics!
 		double carPosition = car.moveCarForward(); //TODO: Could we use 'changeSpeed' from Josh's code here?
 		
@@ -39,7 +39,7 @@ public class Phase1Handler extends PhaseHandler  {
 		
 	}
 	
-	public void algorithm(Car car, StopLight light){
+	public void algorithm(CarManager car, StopLight light){
 		double newSpeed = MAX_SPEED;
 		
 		double distanceToLight = light.getPosition() - car.getPosition();
