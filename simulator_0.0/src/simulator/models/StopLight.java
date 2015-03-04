@@ -62,7 +62,7 @@ public class StopLight {
 		return lane2;
 	}
 	
-	
+
 	/**
 	 * 
 	 * @param timePassed
@@ -140,6 +140,15 @@ public class StopLight {
 		// TODO Auto-generated method stub
 		this.currentColor = color;
 		
+	}
+	
+	public boolean isLightGreen() {
+		if(this.currentColor == GREEN) {
+			return true;
+		}
+		else {
+		return false;
+		}
 	}
 
 	public void setPrevLight(StopLight stopLight) {
