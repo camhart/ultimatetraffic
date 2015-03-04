@@ -203,7 +203,6 @@ public class Simulator {
 				}
 				else
 					throw new Error("this shouldn't be happening : " + c.getLane());
-				System.out.println(findStopLightForArrivingCar(c).getLane1().getNumberCarsInLane());
 			}
 		}
 	}

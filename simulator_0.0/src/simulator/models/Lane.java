@@ -1,16 +1,18 @@
 package simulator.models;
 
 import java.util.Iterator;
-import java.util.TreeSet;
+//import java.util.Iterator;
+import java.util.LinkedList;
 
 public class Lane {
 	
 	Lane otherLane;
 	
-	private TreeSet<Car> cars;
+//	private TreeSet<Car> cars;
+	private LinkedList<Car> cars;
 	
 	public Lane() {
-		cars = new TreeSet<Car>();
+		cars = new LinkedList<Car>();
 	}
 	
 	/**
@@ -57,6 +59,11 @@ public class Lane {
 		return this.cars.size();
 	}
 
+	/**
+	 * Retrieve an iterator object used to go through the cars in
+	 * this lane.
+	 * @return
+	 */
 	public Iterator<Car> getIterable() {
 		return cars.iterator();
 	}

@@ -13,10 +13,8 @@ public class Phase0Handler extends PhaseHandler {
 		
 		//delete all of this stuff
 		car.setPosition(car.getPosition() + 20, car.getLane() == 1 ? currentLight.getLane1()
-				: currentLight.getLane2());
+				: currentLight.getLane2());		
 		
-		//if the car moved, have it add output to the outputter
 		Outputter.getOutputter().addCarOutput(car);
-		
 	}
 }

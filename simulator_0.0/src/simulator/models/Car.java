@@ -9,6 +9,7 @@ public class Car implements Comparable {
 	
 	private double arrivalTime;
 	private double position;
+
 	private double arrivalPosition;
 	private double destination;
 	private int currentLane;
@@ -56,9 +57,7 @@ public class Car implements Comparable {
 		//this removeCar and addCar has to happen to ensure
 		//	the elements in the tree remain in the correct order.
 		//	Otherwise crap breaks and its bad.
-		lane.removeCar(this);
 		this.position = position;
-		lane.addCar(this);
 	}
 
 	public boolean hasFinished() {
