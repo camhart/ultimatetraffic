@@ -44,6 +44,13 @@ public class Car implements Comparable {
 		return false;
 	}
 	
+	public int getOtherLane(){
+		if(this.currentLane == 1)
+			return 2;
+		else
+			return 1;
+	}
+	
 	public void setLane(int lane) {
 		this.currentLane = lane;
 	}
