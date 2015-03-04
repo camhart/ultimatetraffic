@@ -7,10 +7,9 @@ import simulator.Simulator;
 public class CarManager implements Comparable {
 	
 	
-	public static final int CAR_CUSHION = 30; 
+	public static final double CAR_CUSHION = 30.0; 
 	
 	private double arrivalTime;
-//	private double position;
 	private Car car;
 
 	private double arrivalPosition;

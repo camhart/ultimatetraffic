@@ -8,7 +8,6 @@ public class Lane {
 	
 	Lane otherLane;
 	
-//	private TreeSet<Car> cars;
 	private LinkedList<CarManager> cars;
 	
 	public Lane() {
