@@ -29,7 +29,7 @@ public class Phase1Handler extends PhaseHandler  {
 		//TODO: Fix this to move cars according to physics!
 		double carPosition = car.moveCarForward(); //TODO: Could we use 'changeSpeed' from Josh's code here?
 		
-		//TODO: this needs to go somewhere--probably in the other file: Outputter.getOutputter().addCarOutput(car);
+		Outputter.getOutputter().addCarOutput(car);
 		
 		double lightPosition = light.getPosition();
 		if(carPosition >= lightPosition){	//TODO: (eventually) adjust for other direction later ( will be <= )
