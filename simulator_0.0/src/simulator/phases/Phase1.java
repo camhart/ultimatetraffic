@@ -24,8 +24,21 @@ public class Phase1 extends Phase  {
 
 	@Override
 	public void handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(
-			Car car, StopLight upcomingLight) {
-		// TODO Auto-generated method stub		
+			Car car, StopLight light) {
+		//TODO: Fix this to move cars according to physics!
+		double carPosition = car.getPosition()+10; //replace this with an actual physics call
+		car.setPosition(carPosition, car.getLane() == 1 ? light.getLane1()
+				: light.getLane2());
+		//TODO: this needs to go somewhere--probably in the other file: Outputter.getOutputter().addCarOutput(car);
+		double lightPosition = light.getPosition();
+		if(carPosition >= lightPosition){	//TODO: adjust for other direction later ( will be <= )
+			algorithm(car, light.getNextLight());
+		}
+		
+	}
+	
+	public void algorithm(Car car, StopLight light){
+		
 	}
 
 }
