@@ -69,13 +69,12 @@ public class Phase1Handler extends PhaseHandler  {
 				}
 			} else {
 				if(light.getLane1().canChangeLane(car)) {
-					car.setLane(otherLane);	//TODO: Does this work as the code is currently written or do we need to actually mess with the 'Lane' object?
+					car.setLane(otherLane);
 					changedLanes = true;
 				}
 			}
 			
 			if(changedLanes) {
-//				I ask because 'setPosition' sets the lane differently
 				if(car.hitNextCar(theoreticalTimeToLight)){
 					car.setLane(laneNum);
 					if(newSpeed > DECELERATION){
@@ -90,7 +89,7 @@ public class Phase1Handler extends PhaseHandler  {
 			}
 		}
 		
-		car.giveChangeSpeedCommand(newSpeed);	//TODO: Merge Josh's code--this exists in Josh's Car class
+		car.giveChangeSpeedCommand(newSpeed);
 		car.setLane(laneNum);
 	}
 
