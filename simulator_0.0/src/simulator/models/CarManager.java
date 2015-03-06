@@ -5,7 +5,7 @@ import simulator.Simulator;
 //import java.util.Comparator;
 //Comparator<Car>
 public class CarManager implements Comparable {
-	
+	 
 	
 	public static final double CAR_CUSHION = 30.0; 
 	
