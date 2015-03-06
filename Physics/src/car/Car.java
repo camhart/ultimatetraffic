@@ -93,7 +93,7 @@ public class Car {
 	 * Call this when updating each iteration after a command has been issued
 	 */
 	public void stop(){
-		Pair stop_info = map.getAccelerationInfo(new Pair(Math.round(this.velocity-0.5)+0.5, 0));
+		Pair stop_info = map.getAccelerationInfo(new Pair(roundUp(velocity), 0));
 		if(Math.round(stop_info.getSecond()) >= Math.round(stop_distance) - Math.round(position)){
 			calculateEnergyUsed(speed_before_stop, velocity);
 			giveChangeSpeedCommand(0);
@@ -115,5 +115,29 @@ public class Car {
 	}
 	public double getEnergyUsed(){
 		return this.energy_used;
+	}
+	public double roundUp(double number){
+		double result = Math.floor(number);
+		double decimal = number - result;
+		if(decimal > 0.5)
+			result += 1.0;
+		else
+			result += 0.5;
+		return result;
+	}
+	public double roundDown(double number){
+		double result = Math.floor(number);
+		double decimal = number - result;
+		if(decimal > 0.5)
+			result += 0.5;
+		return result;
+	}
+	public double getTimeTo(double newSpeed, double distanceToLight) {
+		Pair info = map.getAccelerationInfo(new Pair(roundDown(velocity), newSpeed));
+		double time = info.getSecond();//Time to accelerate to newSpeed
+		//(distanceToLight - distance to accelerate) / the current speed 
+		// = time to go remaining distance to light
+		time += (distanceToLight - info.getFirst())/newSpeed;
+		return time;
 	}
 }
