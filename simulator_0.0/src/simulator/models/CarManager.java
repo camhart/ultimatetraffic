@@ -135,7 +135,7 @@ public class CarManager implements Comparable {
 
 
 	public double getTimeTo(double newSpeed, double distanceToLight) {
-		throw new RuntimeException("unimplemented");
+		return this.car.getTimeTo(newSpeed, distanceToLight);//throw new RuntimeException("unimplemented");
 	}
 
 

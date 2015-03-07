@@ -26,8 +26,8 @@ public class Phase1Handler extends PhaseHandler  {
 	@Override
 	public void handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(
 			CarManager car, StopLight light) {
-		//TODO: Fix this to move cars according to physics!
-		double carPosition = car.moveCarForward(); //TODO: Could we use 'changeSpeed' from Josh's code here?
+
+		double carPosition = car.moveCarForward(); //TODO: Write function according to Josh's code
 		
 		Outputter.getOutputter().addCarOutput(car);
 		
@@ -43,7 +43,7 @@ public class Phase1Handler extends PhaseHandler  {
 		double newSpeed = MAX_SPEED;
 		
 		double distanceToLight = light.getPosition() - car.getPosition();
-		double theoreticalTimeToLight = car.getTimeTo(newSpeed, distanceToLight);	//TODO: Function must be created
+		double theoreticalTimeToLight = car.getTimeTo(newSpeed, distanceToLight);
 		
 		while(!light.isLightGreenAtTime(theoreticalTimeToLight)){
 			if(newSpeed > DECELERATION){
@@ -64,7 +64,7 @@ public class Phase1Handler extends PhaseHandler  {
 			if(car.getLane() == 1) {
 				if(light.getLane2().canChangeLane(car)) {
 					//can change lanes
-					car.setLane(otherLane);	//TODO: Does this work as the code is currently written or do we need to actually mess with the 'Lane' object?
+					car.setLane(otherLane);
 					changedLanes = true;
 				}
 			} else {
