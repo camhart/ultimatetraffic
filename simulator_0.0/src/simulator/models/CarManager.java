@@ -1,6 +1,7 @@
 package simulator.models;
 
 import simulator.Simulator;
+import simulator.models.car.Car;
 
 //import java.util.Comparator;
 //Comparator<Car>
@@ -144,7 +145,7 @@ public class CarManager implements Comparable {
 
 
 	public void giveChangeSpeedCommand(double newSpeed) {
-		this.car.command(newSpeed, Simulator.TIME_PER_ITERATION);
+		this.car.giveChangeSpeedCommand(newSpeed);
 	}
 
 }
