@@ -85,8 +85,9 @@ public class CarManager implements Comparable {
 	 * Should be set whenever a car changes lanes
 	 * @param lane
 	 */
-	public void setLane(int lane) {
+	public void setLane(int lane, Lane laneObj) {
 		this.currentLane = lane;
+		this.currentLaneObj = laneObj;
 	}
 	
 	
@@ -140,6 +141,7 @@ public class CarManager implements Comparable {
 
 
 	public boolean hitNextCar(double theoreticalTimeToLight) {
+		
 		throw new RuntimeException("unimplemented");
 	}
 

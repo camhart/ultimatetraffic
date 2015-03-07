@@ -57,8 +57,9 @@ public class Car {
 		calculateEnergyUsed(velocity, target_velocity);
 		changeSpeed();
 	}
-	/*
-	 * Call this when updating each iteration after a command has been issued
+	/**
+	 * Call this when updating each iteration after a command has been issued.
+	 * Position, velocity, and acceleration get updated.
 	 */
 	public void changeSpeed(){
 		double error = target_velocity - velocity;

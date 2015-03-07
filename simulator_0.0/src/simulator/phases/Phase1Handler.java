@@ -36,7 +36,6 @@ public class Phase1Handler extends PhaseHandler  {
 			algorithm(car, light.getNextLight());
 			//TODO: move car to the next light's lane list here!
 		}
-		
 	}
 	
 	public void algorithm(CarManager car, StopLight light){
@@ -64,19 +63,22 @@ public class Phase1Handler extends PhaseHandler  {
 			if(car.getLane() == 1) {
 				if(light.getLane2().canChangeLane(car)) {
 					//can change lanes
-					car.setLane(otherLane);	//TODO: Does this work as the code is currently written or do we need to actually mess with the 'Lane' object?
+					car.setLane(otherLane, light.getLane2());	
+					//TODO: Does this work as the code is currently written or do we need to actually mess with the 'Lane' object?
+					//	I think I just fixed this to make sure that works.
 					changedLanes = true;
 				}
 			} else {
 				if(light.getLane1().canChangeLane(car)) {
-					car.setLane(otherLane);
+					car.setLane(otherLane, light.getLane1());
 					changedLanes = true;
 				}
 			}
 			
 			if(changedLanes) {
 				if(car.hitNextCar(theoreticalTimeToLight)){
-					car.setLane(laneNum);
+//					car.setLane(laneNum, car.getL);
+					//why are we calling setLane here?  Isn't that already taken care of?
 					if(newSpeed > DECELERATION){
 						newSpeed -= DECELERATION;
 					}
@@ -90,7 +92,9 @@ public class Phase1Handler extends PhaseHandler  {
 		}
 		
 		car.giveChangeSpeedCommand(newSpeed);
-		car.setLane(laneNum);
+		
+		// Why call this here?
+//		car.setLane(laneNum);
 	}
 
 }
