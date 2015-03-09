@@ -5,6 +5,7 @@ public class Car {
 	public static double KP = 600;
 	public static double MASS = 1270;
 	public static double DAMPING = 10;
+	public enum Command {STOP, GO, CHANGE_SPEED};
 	
 	private double position;
 	private double velocity;
@@ -21,6 +22,7 @@ public class Car {
 	private double speed_before_stop;
 	private double stop_distance;
 	private VelocityMap map;
+	private Command command; 
 	
 	public Car(double initialVelocity, double timeStep, double initialPosition) {
 		position = initialPosition;
@@ -32,7 +34,7 @@ public class Car {
 		mass = Car.MASS;
 		damping = Car.DAMPING;
 		step = timeStep;
-	
+		command = GO;
 		speed_limit = 22;
 		energy_used = 0;
 		target_velocity = velocity;
@@ -53,6 +55,7 @@ public class Car {
 	 * Call this to give a change speed command
 	 */
 	public void giveChangeSpeedCommand(double target){
+		command  = CHANGE_SPEED:
 		target_velocity = target;
 		calculateEnergyUsed(velocity, target_velocity);
 		//changeSpeed();
@@ -77,6 +80,7 @@ public class Car {
 	 * Give the command to go the speed limit
 	 */
 	public void giveGoCommand(){
+		command = GO;
 		target_velocity = speed_limit;
 		calculateEnergyUsed(velocity, target_velocity);
 		changeSpeed();
@@ -91,6 +95,7 @@ public class Car {
 	 * Call this to give a stop command
 	 */
 	public void giveStopCommand(double distance){
+		command = STOP;
 		stop_distance = distance;
 		target_velocity = speed_limit;
 		speed_before_stop = velocity;
@@ -151,6 +156,26 @@ public class Car {
 	public void setPosition(double position) {
 		this.position = position;
 		
+	}
+	public int getCommand(){
+		return command;
+	}
+	public double moveCarForward(){
+		switch(command){
+		case GO:
+			go();
+			break;
+		case STOP:
+			stop();
+			break;
+		case CHANGE_SPEED:
+			changeSpeed();
+			break;
+		default:
+			throw new RuntimeException("INVALID CAR COMMAND GIVEN");
+			//break;
+		}
+		return this.position;
 	}
 }
 

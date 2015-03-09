@@ -133,7 +133,8 @@ public class CarManager implements Comparable {
 
 
 	public double moveCarForward() {
-		throw new RuntimeException("unimplemented");
+		//throw new RuntimeException("unimplemented");
+		return car.moveCarForward();
 	}
 
 
