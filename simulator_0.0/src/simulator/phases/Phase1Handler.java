@@ -33,12 +33,17 @@ public class Phase1Handler extends PhaseHandler  {
 		
 		double lightPosition = light.getPosition();
 		if(carPosition >= lightPosition){	//TODO: (eventually) adjust for other direction later ( will be <= )
-			algorithm(car, light.getNextLight());
-			//TODO: move car to the next light's lane list here!
+			if(carPosition < car.getDestination()){
+				algorithm(car, light.getNextLight(), light);
+			}
+			else{
+				//TODO: Somehow quickly output that this car is done so we can verify all the cars finished...
+				light.removeCarFromLane(car);
+			}
 		}
 	}
 	
-	public void algorithm(CarManager car, StopLight light){
+	public void algorithm(CarManager car, StopLight light, StopLight prevLight){
 		double newSpeed = MAX_SPEED;
 		
 		double distanceToLight = light.getPosition() - car.getPosition();
@@ -56,29 +61,31 @@ public class Phase1Handler extends PhaseHandler  {
 		
 		int laneNum = car.getLane();
 		
-		while(car.hitNextCar(theoreticalTimeToLight)){	//TODO: Function must be created
+		while(car.hitNextCar(theoreticalTimeToLight, distanceToLight)){	//TODO: Function must be created
 			int otherLane = car.getOtherLane();
 			
 			boolean changedLanes = false;
 			if(car.getLane() == 1) {
-				if(light.getLane2().canChangeLane(car)) {
+				if(light.getLane2().canChangeLane(car) && prevLight.getLane1().canChangeLane(car)) {
 					//can change lanes
-					car.setLane(otherLane, light.getLane2());	
-					//TODO: Does this work as the code is currently written or do we need to actually mess with the 'Lane' object?
-					//	I think I just fixed this to make sure that works.
+					car.setLane(otherLane, light.getLane2());
 					changedLanes = true;
 				}
 			} else {
-				if(light.getLane1().canChangeLane(car)) {
+				if(light.getLane1().canChangeLane(car) && prevLight.getLane1().canChangeLane(car)) {
 					car.setLane(otherLane, light.getLane1());
 					changedLanes = true;
 				}
 			}
 			
 			if(changedLanes) {
-				if(car.hitNextCar(theoreticalTimeToLight)){
-//					car.setLane(laneNum, car.getL);
+				if(car.hitNextCar(theoreticalTimeToLight, distanceToLight)){
+					if(otherLane == 1)
+						car.setLane(laneNum, light.getLane2());
+					else
+						car.setLane(laneNum, light.getLane1());
 					//why are we calling setLane here?  Isn't that already taken care of?
+					//This is called because changing lanes didn't work, so we switch back and reduce speed (and try it all again)
 					if(newSpeed > DECELERATION){
 						newSpeed -= DECELERATION;
 					}
@@ -93,7 +100,7 @@ public class Phase1Handler extends PhaseHandler  {
 		
 		car.giveChangeSpeedCommand(newSpeed);
 		
-		// Why call this here?
+		// Why call this here?  Um... we shouldn't...
 //		car.setLane(laneNum);
 	}
 

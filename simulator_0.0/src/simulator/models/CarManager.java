@@ -8,7 +8,8 @@ import simulator.models.car.Car;
 public class CarManager implements Comparable {
 	 
 	
-	public static final double CAR_CUSHION = 30.0; 
+	public static final double CAR_CUSHION = 30.0;
+	public static final double TIME_CUSHION = 0.5;
 	
 	private double arrivalTime;
 	private Car car;
@@ -20,6 +21,7 @@ public class CarManager implements Comparable {
 	private int direction;
 	private Lane currentLaneObj;
 	private int id;
+	private double targetSpeed;
 	
 	private static class CarIdGenerator {
 		private static int currentValue = 0;
@@ -140,14 +142,21 @@ public class CarManager implements Comparable {
 	}
 
 
-	public boolean hitNextCar(double theoreticalTimeToLight) {
-		
-		throw new RuntimeException("unimplemented");
+	public boolean hitNextCar(double theoreticalTimeToLight, double distanceToLight) {
+		CarManager nextCar = getLaneObject().getNextCar();
+		if(nextCar.getPosition() == this.car.getPosition()){//You're the only car on the road!
+			return false;
+		}
+		else if(nextCar.getTimeTo(nextCar.targetSpeed, distanceToLight) < theoreticalTimeToLight + TIME_CUSHION){
+			return true;
+		}
+		return false;
 	}
 
 
 	public void giveChangeSpeedCommand(double newSpeed) {
 		this.car.giveChangeSpeedCommand(newSpeed);
+		targetSpeed = newSpeed;
 	}
 
 }
