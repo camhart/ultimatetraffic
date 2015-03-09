@@ -55,7 +55,7 @@ public class Car {
 	public void giveChangeSpeedCommand(double target){
 		target_velocity = target;
 		calculateEnergyUsed(velocity, target_velocity);
-		changeSpeed();
+		//changeSpeed();
 	}
 	/**
 	 * Call this when updating each iteration after a command has been issued.
