@@ -13,17 +13,21 @@ public class Phase1Handler extends PhaseHandler  {
 	public void handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(
 			CarManager car, StopLight light) {
 		
-		double carPosition = car.getPosition();
-		
+	
 		//move the car, then check for speed change.  It has to happen this way
 		//	because after this function runs, then the car is put onto the next light
 		//	(if it's crossed over).
 		car.moveCarForward(); 
 		
+		double carPosition = car.getPosition();
+		
 		if(carPosition >= light.getPosition()){	//TODO: (eventually) adjust for other direction later ( will be <= )
+			System.out.println("a");
 			if(carPosition < car.getDestination()){
 				algorithm(car, light);
 			}
+		} else {
+			System.out.println("b");
 		}
 		
 		Outputter.getOutputter().addCarOutput(car);
@@ -32,20 +36,24 @@ public class Phase1Handler extends PhaseHandler  {
 	public void algorithm(CarManager car, StopLight currentLight){
 		double newSpeed = MAX_SPEED;
 		
-		if(currentLight == null) { //we just drove past the last light
+		assert currentLight != null : "currentLight is null?";
+		
+		StopLight nextLight = currentLight.getNextLight();
+		
+		if(nextLight == null) { //we just drove past the last light
 			car.giveChangeSpeedCommand(MAX_SPEED);
 			return;
 		}
 		
 		StopLight prevLight = currentLight.getPrevLight();
 		
-		double distanceToLight = currentLight.getPosition() - car.getPosition();
+		double distanceToLight = nextLight.getPosition() - car.getPosition();
 		double theoreticalTimeToLight = car.getTimeTo(newSpeed, distanceToLight);
 		
-		assert distanceToLight >= 0 : "distanceToLight is < 0 (" + distanceToLight + ")";
+		assert distanceToLight >= 0 : "distanceToLight should be >= 0 (" + distanceToLight + ")";
 		assert theoreticalTimeToLight >= 0 : "theoreticalTimeToLight is < 0 (" + theoreticalTimeToLight + ")";
 		
-		while(!currentLight.isLightGreenAtTime(theoreticalTimeToLight)){
+		while(!nextLight.isLightGreenAtTime(theoreticalTimeToLight)){
 			if(newSpeed > DECELERATION){
 				newSpeed -= DECELERATION;
 			}
@@ -63,14 +71,14 @@ public class Phase1Handler extends PhaseHandler  {
 			
 			boolean changedLanes = false;
 			if(car.getLane() == 1) {
-				if(currentLight.getLane2().canChangeLane(car) && prevLight.getLane1().canChangeLane(car)) {
+				if(nextLight.getLane2().canChangeLane(car) && prevLight.getLane1().canChangeLane(car)) {
 					//can change lanes
-					car.setLane(otherLane, currentLight.getLane2());
+					car.setLane(otherLane, nextLight.getLane2());
 					changedLanes = true;
 				}
 			} else {
-				if(currentLight.getLane1().canChangeLane(car) && prevLight.getLane1().canChangeLane(car)) {
-					car.setLane(otherLane, currentLight.getLane1());
+				if(nextLight.getLane1().canChangeLane(car) && prevLight.getLane1().canChangeLane(car)) {
+					car.setLane(otherLane, nextLight.getLane1());
 					changedLanes = true;
 				}
 			}
@@ -78,9 +86,9 @@ public class Phase1Handler extends PhaseHandler  {
 			if(changedLanes) {
 				if(car.hitNextCar(theoreticalTimeToLight, distanceToLight)){
 					if(otherLane == 1)
-						car.setLane(laneNum, currentLight.getLane2());
+						car.setLane(laneNum, nextLight.getLane2());
 					else
-						car.setLane(laneNum, currentLight.getLane1());
+						car.setLane(laneNum, nextLight.getLane1());
 					//why are we calling setLane here?  Isn't that already taken care of?
 					//This is called because changing lanes didn't work, so we switch back and reduce speed (and try it all again)
 					if(newSpeed > DECELERATION){

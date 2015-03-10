@@ -51,14 +51,15 @@ public class Car {
 	 * If a car has the stop command then call car.stop();
 	 */
 	
-	/*
+	/**
 	 * Call this to give a change speed command
 	 */
 	public void giveChangeSpeedCommand(double target){
+		System.out.println("Chaging speed to " + target);
 		command  = Command.CHANGE_SPEED;
 		target_velocity = target;
 		calculateEnergyUsed(velocity, target_velocity);
-		//changeSpeed();
+//		changeSpeed(); //should this be commented out?
 	}
 	/**
 	 * Call this when updating each iteration after a command has been issued.
@@ -76,22 +77,25 @@ public class Car {
 		velocity = velocity + step / 2 * (acceleration + acceleration_delayed);
 		position = position + step / 2 * (velocity + velocity_delayed);
 	}
-	/*
+	
+	/**
 	 * Give the command to go the speed limit
 	 */
 	public void giveGoCommand(){
 		command = Command.GO;
 		target_velocity = speed_limit;
 		calculateEnergyUsed(velocity, target_velocity);
-		changeSpeed();
+//		changeSpeed();
 	}
-	/*
+	
+	/**
 	 * Call this to update after the go command has been issued
 	 */
-	public void go(){
+	private void go(){
 		changeSpeed();
 	}
-	/*
+	
+	/**
 	 * Call this to give a stop command
 	 */
 	public void giveStopCommand(double distance){
@@ -101,10 +105,11 @@ public class Car {
 		speed_before_stop = velocity;
 		stop();
 	}
-	/*
+	
+	/**
 	 * Call this when updating each iteration after a command has been issued
 	 */
-	public void stop(){
+	private void stop(){
 		Pair stop_info = map.getAccelerationInfo(new Pair(roundUp(velocity), 0));
 		if(Math.round(stop_info.getSecond()) >= Math.round(stop_distance) - Math.round(position)){
 			calculateEnergyUsed(speed_before_stop, velocity);
@@ -147,6 +152,8 @@ public class Car {
 	public double getTimeTo(double newSpeed, double distanceToLight) {
 		Pair inputPair = new Pair(roundDown(velocity), newSpeed);
 		Pair info = map.getAccelerationInfo(inputPair);
+		if(info == null)
+			System.out.println("wth");
 		double time = info.getSecond();//Time to accelerate to newSpeed
 		//(distanceToLight - distance to accelerate) / the current speed 
 		// = time to go remaining distance to light
@@ -158,9 +165,15 @@ public class Car {
 		this.position = position;
 		
 	}
+	
 	public Command getCommand(){
 		return command;
 	}
+	
+	/**
+	 * Use this to move cars forward
+	 * @return
+	 */
 	public double moveCarForward(){
 		switch(command){
 		case GO:
@@ -173,7 +186,7 @@ public class Car {
 			changeSpeed();
 			break;
 		default:
-			throw new RuntimeException("INVALID CAR COMMAND GIVEN");
+			throw new Error("INVALID CAR COMMAND GIVEN");
 			//break;
 		}
 		return this.position;

@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.TimeZone;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import simulator.outputter.Outputter;
 import simulator.phases.Phase0Handler;
@@ -31,6 +34,14 @@ public class Simulator {
 		}
 		return sim;
 	}
+	
+	public static final Logger LOG = Logger.getLogger(Simulator.class.getName());
+	
+	static {
+		LOG.addHandler(new ConsoleHandler());
+		LOG.setLevel(Level.WARNING);
+	}
+	
 	
 	public static void setOutputterConfig(Object... params) {
 		Simulator.outputterParams = params;
@@ -240,7 +251,7 @@ public class Simulator {
 			//increment iteration
 			currentIteration++;
 			
-			System.out.println(String.format("%s (%.1f s), iteration %d / %d, cars left %d, cars finished %d",
+			LOG.info(String.format("%s (%.1f s), iteration %d / %d, cars left %d, cars finished %d",
 					getTime(), currentIteration * Simulator.TIME_PER_ITERATION,
 					currentIteration, numberOfIterations, carsLeftToArrive,
 					this.finishedCars.size()));
@@ -319,7 +330,7 @@ public class Simulator {
 		for(CarManager c : this.finishedCars) {
 			totalIterations += c.getIterations();
 		}
-		System.out.println(String.format("Total travel time: %.1f seconds (%s)", totalIterations * this.TIME_PER_ITERATION, Simulator.DATE_FORMATTER.format(totalIterations * this.TIME_PER_ITERATION * 1000)));
+		LOG.info(String.format("Total travel time: %.1f seconds (%s)", totalIterations * this.TIME_PER_ITERATION, Simulator.DATE_FORMATTER.format(totalIterations * this.TIME_PER_ITERATION * 1000)));
 	}
 
 	public void finishCar(CarManager car) {

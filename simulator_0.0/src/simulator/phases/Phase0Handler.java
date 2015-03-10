@@ -27,13 +27,13 @@ public class Phase0Handler extends PhaseHandler {
 				
 			} else {
 				//stop
-				car.stop();
+				car.giveStopCommand(light.getPosition() - car.getPosition());
 			}
 			
 		} else if(light.getCurrentColor() == StopLight.Color.RED &&
 				light.justChangedColor()) {
 			//the light is red but changing green
-			car.go();
+			car.giveGoCommand();
 			//go!
 		}		
 		

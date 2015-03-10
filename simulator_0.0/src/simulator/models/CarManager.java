@@ -163,6 +163,7 @@ public class CarManager implements Comparable {
 
 
 	public void giveChangeSpeedCommand(double newSpeed) {
+		System.out.println("speed set to" + newSpeed);
 		this.car.giveChangeSpeedCommand(newSpeed);
 		targetSpeed = newSpeed;
 	}
@@ -174,17 +175,18 @@ public class CarManager implements Comparable {
 	/**
 	 * Should occur only with phase 0.
 	 */
-	public void stop() {
+	public void giveStopCommand(double distance) {
 		assert Simulator.getSimulator().getPhase() == 0 : "Calling stop in something other than phase 0"; 
-		this.car.stop();
+		this.car.giveStopCommand(distance);
 	}
 	
 	/**
 	 * Should occur only with phase 0.
 	 */
-	public void go() {
+	public void giveGoCommand() {
 		assert Simulator.getSimulator().getPhase() == 0 : "Calling stop in something other than phase 0";
-		this.car.go();
+//		this.car.go();
+		this.car.giveGoCommand();
 	}
 
 }

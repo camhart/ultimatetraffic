@@ -3,6 +3,7 @@ Simulator inputs
 Car arrival file
 
 timestamp	lane	startspeed	startposition	endposition direction
+4.731366995,1,19.25124403,0,5956.8,0
 
 timestamp - time the vehicle arrives at (in milliseconds)
 lane - initial lane the vehicle arrives in
