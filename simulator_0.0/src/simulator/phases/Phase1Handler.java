@@ -62,6 +62,8 @@ public class Phase1Handler extends PhaseHandler  {
 		double distanceToLight = light.getPosition() - car.getPosition();
 		double theoreticalTimeToLight = car.getTimeTo(newSpeed, distanceToLight);
 		
+		assert distanceToLight >= 0 : "distanceToLight is < 0 (" + distanceToLight + ")";
+		assert theoreticalTimeToLight >= 0 : "theoreticalTimeToLight is < 0 (" + theoreticalTimeToLight + ")";
 		
 		while(!light.isLightGreenAtTime(theoreticalTimeToLight)){
 			if(newSpeed > DECELERATION){
@@ -110,14 +112,23 @@ public class Phase1Handler extends PhaseHandler  {
 					theoreticalTimeToLight = car.getTimeTo(newSpeed, distanceToLight);
 				}
 				else{break;}	//unneeded, but saves a function call
-			}
-			System.out.println("we're getting stuck in here!!!!");
+			} else {
+				
+				//if the car doesn't change lanes we still need to decelerate right?
+				
+				if(newSpeed > DECELERATION){
+					newSpeed -= DECELERATION;
+				}
+				else{
+					newSpeed = newSpeed*0.9;
+				}
+				
+				assert newSpeed != 0 : "We shouldn't ever be setting the speed to 0...";
+				
+			}		
 		}
 		
 		car.giveChangeSpeedCommand(newSpeed);
-		
-		// Why call this here?  Um... we shouldn't...
-//		car.setLane(laneNum);
 	}
 
 }

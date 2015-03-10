@@ -1,10 +1,13 @@
 package simulator.outputter;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import javax.swing.JOptionPane;
 
 import simulator.Simulator;
 import simulator.models.CarManager;
@@ -12,7 +15,7 @@ import simulator.models.StopLight;
 
 class SQLiteOutputter implements OutputterInterface{
 	
-	private static final int OUTPUTS_UNTIL_COMMIT = 10;
+	private static final int OUTPUTS_UNTIL_COMMIT = 1000;
 	private int outputCount;
 	
 	private static SQLiteOutputter sqlOut; 
@@ -201,6 +204,33 @@ class SQLiteOutputter implements OutputterInterface{
 	@Override
 	public void initialize(Object... params) {
 		String databaseName = (String)params[0];
+		File dbFile = new File(new File("").getAbsolutePath() + "/" + databaseName);
+		if(dbFile.exists()) {
+			String[] options = {"Yes, continue and delete the database", "No, stop everything now."};
+			int choice = JOptionPane.showOptionDialog(null,
+				    "The database '" +
+				    dbFile.getAbsolutePath() +
+				    "' already exists,\n\tcontinuing will delete it and create a new one.  Do you want to continue?",
+				    "Overwrite database file?",
+				    JOptionPane.YES_NO_OPTION,
+				    JOptionPane.QUESTION_MESSAGE,
+				    null,
+				    options,
+				    options[1]
+			);
+			
+			if(choice != 0) {
+				System.out.println("Simulator stopped.");
+				System.out.println("Database can be found at " + dbFile.getAbsolutePath());
+				System.exit(0);
+			}
+			
+			if(!dbFile.delete()) {
+				System.out.println("Error deleting database file " + dbFile.getAbsolutePath());
+				System.out.println("Please delete manually (ensure no other things are using it).");
+			}
+		}
+		
 		SQLite.setDatabaseName(databaseName);
 		SQLite.initializeDatabase();
 		SQLiteOutputter.getOutputter().startTransaction();
