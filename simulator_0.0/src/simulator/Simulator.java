@@ -223,6 +223,7 @@ public class Simulator {
 			
 			//lights
 			StopLight curLight = this.lastLight;
+			int light = 0;
 			
 			while(curLight != null) {
 				
@@ -231,6 +232,8 @@ public class Simulator {
 				curLight.iterate(this.phase, Simulator.TIME_PER_ITERATION);
 
 				curLight = curLight.getPrevLight();
+				System.out.println("Light: " + light);
+				light++;
 			}
 			
 			//arriving cars

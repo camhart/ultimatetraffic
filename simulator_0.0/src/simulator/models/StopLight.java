@@ -134,52 +134,42 @@ public class StopLight {
 			
 			if(lane1Iter.hasNext()) {
 				lane1Car = lane1Iter.next();
-				phase.handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(lane1Car, this);
-				phase.handlePotentialCarFinish(lane1Car, this);
-				
-				if(nextLight != null && lane1Car.getPosition() >= nextLight.getPosition()) {
-					
-					//add the car to the next lane 
-					// 	phase handler might have changed the lane so we need to check
-					if(lane1Car.getLane() == 1) {
-						nextLight.getLane1().addCar(lane1Car);
-					} else if(lane1Car.getLane() == 2) {
-						nextLight.getLane2().addCar(lane1Car);
-					}
-					
-					//add the car to the remove list
-					lane1Removes.add(lane1Car);
-				}
+				handleCar(phase, lane1Car, lane1, lane1Removes);
 			}
 			
 			if(lane2Iter.hasNext()) {
 				lane2Car = lane2Iter.next();
-				
-				phase.handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(lane2Car, this);
-				phase.handlePotentialCarFinish(lane2Car, this);
-				
-				if(nextLight != null && lane2Car.getPosition() >= nextLight.getPosition()) {
-					
-					//add the car to the next lane 
-					// 	phase handler might have changed the lane so we need to check
-					if(lane2Car.getLane() == 1) {
-						nextLight.getLane1().addCar(lane2Car);
-					} else if(lane2Car.getLane() == 2) {
-						nextLight.getLane2().addCar(lane2Car);
-					}
-					
-					//add the car to the remove list
-					lane2Removes.add(lane2Car);
-				}
+				handleCar(phase, lane2Car, lane2, lane2Removes);
 			}	
-			System.out.println("b");
 		}
 		
 		for(CarManager c : lane1Removes) {
 			this.lane1.removeCar(c);
 		}
+		
 		for(CarManager c : lane2Removes) {
 			this.lane2.removeCar(c);
+		}
+	}
+	
+	public void handleCar(PhaseHandler phase, CarManager car, Lane lane, ArrayList<CarManager> removeList) {
+		phase.handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(car, this);
+		phase.handlePotentialCarFinish(car, this);
+		
+		if(nextLight != null && car.getPosition() >= nextLight.getPosition()) {
+			
+			//add the car to the next lane 
+			// 	phase handler might have changed the lane so we need to check
+			if(car.getLane() == 1) {
+				nextLight.getLane1().addCar(car);
+				car.setLane(1, nextLight.getLane1());
+			} else if(car.getLane() == 2) {
+				nextLight.getLane2().addCar(car);
+				car.setLane(2, nextLight.getLane2());
+			}
+			
+			//add the car to the remove list
+			removeList.add(car);
 		}
 	}
 
