@@ -167,4 +167,8 @@ public class CarManager implements Comparable {
 		targetSpeed = newSpeed;
 	}
 
+	public int getIterations() {
+		return this.totalIterations;
+	}
+
 }

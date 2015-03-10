@@ -316,6 +316,11 @@ public class Simulator {
 
 	private void printStuff() {
 //		System.out.println(this.carArrivalMap);
+		long totalIterations = 0;
+		for(CarManager c : this.finishedCars) {
+			totalIterations += c.getIterations();
+		}
+		System.out.println(String.format("Total travel time: %.1f seconds", totalIterations * this.TIME_PER_ITERATION));
 	}
 
 	public void finishCar(CarManager car) {
