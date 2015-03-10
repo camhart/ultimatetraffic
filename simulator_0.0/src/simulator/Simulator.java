@@ -107,12 +107,8 @@ public class Simulator {
 			while(scanner.hasNextLine()) {
 				curCar = new CarManager(scanner.nextLine());
 
-//				System.out.println(curCar.getArrivalTime());
 				
-//				Double key = new BigDecimal(curCar.getArrivalTime()).setScale(precision, BigDecimal.ROUND_HALF_UP).doubleValue();
 				int key = (int)(new BigDecimal(curCar.getArrivalTime()).setScale(precision, BigDecimal.ROUND_HALF_UP).doubleValue() / Simulator.TIME_PER_ITERATION);
-
-				System.out.println(key);
 				
 				curList = carArrivalMap.get(key);
 				if(curList == null) {
@@ -270,6 +266,10 @@ public class Simulator {
 		this.phase = phase;
 	}
 	
+	public int getPhase() {
+		return this.phase.getPhase();
+	}
+	
 	/**
 	 * get the current iteration from the simulator
 	 * @return
@@ -297,7 +297,7 @@ public class Simulator {
 		File carsFile = new File(args[2]);
 		File stopLightFile = new File(args[3]);
 		
-		Simulator.setOutputterConfig("db_phase_1.sqlite");
+		Simulator.setOutputterConfig("db_phase_" + args[0] + ".sqlite");
 		
 		Simulator simulator = Simulator.getSimulator();
 		
@@ -315,7 +315,6 @@ public class Simulator {
 	}
 
 	private void printStuff() {
-//		System.out.println(this.carArrivalMap);
 		long totalIterations = 0;
 		for(CarManager c : this.finishedCars) {
 			totalIterations += c.getIterations();

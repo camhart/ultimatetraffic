@@ -245,4 +245,12 @@ public class StopLight {
 	public void setNextLight(StopLight stopLight) {
 		this.nextLight = stopLight;
 	}
+
+	public double getTimeUntilChange() {
+		return this.timeUntilColorChange;
+	}
+
+	public boolean justChangedColor() {
+		return this.timeUntilColorChange == this.timeAsGreen || this.timeUntilColorChange == this.timeAsRed;
+	}
 }

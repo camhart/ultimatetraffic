@@ -41,4 +41,6 @@ public abstract class PhaseHandler {
 			Simulator.getSimulator().finishCar(car);
 		}
 	}
+
+	public abstract int getPhase();
 }

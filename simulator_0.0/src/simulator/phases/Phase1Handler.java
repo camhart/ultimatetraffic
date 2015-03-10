@@ -6,6 +6,8 @@ import simulator.models.StopLight;
 import simulator.outputter.Outputter;
 
 public class Phase1Handler extends PhaseHandler  {
+	
+	private static final int PHASE_NUMBER = 1;
 
 	@Override
 	public void handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(
@@ -17,7 +19,6 @@ public class Phase1Handler extends PhaseHandler  {
 		//	because after this function runs, then the car is put onto the next light
 		//	(if it's crossed over).
 		car.moveCarForward(); 
-		car.iterate();
 		
 		if(carPosition >= light.getPosition()){	//TODO: (eventually) adjust for other direction later ( will be <= )
 			if(carPosition < car.getDestination()){
@@ -107,6 +108,12 @@ public class Phase1Handler extends PhaseHandler  {
 		}
 		
 		car.giveChangeSpeedCommand(newSpeed);
+	}
+
+	@Override
+	public int getPhase() {
+		// TODO Auto-generated method stub
+		return this.PHASE_NUMBER;
 	}
 
 }

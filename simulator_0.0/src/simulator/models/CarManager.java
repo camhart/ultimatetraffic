@@ -138,7 +138,7 @@ public class CarManager implements Comparable {
 
 
 	public double moveCarForward() {
-		//throw new RuntimeException("unimplemented");
+		iterate();
 		return car.moveCarForward();
 	}
 
@@ -169,6 +169,22 @@ public class CarManager implements Comparable {
 
 	public int getIterations() {
 		return this.totalIterations;
+	}
+
+	/**
+	 * Should occur only with phase 0.
+	 */
+	public void stop() {
+		assert Simulator.getSimulator().getPhase() == 0 : "Calling stop in something other than phase 0"; 
+		this.car.stop();
+	}
+	
+	/**
+	 * Should occur only with phase 0.
+	 */
+	public void go() {
+		assert Simulator.getSimulator().getPhase() == 0 : "Calling stop in something other than phase 0";
+		this.car.go();
 	}
 
 }
