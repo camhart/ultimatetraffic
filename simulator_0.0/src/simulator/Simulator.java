@@ -196,10 +196,14 @@ public class Simulator {
 			for(int i = 0; i < cars.size(); i++) {
 				c = cars.get(i);
 				if(c.getLane() == 1) {
-					findStopLightForArrivingCar(c).getLane1().addCar(c);
+					StopLight light = findStopLightForArrivingCar(c);
+					light.getLane1().addCar(c);
+					c.setLane(1,  light.getLane1());
 				}
 				else if(c.getLane() == 2) {
-					findStopLightForArrivingCar(c).getLane2().addCar(c);
+					StopLight light = findStopLightForArrivingCar(c);
+					light.getLane2().addCar(c);
+					c.setLane(2,  light.getLane2());
 				}
 				else
 					throw new Error("this shouldn't be happening : " + c.getLane());
@@ -260,7 +264,7 @@ public class Simulator {
 	 * 	 path to cars file, path to lights file
 	 * 
 	 *  Exmaple:
-	 *  	0 60000 config/cars.csv config/lights.csv
+	 *  	1 10000 config/cars.csv config/lights.csv
 	 * @param args
 	 */
 	public static void main(String[] args) {

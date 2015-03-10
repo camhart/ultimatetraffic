@@ -6,22 +6,22 @@ import simulator.outputter.Outputter;
 
 public class Phase1Handler extends PhaseHandler  {
 
-	public double setTargetSpeed(CarManager car, StopLight light) {
-		//set the cars target speed
-		// car.getCurrentSpeed() should give you the cars currentSpeed
-		// car.getPosition() will give you the car's position
-		// light.getPosition() - car.getPosition will give you the distance to the light
-		// light.getStopPosition(car) will give you the car's stop position
-		// light.hitRedLight(adjustedSpeed, distanceToNextLight) - boolean returns 
-		//		if you'll hit a red traveling at adjustedSpeed
-		// light.getLane().getCarIterable() - gives you an iterator that you can go through the car with
-		//		the iterator will get cars for you in ascending order...
-		return 0;		
-	}
+//	public double setTargetSpeed(CarManager car, StopLight light) {
+//		//set the cars target speed
+//		// car.getCurrentSpeed() should give you the cars currentSpeed
+//		// car.getPosition() will give you the car's position
+//		// light.getPosition() - car.getPosition will give you the distance to the light
+//		// light.getStopPosition(car) will give you the car's stop position
+//		// light.hitRedLight(adjustedSpeed, distanceToNextLight) - boolean returns 
+//		//		if you'll hit a red traveling at adjustedSpeed
+//		// light.getLane().getCarIterable() - gives you an iterator that you can go through the car with
+//		//		the iterator will get cars for you in ascending order...
+//		return 0;		
+//	}
 	
-	public void moveCar(CarManager car) {
-		//update cars position
-	}
+//	public void moveCar(CarManager car) {
+//		//update cars position
+//	}
 
 	@Override
 	public void handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(
@@ -45,6 +45,9 @@ public class Phase1Handler extends PhaseHandler  {
 	
 	public void algorithm(CarManager car, StopLight light, StopLight prevLight){
 		double newSpeed = MAX_SPEED;
+		
+		if(light == null || car == null)
+			System.out.println("nulled");
 		
 		double distanceToLight = light.getPosition() - car.getPosition();
 		double theoreticalTimeToLight = car.getTimeTo(newSpeed, distanceToLight);

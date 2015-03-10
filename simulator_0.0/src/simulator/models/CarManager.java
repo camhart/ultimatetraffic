@@ -139,18 +139,20 @@ public class CarManager implements Comparable {
 
 
 	public double getTimeTo(double newSpeed, double distanceToLight) {
-		return this.car.getTimeTo(newSpeed, distanceToLight);//throw new RuntimeException("unimplemented");
+		return this.car.getTimeTo(newSpeed, distanceToLight);
 	}
 
 
 	public boolean hitNextCar(double theoreticalTimeToLight, double distanceToLight) {
 		CarManager nextCar = getLaneObject().getNextCar();
-		if(nextCar.getPosition() == this.car.getPosition()){//You're the only car on the road!
+		if(nextCar != null && nextCar.getPosition() == this.car.getPosition()){//You're the only car on the road!
 			return false;
 		}
-		else if(nextCar.getTimeTo(nextCar.targetSpeed, distanceToLight) < theoreticalTimeToLight + TIME_CUSHION){
+		else if(nextCar != null && nextCar.getTimeTo(nextCar.targetSpeed, distanceToLight) < theoreticalTimeToLight + TIME_CUSHION){
 			return true;
 		}
+		//if there is no next carr return false?
+		
 		return false;
 	}
 

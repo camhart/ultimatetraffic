@@ -46,7 +46,7 @@ public class Lane {
 		Iterator<CarManager> iter = cars.iterator();
 		CarManager car = null;
 		//this should only be called on lanes that already have the current car in the lane
-		car = iter.next();
+//		car = iter.next();
 		if(iter.hasNext()){
 			car = iter.next();
 		}

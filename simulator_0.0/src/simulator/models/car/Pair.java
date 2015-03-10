@@ -33,22 +33,24 @@ public final class Pair implements Comparable<Pair>{
 
 	@Override
 	public int compareTo(Pair p) {
-		if(this.equals((Object)p))
+		if(this.equals(p))
 			return 0;
 		else if(this.firstElement > p.getFirst())
 			return 1;
 		else if(this.firstElement < p.getFirst())
 			return -1;
-		else
+		else {
 			if(this.secondElement > p.getSecond())
 				return 1;
 			else
 				return -1;
+		}
 	}
 	
 	@Override
 	public int hashCode(){
-		return (int)(13*(69*this.firstElement + 17*this.secondElement)) + super.hashCode();
+//		return (int)(13*(69*this.firstElement + 17*this.secondElement)) + super.hashCode();
+		return (int)(13*(69*this.firstElement + 17*this.secondElement));
 	}
 	
 	@Override

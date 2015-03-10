@@ -7,7 +7,7 @@ import simulator.models.StopLight;
 public abstract class PhaseHandler {
 	
 	
-	final public double MAX_SPEED = 25;
+	final public double MAX_SPEED = 22.0;
 	final public double DECELERATION = 0.5;
 	
 	/**
