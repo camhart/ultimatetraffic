@@ -3,6 +3,7 @@ package simulator.models;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import simulator.Simulator;
 import simulator.models.StopLight.Color;
 import simulator.outputter.Outputter;
 import simulator.phases.PhaseHandler;
@@ -134,6 +135,7 @@ public class StopLight {
 			if(lane1Iter.hasNext()) {
 				lane1Car = lane1Iter.next();
 				phase.handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(lane1Car, this);
+				phase.handlePotentialCarFinish(lane1Car, this);
 				
 				if(nextLight != null && lane1Car.getPosition() >= nextLight.getPosition()) {
 					
@@ -148,12 +150,13 @@ public class StopLight {
 					//add the car to the remove list
 					lane1Removes.add(lane1Car);
 				}
-				
 			}
 			
 			if(lane2Iter.hasNext()) {
 				lane2Car = lane2Iter.next();
+				
 				phase.handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(lane2Car, this);
+				phase.handlePotentialCarFinish(lane2Car, this);
 				
 				if(nextLight != null && lane2Car.getPosition() >= nextLight.getPosition()) {
 					
@@ -169,6 +172,7 @@ public class StopLight {
 					lane2Removes.add(lane2Car);
 				}
 			}	
+			System.out.println("b");
 		}
 		
 		for(CarManager c : lane1Removes) {
@@ -186,15 +190,7 @@ public class StopLight {
 	public void removeCarFromLane(CarManager car) {
 		assert car.getPosition() >= car.getDestination() : "Car hasn't finished traveling...";
 		
-		if(car.getLane() == 0) {
-			if(!this.lane1.removeCar(car)) {
-				throw new Error();
-			}
-		}
-		else {
-			if(!this.lane2.removeCar(car))
-				throw new Error();
-		}
+		car.getLaneObject().removeCar(car);
 	}
 	
 	private static class LightIdGenerator {

@@ -1,5 +1,6 @@
 package simulator.phases;
 
+import simulator.Simulator;
 import simulator.models.CarManager;
 import simulator.models.StopLight;
 import simulator.outputter.Outputter;
@@ -33,24 +34,34 @@ public class Phase1Handler extends PhaseHandler  {
 		
 		double lightPosition = light.getPosition();
 		if(carPosition >= lightPosition){	//TODO: (eventually) adjust for other direction later ( will be <= )
+			
 			if(carPosition < car.getDestination()){
+				
 				algorithm(car, light.getNextLight(), light);
 			}
-			else{
-				//TODO: Somehow quickly output that this car is done so we can verify all the cars finished...
-				light.removeCarFromLane(car);
-			}
+			
+			//I pulled this up to StopLight's iterate function.
+			//	search for 'Simulator.getSimulator().finishCar(lane2Car);'
+			//	and
+			//  Simulator.getSimulator().finishCar(lane1Car);
+//			else{
+//				//TODO: Somehow quickly output that this car is done so we can verify all the cars finished...
+//				light.removeCarFromLane(car);
+//			}
 		}
 	}
 	
 	public void algorithm(CarManager car, StopLight light, StopLight prevLight){
 		double newSpeed = MAX_SPEED;
 		
-		if(light == null || car == null)
-			System.out.println("nulled");
+		if(light == null) { //we just drove past the last light
+			car.giveChangeSpeedCommand(MAX_SPEED);
+			return;
+		}
 		
 		double distanceToLight = light.getPosition() - car.getPosition();
 		double theoreticalTimeToLight = car.getTimeTo(newSpeed, distanceToLight);
+		
 		
 		while(!light.isLightGreenAtTime(theoreticalTimeToLight)){
 			if(newSpeed > DECELERATION){
@@ -60,6 +71,7 @@ public class Phase1Handler extends PhaseHandler  {
 				newSpeed = newSpeed*0.9;
 			}
 			theoreticalTimeToLight = car.getTimeTo(newSpeed, distanceToLight);
+			
 		}
 		
 		int laneNum = car.getLane();
@@ -99,6 +111,7 @@ public class Phase1Handler extends PhaseHandler  {
 				}
 				else{break;}	//unneeded, but saves a function call
 			}
+			System.out.println("we're getting stuck in here!!!!");
 		}
 		
 		car.giveChangeSpeedCommand(newSpeed);

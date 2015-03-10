@@ -46,6 +46,8 @@ public class Simulator {
 	StopLight firstLight;
 	PhaseHandler phase;
 	
+	ArrayList<CarManager> finishedCars;
+	
 	HashMap<Double, ArrayList<CarManager>> carArrivalMap;
 	
 	/**
@@ -53,6 +55,7 @@ public class Simulator {
 	 */
 	private Simulator(Object... outputterParams) {
 		carArrivalMap = new HashMap<Double, ArrayList<CarManager>>();
+		finishedCars = new ArrayList<CarManager>();
 		Outputter.getOutputter().initialize(outputterParams);
 	}
 	
@@ -232,7 +235,8 @@ public class Simulator {
 			
 			//arriving cars
 			this.handleArrivingCars(currentIteration);
-			
+					
+			System.out.println(String.format("%d / %d", currentIteration, numberOfIterations));
 			
 			//increment iteration
 			currentIteration++;
@@ -289,5 +293,10 @@ public class Simulator {
 		
 		simulator.run();
 		
+	}
+
+	public void finishCar(CarManager car) {
+		this.finishedCars.add(car);
+		car.getLaneObject().removeCar(car);
 	}
 }
