@@ -22,12 +22,12 @@ public class Phase1Handler extends PhaseHandler  {
 		double carPosition = car.getPosition();
 		
 		if(carPosition >= light.getPosition()){	//TODO: (eventually) adjust for other direction later ( will be <= )
-			System.out.println("a");
+			System.out.print("a");
 			if(carPosition < car.getDestination()){
 				algorithm(car, light);
 			}
 		} else {
-			System.out.println("b");
+			//System.out.println("b");
 		}
 		
 		Outputter.getOutputter().addCarOutput(car);
@@ -89,10 +89,12 @@ public class Phase1Handler extends PhaseHandler  {
 						car.setLane(laneNum, nextLight.getLane2());
 					else
 						car.setLane(laneNum, nextLight.getLane1());
-					//why are we calling setLane here?  Isn't that already taken care of?
-					//This is called because changing lanes didn't work, so we switch back and reduce speed (and try it all again)
+					//These instances of setLane is called because changing lanes didn't work, so we switch back and reduce speed (and try it all again)
 					if(newSpeed > DECELERATION){
 						newSpeed -= DECELERATION;
+						if(newSpeed == 0.5){
+							System.out.println("WHAAAAAAAT? (1)");
+						}
 					}
 					else{
 						newSpeed = newSpeed*0.9;
@@ -106,10 +108,14 @@ public class Phase1Handler extends PhaseHandler  {
 				
 				if(newSpeed > DECELERATION){
 					newSpeed -= DECELERATION;
+					if(newSpeed == 0.5){
+						System.out.println("WHAAAAAAAT?");
+					}
 				}
 				else{
 					newSpeed = newSpeed*0.9;
 				}
+				theoreticalTimeToLight = car.getTimeTo(newSpeed, distanceToLight);
 				
 				assert newSpeed != 0 : "We shouldn't ever be setting the speed to 0...";
 			}		

@@ -222,18 +222,20 @@ public class StopLight {
 	}
 	
 	public boolean isLightGreenAtTime(double time) {
-		boolean willBeGreen = true;
+		boolean willBeGreen = false;
+		if(this.currentColor == Color.GREEN){
+			willBeGreen = true;
+		}
 		double newTimeUntilChange = timeUntilColorChange;
 		while(time > newTimeUntilChange){
 			time -= newTimeUntilChange;
-			if(this.currentColor == Color.GREEN) {
-				willBeGreen = true;
+			if(willBeGreen) {	//switch to red count
 				newTimeUntilChange = timeAsRed;
 			}
-			else{
-				willBeGreen = false;
+			else{	//switch to green count
 				newTimeUntilChange = timeAsGreen;
 			}
+			willBeGreen = !willBeGreen;	//change future light state
 		}
 		return willBeGreen;
 	}
