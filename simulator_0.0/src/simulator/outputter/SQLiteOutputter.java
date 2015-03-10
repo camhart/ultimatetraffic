@@ -12,7 +12,7 @@ import simulator.models.StopLight;
 
 class SQLiteOutputter implements OutputterInterface{
 	
-	private static final int OUTPUTS_UNTIL_COMMIT = 1000;
+	private static final int OUTPUTS_UNTIL_COMMIT = 10;
 	private int outputCount;
 	
 	private static SQLiteOutputter sqlOut; 
@@ -74,11 +74,12 @@ class SQLiteOutputter implements OutputterInterface{
 	public void addCarOutput(CarManager car) {
 		Connection con = SQLite.getConnection();
 		try {
-			PreparedStatement ps = con.prepareStatement("INSERT INTO car_output (id, iterationCount, position) VALUES (?, ?, ?);");
+			PreparedStatement ps = con.prepareStatement("INSERT INTO car_output (id, iterationCount, position, lane) VALUES (?, ?, ?, ?);");
 			
 			ps.setInt(1, car.getId());
 			ps.setInt(2,  Simulator.getSimulator().getCurrentIteration());
 			ps.setDouble(3, car.getPosition());
+			ps.setInt(4,  car.getLane());
 			
 			ps.execute();
 			
@@ -95,7 +96,8 @@ class SQLiteOutputter implements OutputterInterface{
 		String carTable = "CREATE TABLE car_output (" +
 				"id INTEGER not NULL," + 
 				"iterationCount INTEGER not NULL," +
-				"position REAL not NULL" +
+				"position REAL not NULL," +
+				"lane INTEGER not NULL" +
 				");";
 		
 		String lightTable = "CREATE TABLE light_output (" +
