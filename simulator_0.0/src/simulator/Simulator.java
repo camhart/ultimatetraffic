@@ -2,10 +2,13 @@ package simulator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.TimeZone;
 
 import simulator.outputter.Outputter;
 import simulator.phases.Phase0Handler;
@@ -33,10 +36,8 @@ public class Simulator {
 		Simulator.outputterParams = params;
 	}
 	
-	//this value must always be a lot of 0's, and a single ending 1.  
-	//	No other value will work with the car arrival map.
-	//	Examples: 0.1, 0.000000001, 0.0001
-	public static final double TIME_PER_ITERATION = 1.0;
+	//  Changing this could break things...
+	public static final double TIME_PER_ITERATION = 0.1;
 	
 	
 	int numberOfIterations = -1;
@@ -48,13 +49,14 @@ public class Simulator {
 	
 	ArrayList<CarManager> finishedCars;
 	
-	HashMap<Double, ArrayList<CarManager>> carArrivalMap;
+	HashMap<Integer, ArrayList<CarManager>> carArrivalMap;
+	private int carsLeftToArrive;
 	
 	/**
 	 * Private constructor
 	 */
 	private Simulator(Object... outputterParams) {
-		carArrivalMap = new HashMap<Double, ArrayList<CarManager>>();
+		carArrivalMap = new HashMap<Integer, ArrayList<CarManager>>();
 		finishedCars = new ArrayList<CarManager>();
 		Outputter.getOutputter().initialize(outputterParams);
 	}
@@ -86,18 +88,17 @@ public class Simulator {
 	 * @param carsFile
 	 */
 	public void loadCars(File carsFile) {
-		StringBuffer precision = new StringBuffer();
-		char[] chars = ("" + this.TIME_PER_ITERATION).toCharArray();
-		int count = 0;
-		for(char a : chars) {
-			if(count == 1)
-				precision.append('.');
-			else
-				precision.append('0');
-			count++;
+		int precision = 0;
+		String pstr = "" + Simulator.TIME_PER_ITERATION;
+		char[] pstrArr = pstr.toCharArray();
+		boolean decimalFound = false;
+		for(char c : pstrArr) {
+			if(decimalFound)
+				precision++;
+			if(c == '.') {
+				decimalFound = true;
+			}
 		}
-		String precisionString = precision.toString();
-
 		
 		try {
 			Scanner scanner = new Scanner(carsFile);
@@ -105,18 +106,20 @@ public class Simulator {
 			ArrayList<CarManager> curList = null;
 			while(scanner.hasNextLine()) {
 				curCar = new CarManager(scanner.nextLine());
-				
-				//ghetto hax way of forcing specific precision on a double...
-				//cars will only show up at precision equivalent to TIME_PER_ITERATION
-				Double key = Double.parseDouble(
-						new DecimalFormat(precisionString).format(curCar.getArrivalTime() / 
-								Simulator.TIME_PER_ITERATION));
 
+//				System.out.println(curCar.getArrivalTime());
+				
+//				Double key = new BigDecimal(curCar.getArrivalTime()).setScale(precision, BigDecimal.ROUND_HALF_UP).doubleValue();
+				int key = (int)(new BigDecimal(curCar.getArrivalTime()).setScale(precision, BigDecimal.ROUND_HALF_UP).doubleValue() / Simulator.TIME_PER_ITERATION);
+
+				System.out.println(key);
+				
 				curList = carArrivalMap.get(key);
 				if(curList == null) {
 					curList = new ArrayList<CarManager>();
 					carArrivalMap.put(key,  curList);
 				}
+				carsLeftToArrive++;
 				curList.add(curCar);
 			}
 		} catch (FileNotFoundException e) {
@@ -192,8 +195,9 @@ public class Simulator {
 	 * the appropriate lane of the stop light they're supposed to be on.
 	 * @param currentIteration
 	 */
-	public void handleArrivingCars(double currentIteration) {
-		ArrayList<CarManager> cars = this.carArrivalMap.get(currentIteration);
+	public void handleArrivingCars(int currentIteration) {
+//		ArrayList<CarManager> cars = this.carArrivalMap.remove(currentIteration * Simulator.TIME_PER_ITERATION);
+		ArrayList<CarManager> cars = this.carArrivalMap.remove(currentIteration);
 		if(cars != null) {
 			CarManager c;
 			for(int i = 0; i < cars.size(); i++) {
@@ -210,6 +214,7 @@ public class Simulator {
 				}
 				else
 					throw new Error("this shouldn't be happening : " + c.getLane());
+				carsLeftToArrive--;
 			}
 		}
 	}
@@ -223,7 +228,6 @@ public class Simulator {
 			
 			//lights
 			StopLight curLight = this.lastLight;
-			int light = 0;
 			
 			while(curLight != null) {
 				
@@ -232,20 +236,30 @@ public class Simulator {
 				curLight.iterate(this.phase, Simulator.TIME_PER_ITERATION);
 
 				curLight = curLight.getPrevLight();
-				System.out.println("Light: " + light);
-				light++;
 			}
 			
 			//arriving cars
 			this.handleArrivingCars(currentIteration);
-					
-			System.out.println(String.format("%d / %d", currentIteration, numberOfIterations));
 			
 			//increment iteration
 			currentIteration++;
+			
+			System.out.println(String.format("%s (%.1f s), iteration %d / %d, cars left %d, cars finished %d",
+					getTime(), currentIteration * Simulator.TIME_PER_ITERATION,
+					currentIteration, numberOfIterations, carsLeftToArrive,
+					this.finishedCars.size()));
 		}
 		
 		Outputter.getOutputter().close();
+	}
+	
+	static SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("HH:mm:ss:SSS");
+	static {
+		DATE_FORMATTER.setTimeZone(TimeZone.getTimeZone("UTC"));
+	}
+	
+	private String getTime() {
+  	    return DATE_FORMATTER.format(currentIteration * Simulator.TIME_PER_ITERATION * 1000);
 	}
 	
 	/**
@@ -296,6 +310,12 @@ public class Simulator {
 		
 		simulator.run();
 		
+		simulator.printStuff();
+		
+	}
+
+	private void printStuff() {
+//		System.out.println(this.carArrivalMap);
 	}
 
 	public void finishCar(CarManager car) {

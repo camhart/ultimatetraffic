@@ -22,6 +22,7 @@ public class CarManager implements Comparable {
 	private Lane currentLaneObj;
 	private int id;
 	private double targetSpeed;
+	private int totalIterations = 0;
 	
 	private static class CarIdGenerator {
 		private static int currentValue = 0;
@@ -48,6 +49,10 @@ public class CarManager implements Comparable {
 		
 		this.car = new Car(this.currentSpeed, Simulator.TIME_PER_ITERATION, this.arrivalPosition);
 	
+	}
+	
+	public void iterate() {
+		this.totalIterations++;
 	}
 	
 	

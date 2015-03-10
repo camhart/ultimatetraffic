@@ -130,34 +130,45 @@ public class StopLight {
 		ArrayList<CarManager> lane1Removes = new ArrayList<CarManager>();
 		ArrayList<CarManager> lane2Removes = new ArrayList<CarManager>();
 		
+		ArrayList<CarManager> finishingCars = new ArrayList<CarManager>();
+		
 		while(lane1Iter.hasNext() || lane2Iter.hasNext()) {
 			
 			if(lane1Iter.hasNext()) {
 				lane1Car = lane1Iter.next();
-				handleCar(phase, lane1Car, lane1, lane1Removes);
+				handleCar(phase, lane1Car, lane1, lane1Removes, finishingCars);
 			}
 			
 			if(lane2Iter.hasNext()) {
 				lane2Car = lane2Iter.next();
-				handleCar(phase, lane2Car, lane2, lane2Removes);
+				handleCar(phase, lane2Car, lane2, lane2Removes, finishingCars);
 			}	
 		}
 		
+		for(CarManager c : finishingCars) {
+			phase.handlePotentialCarFinish(c,  this);
+		}
+		
 		for(CarManager c : lane1Removes) {
-			this.lane1.removeCar(c);
+			if(!this.lane1.removeCar(c))
+				throw new Error("Unable to remove car from lane.");
 		}
 		
 		for(CarManager c : lane2Removes) {
-			this.lane2.removeCar(c);
+			if(!this.lane2.removeCar(c))
+				throw new Error("Unable to remove car from lane.");
 		}
 	}
 	
-	public void handleCar(PhaseHandler phase, CarManager car, Lane lane, ArrayList<CarManager> removeList) {
+	public void handleCar(PhaseHandler phase, CarManager car, Lane lane, ArrayList<CarManager> removeList, ArrayList<CarManager> finishingCars) {
 		phase.handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(car, this);
-		phase.handlePotentialCarFinish(car, this);
+		if(car.hasFinished()) {
+			finishingCars.add(car);
+		}
+//		phase.handlePotentialCarFinish(car, this, finishingCars);
 		
-		if(nextLight != null && car.getPosition() >= nextLight.getPosition()) {
-			
+		if(nextLight != null && !car.hasFinished() && car.getPosition() >= getPosition()) {
+//			System.out.println("Jumping lights! " + car.getPosition() + " - " + nextLight.getPosition());
 			//add the car to the next lane 
 			// 	phase handler might have changed the lane so we need to check
 			if(car.getLane() == 1) {
@@ -196,7 +207,7 @@ public class StopLight {
 
 	public double getPosition() {
 		// TODO Auto-generated method stub
-		return 0;
+		return this.position;
 	}
 
 	public Color getCurrentColor() {
