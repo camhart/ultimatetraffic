@@ -7,39 +7,23 @@ import simulator.outputter.Outputter;
 
 public class Phase1Handler extends PhaseHandler  {
 
-//	public double setTargetSpeed(CarManager car, StopLight light) {
-//		//set the cars target speed
-//		// car.getCurrentSpeed() should give you the cars currentSpeed
-//		// car.getPosition() will give you the car's position
-//		// light.getPosition() - car.getPosition will give you the distance to the light
-//		// light.getStopPosition(car) will give you the car's stop position
-//		// light.hitRedLight(adjustedSpeed, distanceToNextLight) - boolean returns 
-//		//		if you'll hit a red traveling at adjustedSpeed
-//		// light.getLane().getCarIterable() - gives you an iterator that you can go through the car with
-//		//		the iterator will get cars for you in ascending order...
-//		return 0;		
-//	}
-	
-//	public void moveCar(CarManager car) {
-//		//update cars position
-//	}
-
 	@Override
 	public void handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(
 			CarManager car, StopLight light) {
 		
 		double carPosition = car.getPosition();
 		
+		//move the car, then check for speed change.  It has to happen this way
+		//	because after this function runs, then the car is put onto the next light
+		//	(if it's crossed over).
+		car.moveCarForward(); 
+		car.iterate();
+		
 		if(carPosition >= light.getPosition()){	//TODO: (eventually) adjust for other direction later ( will be <= )
 			if(carPosition < car.getDestination()){
 				algorithm(car, light);
 			}
 		}
-		
-		
-		//move after we set speed (not before)
-		car.moveCarForward(); 
-		car.iterate();
 		
 		Outputter.getOutputter().addCarOutput(car);
 	}

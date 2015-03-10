@@ -320,7 +320,7 @@ public class Simulator {
 		for(CarManager c : this.finishedCars) {
 			totalIterations += c.getIterations();
 		}
-		System.out.println(String.format("Total travel time: %.1f seconds", totalIterations * this.TIME_PER_ITERATION));
+		System.out.println(String.format("Total travel time: %.1f seconds (%s)", totalIterations * this.TIME_PER_ITERATION, Simulator.DATE_FORMATTER.format(totalIterations * this.TIME_PER_ITERATION * 1000)));
 	}
 
 	public void finishCar(CarManager car) {

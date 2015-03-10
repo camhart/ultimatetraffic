@@ -77,12 +77,14 @@ class SQLiteOutputter implements OutputterInterface{
 	public void addCarOutput(CarManager car) {
 		Connection con = SQLite.getConnection();
 		try {
-			PreparedStatement ps = con.prepareStatement("INSERT INTO car_output (id, iterationCount, position, lane) VALUES (?, ?, ?, ?);");
+			PreparedStatement ps = con.prepareStatement("INSERT INTO car_output (id, iterationCount, position, lane, velocity, acceleration) VALUES (?, ?, ?, ?, ?, ?);");
 			
 			ps.setInt(1, car.getId());
 			ps.setInt(2,  Simulator.getSimulator().getCurrentIteration());
 			ps.setDouble(3, car.getPosition());
 			ps.setInt(4,  car.getLane());
+			ps.setDouble(5,  car.getVelocity());
+			ps.setDouble(6,  car.getAcceleration());
 			
 			ps.execute();
 			
@@ -100,7 +102,9 @@ class SQLiteOutputter implements OutputterInterface{
 				"id INTEGER not NULL," + 
 				"iterationCount INTEGER not NULL," +
 				"position REAL not NULL," +
-				"lane INTEGER not NULL" +
+				"lane INTEGER not NULL," +
+				"velocity REAL not NULL," +
+				"acceleration REAL not NULL" +
 				");";
 		
 		String lightTable = "CREATE TABLE light_output (" +
