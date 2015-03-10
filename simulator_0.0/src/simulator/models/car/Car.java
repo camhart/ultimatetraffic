@@ -34,7 +34,7 @@ public class Car {
 		mass = Car.MASS;
 		damping = Car.DAMPING;
 		step = timeStep;
-		command = GO;
+		command = Command.GO;
 		speed_limit = 22;
 		energy_used = 0;
 		target_velocity = velocity;
@@ -55,7 +55,7 @@ public class Car {
 	 * Call this to give a change speed command
 	 */
 	public void giveChangeSpeedCommand(double target){
-		command  = CHANGE_SPEED:
+		command  = Command.CHANGE_SPEED;
 		target_velocity = target;
 		calculateEnergyUsed(velocity, target_velocity);
 		//changeSpeed();
@@ -80,7 +80,7 @@ public class Car {
 	 * Give the command to go the speed limit
 	 */
 	public void giveGoCommand(){
-		command = GO;
+		command = Command.GO;
 		target_velocity = speed_limit;
 		calculateEnergyUsed(velocity, target_velocity);
 		changeSpeed();
@@ -95,7 +95,7 @@ public class Car {
 	 * Call this to give a stop command
 	 */
 	public void giveStopCommand(double distance){
-		command = STOP;
+		command = Command.STOP;
 		stop_distance = distance;
 		target_velocity = speed_limit;
 		speed_before_stop = velocity;
@@ -157,7 +157,7 @@ public class Car {
 		this.position = position;
 		
 	}
-	public int getCommand(){
+	public Command getCommand(){
 		return command;
 	}
 	public double moveCarForward(){

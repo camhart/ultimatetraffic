@@ -272,7 +272,7 @@ public class Simulator {
 		File carsFile = new File(args[2]);
 		File stopLightFile = new File(args[3]);
 		
-		Simulator.setOutputterConfig("db_phase_0.sqlite");
+		Simulator.setOutputterConfig("db_phase_1.sqlite");
 		
 		Simulator simulator = Simulator.getSimulator();
 		
