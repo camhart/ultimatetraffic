@@ -121,7 +121,8 @@ public class StopLight {
 	public void iterate(PhaseHandler phase, double timePerIteration) {
 		
 		this.handleLightColors(timePerIteration);
-		
+		//TODO: Changed the .getIterable() to a ListIterator... so we can remove while traversing now.
+		//	Wait until after presentation to make change
 		Iterator<CarManager> lane1Iter = lane1.getIterable();
 		Iterator<CarManager> lane2Iter = lane2.getIterable();
 		CarManager lane1Car = null;
@@ -252,7 +253,12 @@ public class StopLight {
 		return this.timeUntilColorChange;
 	}
 
-	public boolean justChangedColor() {
-		return this.timeUntilColorChange == this.timeAsGreen || this.timeUntilColorChange == this.timeAsRed;
+	public boolean justChangedGreen() {
+		System.out.println(String.format("%f %f", this.timeUntilColorChange, this.timeAsGreen));
+		return this.timeUntilColorChange == this.timeAsGreen;
+	}
+	
+	public boolean justChangedRed() {
+		return this.timeUntilColorChange == this.timeAsRed;
 	}
 }

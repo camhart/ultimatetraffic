@@ -3,6 +3,7 @@ package simulator.models;
 import java.util.Iterator;
 //import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 public class Lane {
 	
@@ -20,7 +21,10 @@ public class Lane {
 	 * @return
 	 */
 	public boolean addCar(CarManager car) {
-		
+//		cars.addLast(car);
+		//cars.add already adds to the end of this list
+		//according to http://docs.oracle.com/javase/7/docs/api/java/util/LinkedList.html#add(E)
+		// this will ALWAYS return true
 		return cars.add(car);
 	}
 	
@@ -90,7 +94,7 @@ public class Lane {
 	 * this lane.
 	 * @return
 	 */
-	public Iterator<CarManager> getIterable() {
-		return cars.iterator();
+	public ListIterator<CarManager> getIterable() {
+		return cars.listIterator();
 	}
 }

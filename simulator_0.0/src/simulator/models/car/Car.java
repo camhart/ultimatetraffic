@@ -53,10 +53,10 @@ public class Car {
 	
 	/**
 	 * Call this to give a change speed command
+	 * @param command 
 	 */
-	public void giveChangeSpeedCommand(double target){
-		System.out.println("Chaging speed to " + target);
-		command  = Command.CHANGE_SPEED;
+	public void giveChangeSpeedCommand(double target, Command command){
+		this.command  = command;
 		target_velocity = target;
 		calculateEnergyUsed(velocity, target_velocity);
 //		changeSpeed(); //should this be commented out?
@@ -99,7 +99,7 @@ public class Car {
 	 * Call this to give a stop command
 	 */
 	public void giveStopCommand(double distance){
-		command = Command.STOP;
+		this.command = Command.STOP;
 		stop_distance = distance;
 		target_velocity = speed_limit;
 		speed_before_stop = velocity;
@@ -113,7 +113,7 @@ public class Car {
 		Pair stop_info = map.getAccelerationInfo(new Pair(roundUp(velocity), 0));
 		if(Math.round(stop_info.getSecond()) >= Math.round(stop_distance) - Math.round(position)){
 			calculateEnergyUsed(speed_before_stop, velocity);
-			giveChangeSpeedCommand(0);
+			giveChangeSpeedCommand(0, Command.STOP);
 		}
 		else
 			changeSpeed();

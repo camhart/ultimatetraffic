@@ -3,6 +3,7 @@ package simulator.phases;
 import simulator.Simulator;
 import simulator.models.CarManager;
 import simulator.models.StopLight;
+import simulator.models.car.Car.Command;
 import simulator.outputter.Outputter;
 
 public class Phase1Handler extends PhaseHandler  {
@@ -41,7 +42,7 @@ public class Phase1Handler extends PhaseHandler  {
 		StopLight nextLight = currentLight.getNextLight();
 		
 		if(nextLight == null) { //we just drove past the last light
-			car.giveChangeSpeedCommand(MAX_SPEED);
+			car.giveChangeSpeedCommand(MAX_SPEED, Command.CHANGE_SPEED);
 			return;
 		}
 		
@@ -121,7 +122,7 @@ public class Phase1Handler extends PhaseHandler  {
 			}		
 		}
 		
-		car.giveChangeSpeedCommand(newSpeed);
+		car.giveChangeSpeedCommand(newSpeed, Command.CHANGE_SPEED);
 	}
 
 	@Override

@@ -39,7 +39,7 @@ public class Simulator {
 	
 	static {
 		LOG.addHandler(new ConsoleHandler());
-		LOG.setLevel(Level.WARNING);
+		LOG.setLevel(Level.INFO);
 	}
 	
 	
@@ -230,8 +230,9 @@ public class Simulator {
 	 * Runs the simulator for specified number of iterations.
 	 */
 	public void run() {
+		int totalCars = this.carsLeftToArrive;
 		
-		while(currentIteration < numberOfIterations) {
+		while((currentIteration < numberOfIterations) || (numberOfIterations == 0 && totalCars != this.finishedCars.size())) {
 			
 			//lights
 			StopLight curLight = this.lastLight;

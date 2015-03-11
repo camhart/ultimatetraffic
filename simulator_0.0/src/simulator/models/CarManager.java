@@ -1,14 +1,17 @@
 package simulator.models;
 
+import java.util.ListIterator;
+
 import simulator.Simulator;
 import simulator.models.car.Car;
+import simulator.models.car.Car.Command;
 
 //import java.util.Comparator;
 //Comparator<Car>
 public class CarManager implements Comparable {
 	 
 	
-	public static final double CAR_CUSHION = 30.0;
+	public static final double CAR_CUSHION = 15.0; //in meters
 	public static final double TIME_CUSHION = 0.5;
 	
 	private double arrivalTime;
@@ -162,10 +165,62 @@ public class CarManager implements Comparable {
 	}
 
 
-	public void giveChangeSpeedCommand(double newSpeed) {
+	public void giveChangeSpeedCommand(double newSpeed, Command command) {
 		System.out.println("speed set to" + newSpeed);
-		this.car.giveChangeSpeedCommand(newSpeed);
+		this.car.giveChangeSpeedCommand(newSpeed, command);
 		targetSpeed = newSpeed;
+	}
+	
+	public boolean canRunLight(StopLight light) {
+		assert (this.getLane() == 1 ? light.getLane1() : light.getLane2()) == this.getLaneObject() : "Lane objects don't match";
+		
+		boolean foundMe = false;
+		ListIterator<CarManager> iter = this.getLaneObject().getIterable();
+		CarManager curCar;
+		while(iter.hasNext()) {
+			curCar = iter.next();
+			if(curCar == this) {
+				foundMe = true;
+			} else if(foundMe) {
+				if(curCar.getCar().getCommand() != Car.Command.STOP)
+					return false;
+			}			
+		}
+		return true;
+	}
+	
+	public double getStopDistance(StopLight light) {
+		
+		assert (this.getLane() == 1 ? light.getLane1() : light.getLane2()) == this.getLaneObject() : "Lane objects don't match";
+		assert (this.getPosition() < light.getPosition()) : "Car is ahead of light";
+		
+		int stoppingCarsInFrontOfMe = 0;
+		boolean foundMe = false;
+		ListIterator<CarManager> iter = this.getLaneObject().getIterable();
+		CarManager curCar;
+		while(iter.hasNext()) {
+			curCar = iter.next();
+			if(curCar == this) {
+				foundMe = true;
+			} else if(foundMe) {
+				if(curCar.getCar().getCommand() == Car.Command.STOP)
+					stoppingCarsInFrontOfMe++;
+//				else 
+//					car not stopping
+			}			
+		}
+		
+		double value = ((light.getPosition() - (stoppingCarsInFrontOfMe * CarManager.CAR_CUSHION)) - this.getPosition());
+		System.out.println(String.format("(%f - (%d * %f)) - %f = %f", light.getPosition(), stoppingCarsInFrontOfMe, CarManager.CAR_CUSHION, this.getPosition(), value));
+		assert value > 0 : "Crash! " + value;
+		
+		// (light position - length of all cars stopped in front of me) - car position
+		return value;		
+	}
+
+	public Car getCar() {
+		// TODO Auto-generated method stub
+		return this.car;
 	}
 
 	public int getIterations() {
