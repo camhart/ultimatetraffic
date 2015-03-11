@@ -11,7 +11,8 @@ import simulator.models.car.Car.Command;
 public class CarManager implements Comparable {
 	 
 	
-	public static final double CAR_CUSHION = 15.0; //in meters
+	public static final double CAR_CUSHION = 10.0; //in meters
+	public static final double CAR_STOP_CUSHION = 5.0; //in meters
 	public static final double TIME_CUSHION = 0.5;
 	
 	private double arrivalTime;
@@ -210,8 +211,8 @@ public class CarManager implements Comparable {
 			}			
 		}
 		
-		double value = ((light.getPosition() - (stoppingCarsInFrontOfMe * CarManager.CAR_CUSHION)) - this.getPosition());
-		System.out.println(String.format("(%f - (%d * %f)) - %f = %f", light.getPosition(), stoppingCarsInFrontOfMe, CarManager.CAR_CUSHION, this.getPosition(), value));
+		double value = ((light.getPosition() - (stoppingCarsInFrontOfMe * CarManager.CAR_STOP_CUSHION)) - this.getPosition());
+		System.out.println(String.format("(%f - (%d * %f)) - %f = %f", light.getPosition(), stoppingCarsInFrontOfMe, CarManager.CAR_STOP_CUSHION, this.getPosition(), value));
 		assert value > 0 : "Crash! " + value;
 		
 		// (light position - length of all cars stopped in front of me) - car position

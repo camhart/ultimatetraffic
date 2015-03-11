@@ -20,9 +20,10 @@ public class Car {
 	private double energy_used;
 	private double target_velocity;
 	private double speed_before_stop;
-	private double stop_distance;
+	private double stop_position;
 	private VelocityMap map;
-	private Command command; 
+	private Command command;
+	private boolean stopGiven; 
 	
 	public Car(double initialVelocity, double timeStep, double initialPosition) {
 		position = initialPosition;
@@ -38,7 +39,7 @@ public class Car {
 		speed_limit = 22;
 		energy_used = 0;
 		target_velocity = velocity;
-		stop_distance = 0;
+		stop_position = 0;
 		map = new VelocityMap("config/carTable.txt");
 	}
 	
@@ -100,9 +101,10 @@ public class Car {
 	 */
 	public void giveStopCommand(double distance){
 		this.command = Command.STOP;
-		stop_distance = distance;
+		stop_position = this.position + distance;
 		target_velocity = speed_limit;
 		speed_before_stop = velocity;
+		this.stopGiven = false;
 		stop();
 	}
 	
@@ -111,9 +113,10 @@ public class Car {
 	 */
 	private void stop(){
 		Pair stop_info = map.getAccelerationInfo(new Pair(roundUp(velocity), 0));
-		if(Math.round(stop_info.getSecond()) >= Math.round(stop_distance) - Math.round(position)){
+		if(Math.round(stop_info.getSecond()) >= Math.round(stop_position) - Math.round(position) && !this.stopGiven){
 			calculateEnergyUsed(speed_before_stop, velocity);
 			giveChangeSpeedCommand(0, Command.STOP);
+			this.stopGiven = true;
 		}
 		else
 			changeSpeed();

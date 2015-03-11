@@ -231,7 +231,7 @@ class SQLiteOutputter implements OutputterInterface{
 			
 			if(!dbFile.delete()) {
 				System.out.println("Error deleting database file " + dbFile.getAbsolutePath());
-				System.out.println("Please delete manually (ensure no other things are using it).");
+				System.out.println("Please close any programs with it open and try again.");
 				System.exit(0);
 			}
 		}
