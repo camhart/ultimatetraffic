@@ -14,6 +14,7 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -38,12 +39,14 @@ public class ButtonBar extends JToolBar implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	
 	private int iterationCountValue = 0;
+	private int startIterationCountValue = 0;
 	private DataWorker dataWorker;
 	
 	JFileChooser fileChooser;
 	JButton setDatabaseButton;
 	JButton runButton;
 	JTextField iterationTextField;
+	JTextField startIterationTextField;
 
 	private JButton resetDatabaseButton;
 	private JButton cancelButton;
@@ -82,19 +85,51 @@ public class ButtonBar extends JToolBar implements ActionListener {
 		
 		setDatabaseButton = new JButton("Set Database");
 		setDatabaseButton.addActionListener(this);
-		this.add(setDatabaseButton);
+
 		
 		resetDatabaseButton = new JButton("Reset Database");
 		resetDatabaseButton.setEnabled(false);
 		resetDatabaseButton.addActionListener(this);
-		this.add(resetDatabaseButton);		
-		
-		this.add(Box.createRigidArea(new Dimension(5,0)));
 		
 		runButton = new JButton("Run");
 		runButton.addActionListener(this);
-		this.add(runButton);
 		
+		startIterationTextField = new JTextField();
+		PlainDocument doc1 = new PlainDocument();
+		doc1.setDocumentFilter(new DocumentFilter() {
+		    @Override
+		    public void insertString(FilterBypass fb, int off, String str, AttributeSet attr)
+		    		throws BadLocationException {
+		        fb.insertString(off, str.replaceAll("\\D++", ""), attr);  // remove non-digits
+		    } 
+		    
+		    @Override
+		    public void replace(FilterBypass fb, int off, int len, String str, AttributeSet attr)
+		    		throws BadLocationException {
+		        fb.replace(off, len, str.replaceAll("\\D++", ""), attr);  // remove non-digits
+		    }
+		});
+
+		doc1.addDocumentListener(new DocumentListener() {
+			@Override
+			public void changedUpdate(DocumentEvent arg0) {
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				String text = startIterationTextField.getText();
+				startIterationCountValue = Integer.parseInt(text.length() > 0 ? text : "0");
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				String text = startIterationTextField.getText();
+				startIterationCountValue = Integer.parseInt(text.length() > 0 ? text : "0");
+			}			
+		});
+		startIterationTextField.setDocument(doc1);
+		startIterationTextField.setText("0");
+		PromptSupport.setPrompt("Start iteration", startIterationTextField);
 		
 		iterationTextField = new JTextField();
 
@@ -133,22 +168,33 @@ public class ButtonBar extends JToolBar implements ActionListener {
 		});
 		iterationTextField.setDocument(doc);
 		iterationTextField.setText("10000");
-//		iterationTextField.setPreferredSize(new Dimension(30, 0));
-//		iterationTextField.setColumns(10);
 		PromptSupport.setPrompt("Number of Iterations", iterationTextField);
-		
-		this.add(iterationTextField);
 		
 		pauseButton = new JButton("Pause");
 		pauseButton.addActionListener(this);
 		
-		this.add(pauseButton);
+
 		
 		cancelButton = new JButton("Cancel run");
 		cancelButton.addActionListener(this);
 		
+		
+		this.add(setDatabaseButton);
+		this.add(resetDatabaseButton);	
+		this.add(Box.createRigidArea(new Dimension(15,0)));
+		
+		this.add(runButton);
+		this.add(pauseButton);
 		this.add(cancelButton);
 		
+		this.add(Box.createRigidArea(new Dimension(500,0)));
+		
+		this.add(new JLabel("Start at iteration: "));
+		this.add(startIterationTextField);
+		this.add(Box.createRigidArea(new Dimension(5,0)));
+		this.add(new JLabel("Iterations to run: "));
+		this.add(iterationTextField);
+			
 		updateButtons();
 	}
 	
@@ -156,8 +202,8 @@ public class ButtonBar extends JToolBar implements ActionListener {
 		int choice = fileChooser.showOpenDialog(this);
 		if(choice == JFileChooser.APPROVE_OPTION) {
 			SQLiteAccessor.getSQLite().init(fileChooser.getSelectedFile().getAbsolutePath());
+			this.databaseSet = true;
 		}
-		this.databaseSet = true;
 		updateButtons();
 	}
 
@@ -172,11 +218,13 @@ public class ButtonBar extends JToolBar implements ActionListener {
 				this.dataWorker.cancel(true);
 			SQLiteAccessor.getSQLite().close();
 			this.databaseSet = false;
+			SimulatorGui.getInstance().getCanvas().clearData();
+			SimulatorGui.getInstance().setCurrentIteration(this.startIterationCountValue);
 			updateButtons();
 			break;
 		case "Run":
-			int value = SimulatorGui.getInstance().getCurrentIteration();
-			dataWorker = new DataWorker(value, value + this.iterationCountValue, SimulatorGui.getInstance().getStateData().getIterationTime());
+			int value = this.startIterationCountValue;
+			dataWorker = new DataWorker(value, value + this.iterationCountValue);
 			dataWorker.execute();
 			updateButtons();
 			break;
@@ -190,6 +238,7 @@ public class ButtonBar extends JToolBar implements ActionListener {
 		case "Cancel run":
 			dataWorker.cancel(false);
 			SimulatorGui.setState(new StateData());
+			SimulatorGui.getInstance().setCurrentIteration(this.startIterationCountValue);
 			SimulatorGui.getInstance().getCanvas().clearData();
 			updateButtons();
 			break;
@@ -210,6 +259,7 @@ public class ButtonBar extends JToolBar implements ActionListener {
 
 	private void updateButtons() {
 		iterationTextField.setEnabled(this.workerDone);
+		startIterationTextField.setEnabled(this.workerDone);
 		runButton.setEnabled(this.workerDone && this.databaseSet);
 		
 		this.setDatabaseButton.setEnabled(!this.databaseSet);
@@ -218,8 +268,8 @@ public class ButtonBar extends JToolBar implements ActionListener {
 		setDatabaseButton.setEnabled(!this.databaseSet);
 		resetDatabaseButton.setEnabled(this.databaseSet);
 		
-//		cancelButton.setEnabled(!this.workerDone);
-		cancelButton.setEnabled(false);
+		cancelButton.setEnabled(!this.workerDone);
+//		cancelButton.setEnabled(false);
 		
 		pauseButton.setEnabled(!this.workerDone && dataWorker != null && !dataWorker.isDone() && !dataWorker.isCancelled());
 		pauseButton.setText((paused == true) ? "Unpause" : " Pause ");

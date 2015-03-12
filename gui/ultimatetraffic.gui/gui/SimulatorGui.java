@@ -50,6 +50,7 @@ public class SimulatorGui extends JFrame implements DataListener, PropertyChange
 		this.dataListeners.add(this);
 		this.workerDone = true;
 		this.currentIteration = 0;
+		this.timePerIteration = 0.1;
 	}
 	
 	
@@ -167,6 +168,8 @@ public class SimulatorGui extends JFrame implements DataListener, PropertyChange
 	private boolean workerDone = true;
 
 	private CarDebugPanel carDebugPanel;
+
+	private double timePerIteration;
 	
 	public void setWorkerDone(boolean status) {
 		this.workerDone = status;
@@ -201,5 +204,13 @@ public class SimulatorGui extends JFrame implements DataListener, PropertyChange
 	public CarDebugPanel getCarDebugPanel() {
 		return this.carDebugPanel;
 		
+	}
+	
+	public void setTimePerIteration(double newTime) {
+		this.timePerIteration = newTime;
+	}
+
+	public double getTimePerIteration() {
+		return this.timePerIteration;
 	}
 }

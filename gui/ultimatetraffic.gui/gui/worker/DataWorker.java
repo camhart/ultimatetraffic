@@ -12,15 +12,13 @@ import javax.swing.SwingWorker;
 
 public class DataWorker extends SwingWorker<Boolean, StateData> {
 	private int iterations;
-	private double timePerIteration;
 	private int currentIteration;
 	private int totalIterations;
 	private boolean paused;
 
-	public DataWorker(int currentIteration, int iterations, double timePerIteration) {
+	public DataWorker(int currentIteration, int iterations) {
 		this.iterations = iterations;
 		this.totalIterations = this.currentIteration + this.iterations;
-		this.timePerIteration = timePerIteration;
 		this.currentIteration = currentIteration;
 		
 		this.addPropertyChangeListener(SimulatorGui.getInstance());
@@ -41,7 +39,7 @@ public class DataWorker extends SwingWorker<Boolean, StateData> {
 				
 				currentIteration++;
 				
-				long sleepVal = (long) (timePerIteration * 500 - (System.currentTimeMillis() - curTime));
+				long sleepVal = (long) (SimulatorGui.getInstance().getTimePerIteration() * 1000 - (System.currentTimeMillis() - curTime));
 				if(sleepVal > 0) {
 					Thread.sleep(sleepVal);
 				}
