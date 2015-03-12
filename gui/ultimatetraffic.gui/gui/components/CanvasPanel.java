@@ -150,7 +150,7 @@ public class CanvasPanel extends JPanel implements DataListener, MouseListener {
 		
 		g.setColor(Color.BLACK);
 		
-		g.drawString(String.format("Id: %d", l.id), (int) (l.position - 27),  y + 10);
+		g.drawString(String.format("Id: %d", l.id), (int) (l.position - 31),  y + 10);
 		
 		//keep "0.0 +" in there, it prevents it frome showing up as negative zero (-0.0)
 		g.drawString(String.format("%.2f s", 0.0 + (l.getTimeUntilChange() - SimulatorGui.getInstance().getState())), (int) ((int) l.position + lightSize * 1.5), y + 10);

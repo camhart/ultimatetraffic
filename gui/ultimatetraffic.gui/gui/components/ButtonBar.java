@@ -119,12 +119,14 @@ public class ButtonBar extends JToolBar implements ActionListener {
 			public void insertUpdate(DocumentEvent arg0) {
 				String text = startIterationTextField.getText();
 				startIterationCountValue = Integer.parseInt(text.length() > 0 ? text : "0");
+				SimulatorGui.getInstance().setCurrentIteration(startIterationCountValue);
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent arg0) {
 				String text = startIterationTextField.getText();
 				startIterationCountValue = Integer.parseInt(text.length() > 0 ? text : "0");
+				SimulatorGui.getInstance().setCurrentIteration(startIterationCountValue);
 			}			
 		});
 		startIterationTextField.setDocument(doc1);
@@ -223,8 +225,7 @@ public class ButtonBar extends JToolBar implements ActionListener {
 			updateButtons();
 			break;
 		case "Run":
-			int value = this.startIterationCountValue;
-			dataWorker = new DataWorker(value, value + this.iterationCountValue);
+			dataWorker = new DataWorker(this.iterationCountValue);
 			dataWorker.execute();
 			updateButtons();
 			break;

@@ -76,9 +76,8 @@ public class SimulatorGui extends JFrame implements DataListener, PropertyChange
 
 	public void setCurrentIteration(int currentIteration) {
 		this.currentIteration = currentIteration;
+		this.infoBar.setIteration(this.currentIteration);
 	}
-
-
 
 	CanvasPanel canvasPanel;
 

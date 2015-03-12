@@ -12,14 +12,12 @@ import javax.swing.SwingWorker;
 
 public class DataWorker extends SwingWorker<Boolean, StateData> {
 	private int iterations;
-	private int currentIteration;
 	private int totalIterations;
 	private boolean paused;
 
-	public DataWorker(int currentIteration, int iterations) {
+	public DataWorker(int iterations) {
 		this.iterations = iterations;
-		this.totalIterations = this.currentIteration + this.iterations;
-		this.currentIteration = currentIteration;
+		this.totalIterations = SimulatorGui.getInstance().getCurrentIteration() + this.iterations;
 		
 		this.addPropertyChangeListener(SimulatorGui.getInstance());
 	}
@@ -30,18 +28,25 @@ public class DataWorker extends SwingWorker<Boolean, StateData> {
 
 		try {			
 			StateData sd = new StateData();
-			while(currentIteration < this.totalIterations && !this.isCancelled()) {
+			
+			if(SimulatorGui.getInstance().getCurrentIteration() > 0) {
+				sd.setLightData(SQLiteAccessor.getSQLite().getLightData(0));
+				this.publish(sd);
+			}
+			
+			while(SimulatorGui.getInstance().getCurrentIteration() < this.totalIterations && !this.isCancelled()) {
 				curTime = System.currentTimeMillis();
-				sd.setLightData(SQLiteAccessor.getSQLite().getLightData(currentIteration));
-				sd.setCarData(SQLiteAccessor.getSQLite().getCarData(currentIteration));
+				sd.setLightData(SQLiteAccessor.getSQLite().getLightData(SimulatorGui.getInstance().getCurrentIteration()));
+				sd.setCarData(SQLiteAccessor.getSQLite().getCarData(SimulatorGui.getInstance().getCurrentIteration()));
 				
 				this.publish(sd);
 				
-				currentIteration++;
 				
 				long sleepVal = (long) (SimulatorGui.getInstance().getTimePerIteration() * 1000 - (System.currentTimeMillis() - curTime));
-				if(sleepVal > 0) {
-					Thread.sleep(sleepVal);
+				long startedAt = System.currentTimeMillis();
+				while(sleepVal > 0 && startedAt > lastPause) {
+					Thread.sleep((sleepVal > 100) ? 100 : sleepVal);
+					sleepVal -= 100;
 				}
 				while((this.paused && !this.isCancelled())) {
 					Thread.sleep(50);
@@ -72,7 +77,9 @@ public class DataWorker extends SwingWorker<Boolean, StateData> {
 		SimulatorGui.setState(list.get(list.size() - 1));
 	}
 
+	private static long lastPause;
 	public void setPause(boolean b) {
+		lastPause = System.currentTimeMillis();
 		this.paused = b;
 	}
 }
