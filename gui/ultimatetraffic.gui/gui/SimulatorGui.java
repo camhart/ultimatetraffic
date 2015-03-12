@@ -14,8 +14,10 @@ import javax.swing.SwingWorker;
 
 import gui.components.ButtonBar;
 import gui.components.CanvasPanel;
+import gui.components.CanvasPanel.Car;
 import gui.components.CarDebugPanel;
 import gui.components.InfoBar;
+import gui.data.CarData;
 import gui.data.StateData;
 import gui.listeners.DataListener;
 import gui.worker.DataWorker;
@@ -53,6 +55,7 @@ public class SimulatorGui extends JFrame implements DataListener, PropertyChange
 		this.timePerIteration = 0.1;
 	}
 	
+	private JScrollPane scrollPane;
 	
 	
 //	@Override
@@ -93,7 +96,7 @@ public class SimulatorGui extends JFrame implements DataListener, PropertyChange
 		
 		canvasPanel = new CanvasPanel(roadLength, 400);
 		this.addDataListener(canvasPanel);
-		JScrollPane scrollPane = new JScrollPane(canvasPanel);
+		scrollPane = new JScrollPane(canvasPanel);
 		
 		infoBar = new InfoBar();
 		
@@ -160,6 +163,16 @@ public class SimulatorGui extends JFrame implements DataListener, PropertyChange
 
 	@Override
 	public void dataChanged(StateData data) {
+		int carid = this.carDebugPanel.getSelectedCarId();
+		CarData car = data.getCarData().get(carid);
+		if(car != null) {
+			if(this.carDebugPanel.updatingCarData()) {
+				this.carDebugPanel.setCar(car);
+			}
+			if(this.carDebugPanel.followingCar()) {
+				setScrollPosition((int)car.getPosition());
+			}
+		}
 		this.repaint();
 		canvasPanel.repaint();
 	}
@@ -211,5 +224,9 @@ public class SimulatorGui extends JFrame implements DataListener, PropertyChange
 
 	public double getTimePerIteration() {
 		return this.timePerIteration;
+	}
+	
+	public void setScrollPosition(int position) {
+		this.scrollPane.getHorizontalScrollBar().setValue(position - getWidth() / 2);
 	}
 }

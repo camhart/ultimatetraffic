@@ -23,7 +23,7 @@ public class CanvasPanel extends JPanel implements DataListener, MouseListener {
 	static int CarLength = 10;
 	static int CarHeight = 6;
 	
-	class Car {
+	public class Car {
 		
 		public int getY1() {
 			return getHeight() / 2 + ((this.lane == 1) ? -CarHeight * 2 : CarHeight);
