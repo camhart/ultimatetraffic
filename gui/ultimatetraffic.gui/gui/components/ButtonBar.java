@@ -237,6 +237,8 @@ public class ButtonBar extends JToolBar implements ActionListener {
 			updateButtons();
 			break;
 		case "Cancel run":
+			this.paused = false;
+			pauseButton.setText((this.paused == true) ? "Unpause" : " Pause ");
 			dataWorker.cancel(false);
 			SimulatorGui.setState(new StateData());
 			SimulatorGui.getInstance().setCurrentIteration(this.startIterationCountValue);
