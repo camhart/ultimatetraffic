@@ -167,7 +167,6 @@ public class CarManager implements Comparable {
 
 
 	public void giveChangeSpeedCommand(double newSpeed, Command command) {
-		System.out.println("speed set to" + newSpeed);
 		this.car.giveChangeSpeedCommand(newSpeed, command);
 		targetSpeed = newSpeed;
 	}
@@ -199,12 +198,13 @@ public class CarManager implements Comparable {
 		boolean foundMe = false;
 		ListIterator<CarManager> iter = this.getLaneObject().getIterable();
 		CarManager curCar;
+		
 		while(iter.hasNext()) {
 			curCar = iter.next();
 			if(curCar == this) {
 				foundMe = true;
 			} else if(foundMe) {
-				if(curCar.getCar().getCommand() == Car.Command.STOP)
+				if(curCar.getCar().getCommand() == Car.Command.STOP && curCar.getCar().getPosition() < light.getPosition())
 					stoppingCarsInFrontOfMe++;
 //				else 
 //					car not stopping
@@ -213,7 +213,7 @@ public class CarManager implements Comparable {
 		
 		double value = ((light.getPosition() - (stoppingCarsInFrontOfMe * CarManager.CAR_STOP_CUSHION)) - this.getPosition());
 		System.out.println(String.format("(%f - (%d * %f)) - %f = %f", light.getPosition(), stoppingCarsInFrontOfMe, CarManager.CAR_STOP_CUSHION, this.getPosition(), value));
-		assert value > 0 : "Crash! " + value;
+		assert value > 0 : "Crash! " + value + ((Simulator.getSimulator().getPhase() == 0) ? "\n Consider adjusting Phase0Handler.RUN_YELLOW_LIGHT_DISTANCE" : " no clue what's going on...");
 		
 		// (light position - length of all cars stopped in front of me) - car position
 		return value;		

@@ -10,8 +10,9 @@ public class Lane {
 	Lane otherLane;
 	
 	private LinkedList<CarManager> cars;
-	
-	public Lane() {
+	private StopLight light;
+	public Lane(StopLight light) {
+		this.light = light;
 		cars = new LinkedList<CarManager>();
 	}
 	
@@ -59,19 +60,6 @@ public class Lane {
 	
 	public boolean removeCar(CarManager car) {
 		
-//		CarManager last = this.cars.removeLast();
-//		System.out.println("Removed Car: " + last.getId() + " from lane " + toString());
-//		if(last != car) {
-//			System.out.println(String.format("Car id=%d position=%f", car.getId(), car.getPosition()));
-//			System.out.println(String.format("Car id=%d position=%f", last.getId(), last.getPosition()));
-//			
-//			System.out.println("wtg");
-//			
-//			throw new Error("last car removed wasn't the right car");
-//		}
-//		
-//		return true;
-		
 		//this.cars.remove(car); //I don't know if I trust this...  even if we go back to it consider using removeLastOccurance
 		
 		return this.cars.removeLastOccurrence(car);
@@ -96,5 +84,9 @@ public class Lane {
 	 */
 	public ListIterator<CarManager> getIterable() {
 		return cars.listIterator();
+	}
+
+	public StopLight getParentLight() {
+		return this.light;
 	}
 }

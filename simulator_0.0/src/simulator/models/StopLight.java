@@ -41,8 +41,9 @@ public class StopLight {
 		this.timeAsGreen = Double.parseDouble(values[2]);
 		this.timeAsRed = Double.parseDouble(values[3]);
 		this.initialOffset = Double.parseDouble(values[4]);
-		lane1 = new Lane();
-		lane2 = new Lane();
+		this.currentColor = Color.valueOf(values[5].toUpperCase());
+		lane1 = new Lane(this);
+		lane2 = new Lane(this);
 		lane1.otherLane = lane2;
 		lane2.otherLane = lane1;
 		
@@ -169,7 +170,7 @@ public class StopLight {
 //		phase.handlePotentialCarFinish(car, this, finishingCars);
 		
 		if(nextLight != null && !car.hasFinished() && car.getPosition() >= getPosition()) {
-//			System.out.println("Jumping lights! " + car.getPosition() + " - " + nextLight.getPosition());
+
 			//add the car to the next lane 
 			// 	phase handler might have changed the lane so we need to check
 			if(car.getLane() == 1) {

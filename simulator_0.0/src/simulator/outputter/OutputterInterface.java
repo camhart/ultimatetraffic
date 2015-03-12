@@ -12,4 +12,7 @@ public interface OutputterInterface {
 	public void addLightOutput(StopLight light);
 
 	public void close();
+
+	void addConfigOutput(String databasePath, int roadLength,
+			double iterationTime, String description);
 }

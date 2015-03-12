@@ -4,6 +4,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -19,6 +20,7 @@ class SQLiteOutputter implements OutputterInterface{
 	private int outputCount;
 	
 	private static SQLiteOutputter sqlOut; 
+	private static int simulationId = -1;
 	
 	//singleton
 	public static SQLiteOutputter getOutputter() {
@@ -30,11 +32,15 @@ class SQLiteOutputter implements OutputterInterface{
 	
 	private SQLiteOutputter() {
 		outputCount = OUTPUTS_UNTIL_COMMIT;
-		SQLite.initializeDatabase();
+		SQLite.initializeDatabaseDriver();
 	}
 	
 	public void startTransaction() {
 		SQLite.startTransaction();
+	}
+	
+	public void startTransaction(String databaseName) {
+		SQLite.startTransaction(databaseName);
 	}
 
 	public void handleCommit() {
@@ -55,12 +61,14 @@ class SQLiteOutputter implements OutputterInterface{
 	public void addLightOutput(StopLight light) {
 		Connection con = SQLite.getConnection();
 		try {
-			PreparedStatement ps = con.prepareStatement("INSERT INTO light_output (id, iterationCount, position, color) VALUES (?, ?, ?, ?);");
+			PreparedStatement ps = con.prepareStatement("INSERT INTO light_output (id, iterationCount, position, color, simulationId, timeUntilChange) VALUES (?, ?, ?, ?, ?, ?);");
 			
 			ps.setInt(1, light.getId());
 			ps.setInt(2,  Simulator.getSimulator().getCurrentIteration());
 			ps.setDouble(3, light.getPosition());
 			ps.setString(4, light.getCurrentColor().toString());
+			ps.setInt(5, simulationId);
+			ps.setDouble(6, light.getTimeUntilChange());
 			
 			ps.execute();
 			
@@ -77,7 +85,7 @@ class SQLiteOutputter implements OutputterInterface{
 	public void addCarOutput(CarManager car) {
 		Connection con = SQLite.getConnection();
 		try {
-			PreparedStatement ps = con.prepareStatement("INSERT INTO car_output (id, iterationCount, position, lane, velocity, acceleration) VALUES (?, ?, ?, ?, ?, ?);");
+			PreparedStatement ps = con.prepareStatement("INSERT INTO car_output (id, iterationCount, position, lane, velocity, acceleration, simulationId, lightId) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
 			
 			ps.setInt(1, car.getId());
 			ps.setInt(2,  Simulator.getSimulator().getCurrentIteration());
@@ -85,8 +93,47 @@ class SQLiteOutputter implements OutputterInterface{
 			ps.setInt(4,  car.getLane());
 			ps.setDouble(5,  car.getVelocity());
 			ps.setDouble(6,  car.getAcceleration());
+			ps.setInt(7, simulationId);
+			ps.setInt(8,  car.getLaneObject().getParentLight().getId());
 			
 			ps.execute();
+			
+			ps.close();
+			
+			handleCommit();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	public void addConfigOutput(String databasePath, int roadLength, double iterationTime, String description) {
+		
+		if(databasePath.length() > 512) {
+			throw new Error("Database path '" + databasePath +"' is too long (" + databasePath.length() +
+					")  Max allowed (" + 512 + ")");
+		}
+		
+		Connection con = SQLite.getConnection();
+		try {
+			PreparedStatement ps = con.prepareStatement("INSERT INTO simulation (databasePath, roadLength, iterationTime, description) VALUES (?, ?, ?, ?);");
+			
+			ps.setString(1, databasePath);
+			ps.setInt(2,  roadLength);
+			ps.setDouble(3,  iterationTime);
+			ps.setString(4, description);
+			
+			ps.execute();
+			
+			ResultSet key = ps.getGeneratedKeys();
+			
+			if(key.next()) {
+				SQLiteOutputter.simulationId = (int)key.getLong(1);
+			} else {
+				ps.close();
+				throw new Error("something wrong with simulation id");
+			}
 			
 			ps.close();
 			
@@ -104,33 +151,74 @@ class SQLiteOutputter implements OutputterInterface{
 				"position REAL not NULL," +
 				"lane INTEGER not NULL," +
 				"velocity REAL not NULL," +
-				"acceleration REAL not NULL" +
-				");";
+				"acceleration REAL not NULL," +
+				"simulationId INTEGER not NULL," +
+				"lightId INTEGER not NULL," +
+				"FOREIGN KEY(simulationId) REFERENCES simulation(id)" + 
+			");";
 		
 		String lightTable = "CREATE TABLE light_output (" +
 				"id INTEGER not NULL," + 
 				"iterationCount INTEGER not NULL," +
 				"position REAL not NULL," +
-				"color VARCHAR(6)" +
-				");";
+				"color VARCHAR(6)," +
+				"simulationId INTEGER not NULL," +
+				"timeUntilChange REAL not NULL," +
+				"FOREIGN KEY(simulationId) REFERENCES simulation(id)" + 
+			");";
 		
+		String simTable = "CREATE TABLE simulation (" +
+				"id INTEGER PRIMARY KEY not NULL," +
+				"databasePath VARCHAR(512) not NULL," +
+				"roadLength INTEGER not NULL," +
+				"iterationTime REAL not NULL," +
+				"description VARCHAR(512) not NULL" +
+			");";
+		
+		ResultSet carTableExists, lightTableExists, simulationTableExists;
 		try {
-			Statement statement = SQLite.getConnection().createStatement();
-			statement.executeUpdate(carTable);
+			carTableExists = SQLite.getConnection().getMetaData().getTables(null, null, "car_output", null);
+		
+			if(!carTableExists.next()) {		
+				try {
+					Statement statement = SQLite.getConnection().createStatement();
+					statement.executeUpdate(carTable);
+					
+					statement = SQLite.getConnection().createStatement();
+					statement.executeUpdate(lightTable);
+				} catch (SQLException e) {
+					if(!e.getMessage().equals("table car_output already exists"))
+						e.printStackTrace();
+				}
+			}
+				
+			lightTableExists = SQLite.getConnection().getMetaData().getTables(null, null, "light_output", null);
 			
-			statement = SQLite.getConnection().createStatement();
-			statement.executeUpdate(lightTable);
-		} catch (SQLException e) {
-			if(!e.getMessage().equals("table car_output already exists"))
-				e.printStackTrace();
-		}
+			if(!lightTableExists.next()) {
+				try {
+					Statement statement = SQLite.getConnection().createStatement();
+					statement.executeUpdate(lightTable);
+				} catch (SQLException e) {
+					if(!e.getMessage().equals("table light_output already exists"))
+						e.printStackTrace();
+				}
+			}
+			
+			simulationTableExists = SQLite.getConnection().getMetaData().getTables(null, null, "simulation", null);
+			
+			if(!simulationTableExists.next()) {
+				try {
+					Statement statement = SQLite.getConnection().createStatement();
+					statement.executeUpdate(simTable);
+				} catch (SQLException e) {
+					if(!e.getMessage().equals("table simulation already exists"))
+						e.printStackTrace();
+				}
+			}
 		
-		try {
-			Statement statement = SQLite.getConnection().createStatement();
-			statement.executeUpdate(lightTable);
-		} catch (SQLException e) {
-			if(!e.getMessage().equals("table light_output already exists"))
-				e.printStackTrace();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 	}
 	
@@ -141,15 +229,21 @@ class SQLiteOutputter implements OutputterInterface{
 		private static Connection connection;
 		
 		private static String databaseName = "db.sqlite";
+		private static int roadLength;
+		private static double iterationTime;
+		private static String description;
 		
-		public static void setDatabaseName(String newName) {
+		public static void addConfigOutput(String newName, int roadLength, double iterationTime, String description) {
 			SQLite.databaseName = newName;
+			SQLite.roadLength = roadLength;
+			SQLite.iterationTime = iterationTime;
+			SQLite.description = description;
 		}
 		public static String getDatabaseName() {
 			return databaseName;
 		}
 		
-		public static void initializeDatabase() {
+		public static void initializeDatabaseDriver() {
 			try {
 				Class.forName(JDBC_DRIVER);
 			} catch(ClassNotFoundException e) {
@@ -160,6 +254,11 @@ class SQLiteOutputter implements OutputterInterface{
 		public static Connection getConnection() {
 			return connection;
 		}	
+		
+		public static boolean startTransaction(String dbName) {
+			databaseName = dbName;
+			return startTransaction();
+		}
 		
 		public static boolean startTransaction() {
 			try {
@@ -208,6 +307,10 @@ class SQLiteOutputter implements OutputterInterface{
 	@Override
 	public void initialize(Object... params) {
 		String databaseName = (String)params[0];
+		int roadLength = (int)params[1];
+		double iterationTime = (double)params[2];
+		String description = (String)params[3];
+		
 		File dbFile = new File(new File("").getAbsolutePath() + "/" + databaseName);
 		if(dbFile.exists()) {
 			String[] options = {"Yes, continue and delete the database", "No, stop everything now."};
@@ -236,9 +339,9 @@ class SQLiteOutputter implements OutputterInterface{
 			}
 		}
 		
-		SQLite.setDatabaseName(databaseName);
-		SQLite.initializeDatabase();
-		SQLiteOutputter.getOutputter().startTransaction();
+		SQLite.initializeDatabaseDriver();
+		SQLiteOutputter.getOutputter().startTransaction(databaseName);
 		SQLiteOutputter.getOutputter().createTables();
+		SQLite.addConfigOutput(databaseName, roadLength, iterationTime, description);
 	}
 }

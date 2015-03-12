@@ -156,8 +156,11 @@ public class Simulator {
 			Scanner scanner = new Scanner(lightsFile);
 			
 			while(scanner.hasNextLine()) {
-				lights.add(new StopLight(scanner.nextLine()));
+				StopLight light = new StopLight(scanner.nextLine());
+				lights.add(light);
+				Outputter.getOutputter().addLightOutput(light);
 			}
+			
 			firstLight = lights.get(0);
 			lastLight = lights.get(lights.size() - 1);
 			lastLight.setPrevLight(lights.get(lights.size() - 2));
@@ -309,7 +312,10 @@ public class Simulator {
 		File carsFile = new File(args[2]);
 		File stopLightFile = new File(args[3]);
 		
-		Simulator.setOutputterConfig("db_phase_" + args[0] + ".sqlite");
+		int roadLength = 6000;
+		
+		Simulator.setOutputterConfig("db_phase_" + args[0] + ".sqlite", roadLength,
+				Simulator.TIME_PER_ITERATION, "Some description");
 		
 		Simulator simulator = Simulator.getSimulator();
 		
