@@ -155,10 +155,10 @@ public class Car {
 	public double getTimeTo(double newSpeed, double distanceToLight) {
 		Pair inputPair = new Pair(roundDown(velocity), newSpeed);
 		Pair info = map.getAccelerationInfo(inputPair);
-		double time = info.getSecond();//Time to accelerate to newSpeed
+		double time = info.getFirst();//Time to accelerate to newSpeed
 		//(distanceToLight - distance to accelerate) / the current speed 
 		// = time to go remaining distance to light
-		time += (distanceToLight - info.getFirst())/newSpeed;
+		time += (distanceToLight - info.getSecond())/newSpeed;
 		return time;
 	}
 
