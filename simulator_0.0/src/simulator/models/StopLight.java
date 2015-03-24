@@ -255,7 +255,6 @@ public class StopLight {
 	}
 
 	public boolean justChangedGreen() {
-		System.out.println(String.format("%f %f", this.timeUntilColorChange, this.timeAsGreen));
 		return this.timeUntilColorChange == this.timeAsGreen;
 	}
 	

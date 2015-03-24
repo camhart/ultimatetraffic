@@ -20,8 +20,8 @@ import javax.swing.JRootPane;
 
 public class CanvasPanel extends JPanel implements DataListener, MouseListener {
 
-	static int CarLength = 10;
-	static int CarHeight = 6;
+	static int CarLength = 5;
+	static int CarHeight = 3;
 	
 	public class Car {
 		
@@ -126,7 +126,7 @@ public class CanvasPanel extends JPanel implements DataListener, MouseListener {
 	}	
 	
 	private void drawCar(Car car, Graphics2D g) {
-		Color carColor = car.acceleration > 0.001 ? Color.GREEN : ((car.acceleration < 0) ? Color.RED : Color.YELLOW);
+		Color carColor = car.acceleration > 0.001 ? Color.GREEN : ((car.acceleration < -0.001) ? Color.RED : Color.YELLOW);
 		g.setColor(carColor);
 		
 		g.fillPolygon(new int[]{car.x1, car.x2, car.x1}, new int[]{car.y1, car.y2, car.y3}, 3);
@@ -140,7 +140,12 @@ public class CanvasPanel extends JPanel implements DataListener, MouseListener {
 	private static int lightSize = 10;
 	
 	private void drawLight(Light l, Graphics2D g) {
-		Color lightColor = (l.color.toString().equals("GREEN")) ? Color.GREEN : Color.RED;
+		Color lightColor;
+		if(l.getTimeUntilChange() < 5.0 && l.color.toString().equals("GREEN")) {
+			lightColor = Color.YELLOW;
+		} else {
+			lightColor = (l.color.toString().equals("GREEN")) ? Color.GREEN : Color.RED;	
+		}		
 		
 		g.setColor(lightColor);
 		

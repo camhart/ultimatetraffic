@@ -7,10 +7,9 @@ import simulator.outputter.Outputter;
 
 public class Phase0Handler extends PhaseHandler {
 	
-	private static final double YELLOW_LIGHT_TIME_LEFT = 5.0;
-	private static final double RUN_YELLOW_LIGHT_DISTANCE = 50.0;
-	
-	private static final int PHASE_NUMBER = 0;
+	public static final double YELLOW_LIGHT_TIME_LEFT = 4.0;
+	public static final double RUN_YELLOW_LIGHT_DISTANCE = 30.0;
+	public static final int PHASE_NUMBER = 0;
 	
 	@Override
 	public void handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(
@@ -23,11 +22,14 @@ public class Phase0Handler extends PhaseHandler {
 			//the light is green and about to change red (yellow).  Tell car to stop.
 			
 			//determine if GO or STOP according to my position and the light position?
-			if(car.getCar().getCommand() == Car.Command.GO && car.getPosition() < light.getPosition() && 
-					(light.getPosition() - car.getPosition() > RUN_YELLOW_LIGHT_DISTANCE || !car.canRunLight(light))) {
+//			if(car.getCar().getCommand() == Car.Command.GO && car.getPosition() < light.getPosition() && 
+//					((light.getPosition() - car.getPosition() > RUN_YELLOW_LIGHT_DISTANCE) || !car.canRunLight(light))) {
+			
+			
+			if(car.getCar().getCommand() == Car.Command.GO && car.getPosition() < light.getPosition() - RUN_YELLOW_LIGHT_DISTANCE &&
+					car.canRunLight(light)) {
 				//stop
 				car.giveStopCommand(car.getStopDistance(light));
-				System.out.println(car.getCar().getCommand());
 			}
 			//else run light
 			

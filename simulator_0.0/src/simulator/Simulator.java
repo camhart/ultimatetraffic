@@ -39,7 +39,7 @@ public class Simulator {
 	
 	static {
 		LOG.addHandler(new ConsoleHandler());
-		LOG.setLevel(Level.INFO);
+		LOG.setLevel(Level.SEVERE);
 	}
 	
 	

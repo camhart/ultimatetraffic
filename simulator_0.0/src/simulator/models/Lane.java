@@ -85,6 +85,15 @@ public class Lane {
 	public ListIterator<CarManager> getIterable() {
 		return cars.listIterator();
 	}
+	
+	/**
+	 * Retrieve an iterator object used to go through the cars in
+	 * this lane.
+	 * @return
+	 */
+	public ListIterator<CarManager> getReverseIterable() {
+		return cars.listIterator(cars.size());
+	}
 
 	public StopLight getParentLight() {
 		return this.light;
