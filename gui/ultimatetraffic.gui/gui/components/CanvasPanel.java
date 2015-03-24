@@ -20,8 +20,8 @@ import javax.swing.JRootPane;
 
 public class CanvasPanel extends JPanel implements DataListener, MouseListener {
 
-	static int CarLength = 10;
-	static int CarHeight = 6;
+	static int CarLength = 5;
+	static int CarHeight = 3;
 	
 	public class Car {
 		

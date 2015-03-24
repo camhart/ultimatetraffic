@@ -23,12 +23,9 @@ public class Phase1Handler extends PhaseHandler  {
 		double carPosition = car.getPosition();
 		
 		if(carPosition >= light.getPosition()){	//TODO: (eventually) adjust for other direction later ( will be <= )
-			System.out.print("a");
 			if(carPosition < car.getDestination()){
 				algorithm(car, light);
 			}
-		} else {
-			//System.out.println("b");
 		}
 		
 		Outputter.getOutputter().addCarOutput(car);

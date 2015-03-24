@@ -5,6 +5,7 @@ import java.util.ListIterator;
 import simulator.Simulator;
 import simulator.models.car.Car;
 import simulator.models.car.Car.Command;
+import simulator.phases.Phase0Handler;
 
 //import java.util.Comparator;
 //Comparator<Car>
@@ -12,7 +13,7 @@ public class CarManager implements Comparable {
 	 
 	
 	public static final double CAR_CUSHION = 10.0; //in meters
-	public static final double CAR_STOP_CUSHION = 5.0; //in meters
+	public static final double CAR_STOP_CUSHION = 7.5; //in meters
 	public static final double TIME_CUSHION = 0.5;
 	
 	private double arrivalTime;
@@ -174,6 +175,10 @@ public class CarManager implements Comparable {
 	public boolean canRunLight(StopLight light) {
 		assert (this.getLane() == 1 ? light.getLane1() : light.getLane2()) == this.getLaneObject() : "Lane objects don't match";
 		
+//		if(light.getPosition() - Phase0Handler.RUN_YELLOW_LIGHT_DISTANCE < this.getPosition()) {
+//			return true;
+//		} 
+		
 		boolean foundMe = false;
 		ListIterator<CarManager> iter = this.getLaneObject().getIterable();
 		CarManager curCar;
@@ -182,8 +187,9 @@ public class CarManager implements Comparable {
 			if(curCar == this) {
 				foundMe = true;
 			} else if(foundMe) {
-				if(curCar.getCar().getCommand() != Car.Command.STOP)
+				if(curCar.getCar().getCommand() == Car.Command.STOP) {
 					return false;
+				}
 			}			
 		}
 		return true;
@@ -196,27 +202,30 @@ public class CarManager implements Comparable {
 		
 		int stoppingCarsInFrontOfMe = 0;
 		boolean foundMe = false;
-		ListIterator<CarManager> iter = this.getLaneObject().getIterable();
+		ListIterator<CarManager> iter = this.getLaneObject().getReverseIterable();
 		CarManager curCar;
 		
-		while(iter.hasNext()) {
-			curCar = iter.next();
-			if(curCar == this) {
+		while(iter.hasPrevious()) {
+			curCar = iter.previous();
+			if(curCar.getId() == this.getId()) {
 				foundMe = true;
 			} else if(foundMe) {
-				if(curCar.getCar().getCommand() == Car.Command.STOP && curCar.getCar().getPosition() < light.getPosition())
+				Car.Command command = curCar.getCar().getCommand();
+				
+				if(curCar.getCar().getCommand() == Car.Command.STOP && curCar.getCar().getPosition() < light.getPosition()) {
 					stoppingCarsInFrontOfMe++;
+				}
 //				else 
 //					car not stopping
 			}			
 		}
 		
 		double value = ((light.getPosition() - (stoppingCarsInFrontOfMe * CarManager.CAR_STOP_CUSHION)) - this.getPosition());
-		System.out.println(String.format("(%f - (%d * %f)) - %f = %f", light.getPosition(), stoppingCarsInFrontOfMe, CarManager.CAR_STOP_CUSHION, this.getPosition(), value));
+//		System.out.println(String.format("(%f - (%d * %f)) - %f = %f", light.getPosition(), stoppingCarsInFrontOfMe, CarManager.CAR_STOP_CUSHION, this.getPosition(), value));
 		assert value > 0 : "Crash! " + value + ((Simulator.getSimulator().getPhase() == 0) ? "\n Consider adjusting Phase0Handler.RUN_YELLOW_LIGHT_DISTANCE" : " no clue what's going on...");
 		
 		// (light position - length of all cars stopped in front of me) - car position
-		return value;		
+		return value - 1.0;		
 	}
 
 	public Car getCar() {
@@ -232,7 +241,10 @@ public class CarManager implements Comparable {
 	 * Should occur only with phase 0.
 	 */
 	public void giveStopCommand(double distance) {
-		assert Simulator.getSimulator().getPhase() == 0 : "Calling stop in something other than phase 0"; 
+		assert Simulator.getSimulator().getPhase() == 0 : "Calling stop in something other than phase 0";
+		System.out.println(String.format("Iteration: %d, Car: %d (%.2f), Light %d (%.2f), TotalDistance: %f (%f)", Simulator.getSimulator().getCurrentIteration(), 
+				this.id, this.car.getPosition(), this.getLaneObject().getParentLight().getId(),
+				this.getLaneObject().getParentLight().getPosition() , distance, this.getLaneObject().getParentLight().getPosition() - this.car.getPosition()));
 		this.car.giveStopCommand(distance);
 	}
 	
