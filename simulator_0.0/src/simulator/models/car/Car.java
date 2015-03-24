@@ -68,6 +68,10 @@ public class Car {
 	 */
 	public void changeSpeed(){
 		double error = target_velocity - velocity;
+		if(Math.abs(error) < 0.5){
+			error = 0;
+			velocity = target_velocity;
+		}
 		double control = error * Kp;
 		//Update delayed states
 		velocity_delayed = velocity;
