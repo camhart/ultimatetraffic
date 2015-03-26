@@ -55,16 +55,17 @@ public class Lane {
 	public CarManager getNextCar(CarManager curCar){
 		Iterator<CarManager> iter = cars.iterator();
 		CarManager car = null;
-//		CarManager prevCar = null;
+		CarManager prevCar = null;
 		//this should only be called on lanes that already have the current car in the lane
 		while(iter.hasNext()){
-//			prevCar = car;
+			prevCar = car;
 			car = iter.next();
-//			if(car == curCar) {
+			if(car == curCar) {
+				return prevCar;
 //				if(iter.hasNext())
 //					return iter.next();
 //				else return null;
-//			}
+			}
 		}
 //		throw new Error("This shouldn't be happening.... current car not found.");
 		return car;
