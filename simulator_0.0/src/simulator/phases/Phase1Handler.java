@@ -63,8 +63,14 @@ public class Phase1Handler extends PhaseHandler  {
 		}
 		
 		int laneNum = car.getLane();
+		if(laneNum == 1){
+			car.setLane(laneNum, nextLight.getLane1());
+		}
+		else{
+			car.setLane(laneNum, nextLight.getLane2());
+		}
 		
-		while(car.hitNextCar(theoreticalTimeToLight, distanceToLight)){	//TODO: Function must be created
+		while(car.hitNextCar(theoreticalTimeToLight, nextLight.getPosition())){	//TODO: Function must be created
 			int otherLane = car.getOtherLane();
 			
 			boolean changedLanes = false;
@@ -82,7 +88,7 @@ public class Phase1Handler extends PhaseHandler  {
 			}
 			
 			if(changedLanes) {
-				if(car.hitNextCar(theoreticalTimeToLight, distanceToLight)){
+				if(car.hitNextCar(theoreticalTimeToLight, nextLight.getPosition())){
 					if(otherLane == 1)
 						car.setLane(laneNum, nextLight.getLane2());
 					else

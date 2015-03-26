@@ -153,15 +153,15 @@ public class CarManager implements Comparable {
 	}
 
 
-	public boolean hitNextCar(double theoreticalTimeToLight, double distanceToLight) {
+	public boolean hitNextCar(double theoreticalTimeToLight, double lightPosition) {
 		CarManager nextCar = getLaneObject().getNextCar(this);
 		if(nextCar != null && nextCar.getPosition() == this.car.getPosition()){//You're the only car on the road!
 			return false;
 		}
-		else if(nextCar != null && nextCar.getTimeTo(nextCar.targetSpeed, distanceToLight) > theoreticalTimeToLight - TIME_CUSHION){
+		else if(nextCar != null && nextCar.getTimeTo(nextCar.targetSpeed, lightPosition - nextCar.getPosition()) > theoreticalTimeToLight - TIME_CUSHION){
 			return true;
 		}
-		//if there is no next carr return false? The above if() checks if you're the only car on the stretch of road
+		//if there is no next car return false? The above if() checks if you're the only car on the stretch of road
 		
 		return false;
 	}

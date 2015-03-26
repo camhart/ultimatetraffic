@@ -243,7 +243,7 @@ public class Simulator {
 			while(curLight != null) {
 				
 				//iterate handles everything for the light and the cars within each lane
-				//	approaching the light
+				//	approac0hing the light
 				curLight.iterate(this.phase, Simulator.TIME_PER_ITERATION);
 
 				curLight = curLight.getPrevLight();
