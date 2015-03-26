@@ -154,7 +154,7 @@ public class CarManager implements Comparable {
 
 
 	public boolean hitNextCar(double theoreticalTimeToLight, double distanceToLight) {
-		CarManager nextCar = getLaneObject().getNextCar();
+		CarManager nextCar = getLaneObject().getNextCar(this);
 		if(nextCar != null && nextCar.getPosition() == this.car.getPosition()){//You're the only car on the road!
 			return false;
 		}

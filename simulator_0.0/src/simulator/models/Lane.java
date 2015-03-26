@@ -64,7 +64,8 @@ public class Lane {
 				else return null;
 			}
 		}
-		return car;
+		throw new Error("This shouldn't be happening.... current car not found.");
+//		return null;
 	}
 	
 	public boolean removeCar(CarManager car) {
