@@ -14,7 +14,7 @@ public class CarManager implements Comparable {
 	
 	public static final double CAR_CUSHION = 10.0; //in meters
 	public static final double CAR_STOP_CUSHION = 7.5; //in meters
-	public static final double TIME_CUSHION = 0.5;
+	public static final double TIME_CUSHION = 1.5;
 	
 	private double arrivalTime;
 	private Car car;
