@@ -47,13 +47,22 @@ public class Lane {
 		return true;
 	}
 	
-	public CarManager getNextCar(){
+	/**
+	 * returns null if no other car in front
+	 * @param curCar
+	 * @return
+	 */
+	public CarManager getNextCar(CarManager curCar){
 		Iterator<CarManager> iter = cars.iterator();
 		CarManager car = null;
 		//this should only be called on lanes that already have the current car in the lane
-//		car = iter.next();
-		if(iter.hasNext()){
+		while(iter.hasNext()){
 			car = iter.next();
+			if(car == curCar) {
+				if(iter.hasNext())
+					return iter.next();
+				else return null;
+			}
 		}
 		return car;
 	}

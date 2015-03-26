@@ -8,7 +8,7 @@ import simulator.outputter.Outputter;
 public class Phase0Handler extends PhaseHandler {
 	
 	public static final double YELLOW_LIGHT_TIME_LEFT = 4.0;
-	public static final double RUN_YELLOW_LIGHT_DISTANCE = 30.0;
+	public static final double RUN_YELLOW_LIGHT_DISTANCE = 50.0;
 	public static final int PHASE_NUMBER = 0;
 	
 	@Override

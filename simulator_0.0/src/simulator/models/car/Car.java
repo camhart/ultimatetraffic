@@ -117,7 +117,7 @@ public class Car {
 	 */
 	private void stop(){
 		Pair stop_info = map.getAccelerationInfo(new Pair(roundUp(velocity), 0));
-		if(Math.round(stop_info.getSecond()) >= Math.round(stop_position) - Math.round(position) && !this.stopGiven){
+		if(roundDown(stop_info.getSecond()) >= roundDown(stop_position) - roundUp(position) && !this.stopGiven){
 			calculateEnergyUsed(speed_before_stop, velocity);
 			giveChangeSpeedCommand(0, Command.STOP);
 			this.stopGiven = true;
