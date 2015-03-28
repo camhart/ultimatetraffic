@@ -43,4 +43,6 @@ public abstract class PhaseHandler {
 	}
 
 	public abstract int getPhase();
+	
+	public abstract void intermediateAlgorithm(CarManager car, StopLight light);
 }

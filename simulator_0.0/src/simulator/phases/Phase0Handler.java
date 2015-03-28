@@ -43,6 +43,10 @@ public class Phase0Handler extends PhaseHandler {
 		
 		Outputter.getOutputter().addCarOutput(car);
 	}
+	
+	public void intermediateAlgorithm(CarManager car, StopLight light){
+		throw new Error("Phase0 is trying to call the algorithm!");
+	}
 
 	@Override
 	public int getPhase() {

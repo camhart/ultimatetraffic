@@ -6,6 +6,7 @@ import java.util.Iterator;
 import simulator.Simulator;
 import simulator.models.StopLight.Color;
 import simulator.outputter.Outputter;
+import simulator.phases.Phase1Handler;
 import simulator.phases.PhaseHandler;
 
 public class StopLight {
@@ -47,7 +48,11 @@ public class StopLight {
 		lane1.otherLane = lane2;
 		lane2.otherLane = lane1;
 		
-		setTimeUntilColorChange();
+		//setTimeUntilColorChange(); //I'm removing this, because it doesn't take any advantage of creating offsets on timing.
+		if(this.currentColor == Color.GREEN)
+			this.timeUntilColorChange = this.timeAsGreen - this.initialOffset;
+		else
+			this.timeUntilColorChange = this.timeAsRed - this.initialOffset;
 		
 		this.id = LightIdGenerator.generateId();
 	}
@@ -94,7 +99,7 @@ public class StopLight {
 	 * 	
 	 * @param timePassed
 	 */
-	public void handleLightColors(double timePassed) {
+	public void handleLightColors(double timePassed, PhaseHandler phase) {
 		timeUntilColorChange-=timePassed;
 		if(timeUntilColorChange < 0) {
 			if(this.currentColor == Color.GREEN) {
@@ -107,7 +112,31 @@ public class StopLight {
 				this.timeUntilColorChange = this.timeAsGreen;
 				setTimeUntilColorChange();
 				Outputter.getOutputter().addLightOutput(this);
+				//Call the algorithm on current cars to catch rounding errors on cars approaching the newly green light
+				if(phase.getPhase() == 1){
+					this.CallIntermediateAlgorithmOnAllCars(phase);
+				}
 			}
+		}
+	}
+	
+	public void CallIntermediateAlgorithmOnAllCars(PhaseHandler phase){
+		Iterator<CarManager> lane1Iter = lane1.getIterable();
+		Iterator<CarManager> lane2Iter = lane2.getIterable();
+		CarManager lane1Car = null;
+		CarManager lane2Car = null;
+		
+		while(lane1Iter.hasNext() || lane2Iter.hasNext()) {
+			
+			if(lane1Iter.hasNext()) {
+				lane1Car = lane1Iter.next();
+				phase.intermediateAlgorithm(lane1Car, this);
+			}
+			
+			if(lane2Iter.hasNext()) {
+				lane2Car = lane2Iter.next();
+				phase.intermediateAlgorithm(lane2Car, this);
+			}	
 		}
 	}
 
@@ -121,7 +150,7 @@ public class StopLight {
 	 */
 	public void iterate(PhaseHandler phase, double timePerIteration) {
 		
-		this.handleLightColors(timePerIteration);
+		this.handleLightColors(timePerIteration, phase);
 		//TODO: Changed the .getIterable() to a ListIterator... so we can remove while traversing now.
 		//	Wait until after presentation to make change
 		Iterator<CarManager> lane1Iter = lane1.getIterable();
