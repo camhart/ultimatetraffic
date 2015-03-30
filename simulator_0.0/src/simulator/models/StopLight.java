@@ -13,6 +13,8 @@ public class StopLight {
 	private StopLight nextLight;
 	private StopLight prevLight;
 	
+	private static int MAX_EARNED_TIME = 12;
+	
 	
 	private Lane lane1;
 	private Lane lane2;
@@ -25,6 +27,7 @@ public class StopLight {
 	private String lightType;
 	private double initialOffset;
 	private int id;
+	private int greenTimesEarned;
 	
 	public enum Color {
 		GREEN, RED
@@ -47,6 +50,8 @@ public class StopLight {
 		lane2 = new Lane(this);
 		lane1.otherLane = lane2;
 		lane2.otherLane = lane1;
+		
+		this.greenTimesEarned = 3;
 		
 		//setTimeUntilColorChange(); //I'm removing this, because it doesn't take any advantage of creating offsets on timing.
 		if(this.currentColor == Color.GREEN)
@@ -269,6 +274,10 @@ public class StopLight {
 			willBeGreen = !willBeGreen;	//change future light state
 		}
 		return willBeGreen;
+	}
+	
+	public boolean canLightBeGreenAtTime(double time){
+		return true;
 	}
 
 	public void setPrevLight(StopLight stopLight) {
