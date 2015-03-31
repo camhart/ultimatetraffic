@@ -72,7 +72,7 @@ public class StopLight {
 	 * 	ensure the color gets changed prior to calling this.
 	 */
 	private void setTimeUntilColorChange() {
-		if(this.lightType == "phase2"){
+		if(this.lightType.equals("phase2")){
 			lightTimes.set(0, lightTimes.get(0)-1);
 			if(lightTimes.get(0) <= 0){//change color
 				this.lightTimes.remove(0);
@@ -165,7 +165,7 @@ public class StopLight {
 				setTimeUntilColorChange();
 				Outputter.getOutputter().addLightOutput(this);
 				//Call the algorithm on current cars to catch rounding errors on cars approaching the newly green light
-				if(phase.getPhase() == 1){
+				if(phase.getPhase() > 0){
 					this.CallIntermediateAlgorithmOnAllCars(phase);
 				}
 			}
@@ -329,12 +329,18 @@ public class StopLight {
 			greenLight = true;
 		int size = lightTimes.size();
 		time -= this.timeUntilColorChange;
+		//ArrayList<Integer> tempArray = this.lightTimes;//this doesn't actually create anything new... oops.
+		//tempArray.set(0, tempArray.get(0)-1);
 		if(time > 0){
 			int i;
 			int timesUsedPerSection = 0;
 			for(i=0;i<size && time > 0;i++){ //subtract off planned light timing until planned time is up or time is found
 				int timesPlannedPerSection = lightTimes.get(i);
 				timesUsedPerSection = 0;
+				if(i == 0){
+					timesPlannedPerSection--;
+					timesUsedPerSection++;
+				}
 				while(time > 0 && timesPlannedPerSection > 0){
 					time -= getTimeChunk(greenLight);
 					timesUsedPerSection++;
@@ -352,13 +358,13 @@ public class StopLight {
 				while(time > 0){
 					if(time - this.timeAsGreen < 0){
 						if(this.greenTimesEarned > 0){
-							appendTimes(redsToAdd, 1, greenLight);
+							lightTimes = appendTimes(lightTimes, redsToAdd, 1, greenLight);
 							time = -1;
 							this.greenTimesEarned--;
 							return true;
 						}
 						else{
-							appendTimes(redsToAdd+1,0,greenLight);
+							lightTimes = appendTimes(lightTimes, redsToAdd+1,0,greenLight);
 							return false;
 						}
 					}
@@ -366,19 +372,48 @@ public class StopLight {
 						redsToAdd++;
 						addGreenTime();
 						time -= this.timeAsRed;
+						if(time < 0){//our red interval is bigger than the green interval, so we need multiple greens here
+							//reverse what just happened
+							time +=this.timeAsRed;
+							redsToAdd--;
+							//get needed green light times
+							int greensNeeded = 1;
+							while(time > 0){
+								time -= this.timeAsGreen;
+								greensNeeded++;
+							}
+							if(this.greenTimesEarned >= greensNeeded){
+								this.greenTimesEarned -= greensNeeded;
+								lightTimes = appendTimes(lightTimes, redsToAdd, greensNeeded, greenLight);
+								return true;
+							}
+							else{
+								lightTimes = appendTimes(lightTimes, redsToAdd,0,greenLight);
+								return false;
+							}
+						}
 					}
 				}
+				
 			}
 			else{
 				if(!greenLight){
 					if(this.greenTimesEarned > 0){
 						this.greenTimesEarned--;
 						int timeToSplit = this.lightTimes.get(i);
-						int timeFirst = timeToSplit - timesUsedPerSection;
+						int timeFirst = timeToSplit - (timesUsedPerSection);
 						int timeAfter = timeToSplit - timeFirst;
 						lightTimes.set(i,timeFirst);
 						lightTimes.add(i+1, timeAfter);
 						lightTimes.add(i+1, 1);
+//						int timeToSplit = tempArray.get(i);
+//						int timeFirst = timeToSplit - (timesUsedPerSection);
+//						int timeAfter = timeToSplit - timeFirst;
+//						tempArray.set(i,timeFirst);
+//						tempArray.add(i+1, timeAfter);
+//						tempArray.add(i+1, 1);
+//						tempArray.set(0, tempArray.get(0)+1);
+//						this.lightTimes = tempArray;
 						return true;
 					}
 					return false;
@@ -391,25 +426,26 @@ public class StopLight {
 		return greenLight;
 	}
 	
-	public void appendTimes(int reds, int greens, boolean lightStatus){
+	public ArrayList<Integer> appendTimes(ArrayList<Integer> a, int reds, int greens, boolean lightStatus){
 		if(reds > 0){//there are reds to add
 			if(lightStatus){//the last light was green, so we can just append the red and green
-				lightTimes.add(reds);
-				lightTimes.add(greens);
+				a.add(reds);
+				a.add(greens);
 			}
 			else{//last light was red, so we need to add the new reds to the last value and append green
-				lightTimes.set(lightTimes.size()-1, lightTimes.get(lightTimes.size()-1)+reds);
-				lightTimes.add(greens);
+				a.set(a.size()-1, a.get(a.size()-1)+reds);
+				a.add(greens);
 			}
 		}
 		else{//just add green light
 			if(lightStatus){//last light was green, so add to last value
-				lightTimes.set(lightTimes.size()-1, lightTimes.get(lightTimes.size()-1)+1);
+				a.set(a.size()-1, a.get(a.size()-1)+1);
 			}
 			else{//last light was red, so we can just append the new green
-				lightTimes.add(greens);
+				a.add(greens);
 			}
 		}
+		return a;
 	}
 	
 	public double getTimeChunk(boolean greenLight){
