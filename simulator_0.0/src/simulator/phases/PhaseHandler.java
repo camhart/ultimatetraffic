@@ -24,6 +24,8 @@ public abstract class PhaseHandler {
 			return new Phase0Handler();
 		else if(phaseNumber == 1)
 			return new Phase1Handler();
+		else if (phaseNumber == 2)
+			return new Phase2Handler();
 		else {
 			throw new Error("");
 		}

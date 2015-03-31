@@ -2,6 +2,7 @@ package simulator.models;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Vector;
 
 import simulator.Simulator;
 import simulator.models.StopLight.Color;
@@ -28,6 +29,8 @@ public class StopLight {
 	private double initialOffset;
 	private int id;
 	private int greenTimesEarned;
+	//private int[] lightTimes;
+	private ArrayList<Integer> lightTimes;
 	
 	public enum Color {
 		GREEN, RED
@@ -52,6 +55,8 @@ public class StopLight {
 		lane2.otherLane = lane1;
 		
 		this.greenTimesEarned = 3;
+		this.lightTimes = new ArrayList<Integer>();
+		this.lightTimes.add(1);
 		
 		//setTimeUntilColorChange(); //I'm removing this, because it doesn't take any advantage of creating offsets on timing.
 		if(this.currentColor == Color.GREEN)
@@ -67,10 +72,52 @@ public class StopLight {
 	 * 	ensure the color gets changed prior to calling this.
 	 */
 	private void setTimeUntilColorChange() {
-		if(this.currentColor == Color.GREEN)
-			this.timeUntilColorChange = this.timeAsGreen;
-		else
-			this.timeUntilColorChange = this.timeAsRed;
+		if(this.lightType == "phase2"){
+			lightTimes.set(0, lightTimes.get(0)-1);
+			if(lightTimes.get(0) <= 0){//change color
+				this.lightTimes.remove(0);
+				if(this.lightTimes.size() < 1){ //This means no cars have requested Green in the future, so we leave the light red
+					this.lightTimes.add(1);
+					this.currentColor = Color.RED;
+					this.timeUntilColorChange = this.timeAsRed;
+					addGreenTime();
+				}
+				else{
+					if(this.currentColor == Color.GREEN){
+						this.currentColor = Color.RED;
+						this.timeUntilColorChange = this.timeAsRed;
+					}
+					else{
+						this.currentColor = Color.GREEN;
+						this.timeUntilColorChange = this.timeAsGreen;
+					}
+				}
+			}
+			else{//don't change
+				if(this.currentColor == Color.GREEN){
+					this.timeUntilColorChange = this.timeAsGreen;
+				}
+				else{
+					this.timeUntilColorChange = this.timeAsRed;
+				}
+			}
+		}
+		else{ //Phases 0 and 1
+			if(this.currentColor == Color.GREEN){
+				this.currentColor = Color.RED;
+				this.timeUntilColorChange = this.timeAsRed;
+			}
+			else{
+				this.currentColor = Color.GREEN;
+				this.timeUntilColorChange = this.timeAsGreen;
+			}
+		}
+	}
+	
+	public void addGreenTime(){
+		if(this.greenTimesEarned < this.MAX_EARNED_TIME){
+			greenTimesEarned++;
+		}
 	}
 	
 	/**
@@ -108,13 +155,13 @@ public class StopLight {
 		timeUntilColorChange-=timePassed;
 		if(timeUntilColorChange < 0) {
 			if(this.currentColor == Color.GREEN) {
-				this.currentColor = Color.RED;
-				this.timeUntilColorChange = this.timeAsRed;
+				//this.currentColor = Color.RED;
+				//this.timeUntilColorChange = this.timeAsRed;
 				setTimeUntilColorChange();
 				Outputter.getOutputter().addLightOutput(this);
 			} else {
-				this.currentColor = Color.GREEN;
-				this.timeUntilColorChange = this.timeAsGreen;
+				//this.currentColor = Color.GREEN;
+				//this.timeUntilColorChange = this.timeAsGreen;
 				setTimeUntilColorChange();
 				Outputter.getOutputter().addLightOutput(this);
 				//Call the algorithm on current cars to catch rounding errors on cars approaching the newly green light
@@ -277,7 +324,101 @@ public class StopLight {
 	}
 	
 	public boolean canLightBeGreenAtTime(double time){
-		return true;
+		boolean greenLight = false;
+		if(this.currentColor == Color.GREEN)
+			greenLight = true;
+		int size = lightTimes.size();
+		time -= this.timeUntilColorChange;
+		if(time > 0){
+			int i;
+			int timesUsedPerSection = 0;
+			for(i=0;i<size && time > 0;i++){ //subtract off planned light timing until planned time is up or time is found
+				int timesPlannedPerSection = lightTimes.get(i);
+				timesUsedPerSection = 0;
+				while(time > 0 && timesPlannedPerSection > 0){
+					time -= getTimeChunk(greenLight);
+					timesUsedPerSection++;
+					timesPlannedPerSection--;
+				}
+				if(timesPlannedPerSection == 0 && i < size-1 && time > 0){
+					greenLight = !greenLight;
+				}
+				if(time < 0){
+					break;
+				}
+			}
+			if(time > 0){ //after subtracting, if we still have unplanned future times for the light, let's add them in
+				int redsToAdd = 0;
+				while(time > 0){
+					if(time - this.timeAsGreen < 0){
+						if(this.greenTimesEarned > 0){
+							appendTimes(redsToAdd, 1, greenLight);
+							time = -1;
+							this.greenTimesEarned--;
+							return true;
+						}
+						else{
+							appendTimes(redsToAdd+1,0,greenLight);
+							return false;
+						}
+					}
+					else{
+						redsToAdd++;
+						addGreenTime();
+						time -= this.timeAsRed;
+					}
+				}
+			}
+			else{
+				if(!greenLight){
+					if(this.greenTimesEarned > 0){
+						this.greenTimesEarned--;
+						int timeToSplit = this.lightTimes.get(i);
+						int timeFirst = timeToSplit - timesUsedPerSection;
+						int timeAfter = timeToSplit - timeFirst;
+						lightTimes.set(i,timeFirst);
+						lightTimes.add(i+1, timeAfter);
+						lightTimes.add(i+1, 1);
+						return true;
+					}
+					return false;
+				}
+				else{
+					return greenLight; //the light is already planning to be green at that time
+				}
+			}
+		}
+		return greenLight;
+	}
+	
+	public void appendTimes(int reds, int greens, boolean lightStatus){
+		if(reds > 0){//there are reds to add
+			if(lightStatus){//the last light was green, so we can just append the red and green
+				lightTimes.add(reds);
+				lightTimes.add(greens);
+			}
+			else{//last light was red, so we need to add the new reds to the last value and append green
+				lightTimes.set(lightTimes.size()-1, lightTimes.get(lightTimes.size()-1)+reds);
+				lightTimes.add(greens);
+			}
+		}
+		else{//just add green light
+			if(lightStatus){//last light was green, so add to last value
+				lightTimes.set(lightTimes.size()-1, lightTimes.get(lightTimes.size()-1)+1);
+			}
+			else{//last light was red, so we can just append the new green
+				lightTimes.add(greens);
+			}
+		}
+	}
+	
+	public double getTimeChunk(boolean greenLight){
+		if(greenLight){
+			return this.timeAsGreen;
+		}
+		else{
+			return this.timeAsRed;
+		}
 	}
 
 	public void setPrevLight(StopLight stopLight) {
