@@ -12,7 +12,7 @@ import javax.swing.JOptionPane;
 
 import simulator.Simulator;
 import simulator.models.CarManager;
-import simulator.models.StopLight;
+import simulator.models.stoplights.StopLight;
 
 class SQLiteOutputter implements OutputterInterface{
 	

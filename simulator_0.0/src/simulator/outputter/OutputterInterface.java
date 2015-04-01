@@ -1,7 +1,7 @@
 package simulator.outputter;
 
 import simulator.models.CarManager;
-import simulator.models.StopLight;
+import simulator.models.stoplights.StopLight;
 
 public interface OutputterInterface {
 

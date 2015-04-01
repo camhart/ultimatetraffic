@@ -1,9 +1,9 @@
 package simulator.phases;
 
-import simulator.Simulator;
 import simulator.models.CarManager;
-import simulator.models.StopLight;
 import simulator.models.car.Car.Command;
+import simulator.models.stoplights.Phase2StopLight;
+import simulator.models.stoplights.StopLight;
 import simulator.outputter.Outputter;
 
 public class Phase2Handler extends PhaseHandler  {
@@ -221,9 +221,9 @@ public class Phase2Handler extends PhaseHandler  {
 	}
 
 	@Override
-	public int getPhase() {
+	public StopLight buildStopLight(String configString) {
 		// TODO Auto-generated method stub
-		return this.PHASE_NUMBER;
+		return new Phase2StopLight(configString);
 	}
 
 }

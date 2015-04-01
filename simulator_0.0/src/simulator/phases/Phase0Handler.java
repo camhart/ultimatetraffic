@@ -1,8 +1,8 @@
 package simulator.phases;
 
 import simulator.models.CarManager;
-import simulator.models.StopLight;
 import simulator.models.car.Car;
+import simulator.models.stoplights.StopLight;
 import simulator.outputter.Outputter;
 
 public class Phase0Handler extends PhaseHandler {
@@ -48,9 +48,14 @@ public class Phase0Handler extends PhaseHandler {
 		throw new Error("Phase0 is trying to call the algorithm!");
 	}
 
+//	@Override
+//	public int getPhase() {
+//		// TODO Auto-generated method stub
+//		return this.PHASE_NUMBER;
+//	}
+
 	@Override
-	public int getPhase() {
-		// TODO Auto-generated method stub
-		return this.PHASE_NUMBER;
+	public StopLight buildStopLight(String configString) {
+		return new StopLight(configString);
 	}
 }

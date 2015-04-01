@@ -5,6 +5,7 @@ import java.util.ListIterator;
 import simulator.Simulator;
 import simulator.models.car.Car;
 import simulator.models.car.Car.Command;
+import simulator.models.stoplights.StopLight;
 import simulator.phases.Phase0Handler;
 
 //import java.util.Comparator;
@@ -222,7 +223,7 @@ public class CarManager implements Comparable {
 		
 		double value = ((light.getPosition() - (stoppingCarsInFrontOfMe * CarManager.CAR_STOP_CUSHION)) - this.getPosition());
 //		System.out.println(String.format("(%f - (%d * %f)) - %f = %f", light.getPosition(), stoppingCarsInFrontOfMe, CarManager.CAR_STOP_CUSHION, this.getPosition(), value));
-		assert value > 0 : "Crash! " + value + ((Simulator.getSimulator().getPhase() == 0) ? "\n Consider adjusting Phase0Handler.RUN_YELLOW_LIGHT_DISTANCE" : " no clue what's going on...");
+		assert value > 0 : "Crash! " + value + ((this.getLaneObject().getParentLight().getClass() == StopLight.class) ? "\n Consider adjusting Phase0Handler.RUN_YELLOW_LIGHT_DISTANCE" : " no clue what's going on...");
 		
 		// (light position - length of all cars stopped in front of me) - car position
 		return value - 1.0;		
@@ -241,7 +242,9 @@ public class CarManager implements Comparable {
 	 * Should occur only with phase 0.
 	 */
 	public void giveStopCommand(double distance) {
-		assert Simulator.getSimulator().getPhase() == 0 : "Calling stop in something other than phase 0";
+//		assert Simulator.getSimulator().getPhase() == 0 : "Calling stop in something other than phase 0";
+		assert this.getLaneObject().getParentLight().getClass() == StopLight.class : "Calling stop in something other than phase 0";
+		
 		System.out.println(String.format("Iteration: %d, Car: %d (%.2f), Light %d (%.2f), TotalDistance: %f (%f)", Simulator.getSimulator().getCurrentIteration(), 
 				this.id, this.car.getPosition(), this.getLaneObject().getParentLight().getId(),
 				this.getLaneObject().getParentLight().getPosition() , distance, this.getLaneObject().getParentLight().getPosition() - this.car.getPosition()));
@@ -252,7 +255,7 @@ public class CarManager implements Comparable {
 	 * Should occur only with phase 0.
 	 */
 	public void giveGoCommand() {
-		assert Simulator.getSimulator().getPhase() == 0 : "Calling stop in something other than phase 0";
+		assert this.getLaneObject().getParentLight().getClass() == StopLight.class : "Calling stop in something other than phase 0";
 //		this.car.go();
 		this.car.giveGoCommand();
 	}

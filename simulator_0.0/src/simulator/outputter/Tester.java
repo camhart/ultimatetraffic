@@ -3,7 +3,7 @@ package simulator.outputter;
 import java.sql.SQLException;
 
 import simulator.models.CarManager;
-import simulator.models.StopLight;
+import simulator.models.stoplights.StopLight;
 import simulator.outputter.SQLiteOutputter.SQLite;
 
 public class Tester {

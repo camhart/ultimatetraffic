@@ -18,7 +18,7 @@ import simulator.phases.Phase0Handler;
 import simulator.phases.Phase1Handler;
 import simulator.phases.PhaseHandler;
 import simulator.models.CarManager;
-import simulator.models.StopLight;
+import simulator.models.stoplights.StopLight;
 
 public class Simulator {
 	
@@ -150,13 +150,14 @@ public class Simulator {
 	 *		1409.9,timed,30,20,0,green
 	 * @param lightsFile
 	 */
-	public void loadLights(File lightsFile) {
+	public void loadLights(File lightsFile, PhaseHandler phase) {
 		ArrayList<StopLight> lights = new ArrayList<StopLight>();
 		try {
 			Scanner scanner = new Scanner(lightsFile);
 			
 			while(scanner.hasNextLine()) {
-				StopLight light = new StopLight(scanner.nextLine());
+//				StopLight light = new StopLight(scanner.nextLine());
+				StopLight light = phase.buildStopLight(scanner.nextLine());
 				lights.add(light);
 				Outputter.getOutputter().addLightOutput(light);
 			}
@@ -281,10 +282,6 @@ public class Simulator {
 		this.phase = phase;
 	}
 	
-	public int getPhase() {
-		return this.phase.getPhase();
-	}
-	
 	/**
 	 * get the current iteration from the simulator
 	 * @return
@@ -321,10 +318,11 @@ public class Simulator {
 		
 		simulator.setNumberOfIterations(iterationCount);
 		
-		simulator.loadLights(stopLightFile);
+		simulator.setPhase(phase);
+		
+		simulator.loadLights(stopLightFile, phase);
 		simulator.loadCars(carsFile);
 		
-		simulator.setPhase(phase);
 		
 		simulator.run();
 		

@@ -1,36 +1,34 @@
-package simulator.models;
+package simulator.models.stoplights;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Vector;
 
-import simulator.Simulator;
-import simulator.models.StopLight.Color;
+import simulator.models.CarManager;
+import simulator.models.Lane;
 import simulator.outputter.Outputter;
-import simulator.phases.Phase1Handler;
 import simulator.phases.PhaseHandler;
 
 public class StopLight {
-	private StopLight nextLight;
-	private StopLight prevLight;
+	protected StopLight nextLight;
+	protected StopLight prevLight;
 	
-	private static int MAX_EARNED_TIME = 12;
+	protected static int MAX_EARNED_TIME = 12;
 	
 	
-	private Lane lane1;
-	private Lane lane2;
+	protected Lane lane1;
+	protected Lane lane2;
 	
-	private Color currentColor;
-	private double timeAsRed;
-	private double timeAsGreen;
-	private double timeUntilColorChange;
-	private double position;
-	private String lightType;
-	private double initialOffset;
-	private int id;
-	private int greenTimesEarned;
+	protected Color currentColor;
+	protected double timeAsRed;
+	protected double timeAsGreen;
+	protected double timeUntilColorChange;
+	protected double position;
+	protected String lightType;
+	protected double initialOffset;
+	protected int id;
+	protected int greenTimesEarned;
 	//private int[] lightTimes;
-	private ArrayList<Integer> lightTimes;
+	protected ArrayList<Integer> lightTimes;
 	
 	public enum Color {
 		GREEN, RED
@@ -71,38 +69,38 @@ public class StopLight {
 	 * Will set timeUntilColorChange value according to CURRENT color.  So
 	 * 	ensure the color gets changed prior to calling this.
 	 */
-	private void setTimeUntilColorChange() {
-		if(this.lightType.equals("phase2")){
-			lightTimes.set(0, lightTimes.get(0)-1);
-			if(lightTimes.get(0) <= 0){//change color
-				this.lightTimes.remove(0);
-				if(this.lightTimes.size() < 1){ //This means no cars have requested Green in the future, so we leave the light red
-					this.lightTimes.add(1);
-					this.currentColor = Color.RED;
-					this.timeUntilColorChange = this.timeAsRed;
-					addGreenTime(1);
-				}
-				else{
-					if(this.currentColor == Color.GREEN){
-						this.currentColor = Color.RED;
-						this.timeUntilColorChange = this.timeAsRed;
-					}
-					else{
-						this.currentColor = Color.GREEN;
-						this.timeUntilColorChange = this.timeAsGreen;
-					}
-				}
-			}
-			else{//don't change
-				if(this.currentColor == Color.GREEN){
-					this.timeUntilColorChange = this.timeAsGreen;
-				}
-				else{
-					this.timeUntilColorChange = this.timeAsRed;
-				}
-			}
-		}
-		else{ //Phases 0 and 1
+	protected void setTimeUntilColorChange() {
+//		if(this.lightType.equals("phase2")){
+//			lightTimes.set(0, lightTimes.get(0)-1);
+//			if(lightTimes.get(0) <= 0){//change color
+//				this.lightTimes.remove(0);
+//				if(this.lightTimes.size() < 1){ //This means no cars have requested Green in the future, so we leave the light red
+//					this.lightTimes.add(1);
+//					this.currentColor = Color.RED;
+//					this.timeUntilColorChange = this.timeAsRed;
+//					addGreenTime(1);
+//				}
+//				else{
+//					if(this.currentColor == Color.GREEN){
+//						this.currentColor = Color.RED;
+//						this.timeUntilColorChange = this.timeAsRed;
+//					}
+//					else{
+//						this.currentColor = Color.GREEN;
+//						this.timeUntilColorChange = this.timeAsGreen;
+//					}
+//				}
+//			}
+//			else{//don't change
+//				if(this.currentColor == Color.GREEN){
+//					this.timeUntilColorChange = this.timeAsGreen;
+//				}
+//				else{
+//					this.timeUntilColorChange = this.timeAsRed;
+//				}
+//			}
+//		}
+//		else{ //Phases 0 and 1
 			if(this.currentColor == Color.GREEN){
 				this.currentColor = Color.RED;
 				this.timeUntilColorChange = this.timeAsRed;
@@ -111,7 +109,7 @@ public class StopLight {
 				this.currentColor = Color.GREEN;
 				this.timeUntilColorChange = this.timeAsGreen;
 			}
-		}
+//		}
 	}
 	
 	public void addGreenTime(int greens){
@@ -158,19 +156,11 @@ public class StopLight {
 		timeUntilColorChange-=timePassed;
 		if(timeUntilColorChange < 0) {
 			if(this.currentColor == Color.GREEN) {
-				//this.currentColor = Color.RED;
-				//this.timeUntilColorChange = this.timeAsRed;
 				setTimeUntilColorChange();
 				Outputter.getOutputter().addLightOutput(this);
 			} else {
-				//this.currentColor = Color.GREEN;
-				//this.timeUntilColorChange = this.timeAsGreen;
 				setTimeUntilColorChange();
 				Outputter.getOutputter().addLightOutput(this);
-				//Call the algorithm on current cars to catch rounding errors on cars approaching the newly green light
-				if(phase.getPhase() > 0){
-//					this.CallIntermediateAlgorithmOnAllCars(phase); //TODO: Make this actually work! Currently broken because of faulty lane changes between lights
-				}
 			}
 		}
 	}

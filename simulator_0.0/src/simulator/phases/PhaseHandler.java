@@ -3,7 +3,7 @@ package simulator.phases;
 import simulator.Simulator;
 import simulator.models.CarManager;
 import simulator.error.Error;
-import simulator.models.StopLight;
+import simulator.models.stoplights.StopLight;
 
 public abstract class PhaseHandler {
 	
@@ -44,7 +44,9 @@ public abstract class PhaseHandler {
 		}
 	}
 
-	public abstract int getPhase();
+//	public abstract int getPhase();
 	
 	public abstract void intermediateAlgorithm(CarManager car, StopLight light);
+	
+	public abstract StopLight buildStopLight(String configString);
 }

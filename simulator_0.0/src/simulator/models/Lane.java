@@ -5,9 +5,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import simulator.models.stoplights.StopLight;
+
 public class Lane {
 	
-	Lane otherLane;
+	public Lane otherLane;
 	
 	private LinkedList<CarManager> cars;
 	private StopLight light;
