@@ -14,7 +14,6 @@ public class StopLight {
 	
 	protected static int MAX_EARNED_TIME = 12;
 	
-	
 	protected Lane lane1;
 	protected Lane lane2;
 	
