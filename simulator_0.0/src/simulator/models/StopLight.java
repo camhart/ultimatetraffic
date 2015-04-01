@@ -80,7 +80,7 @@ public class StopLight {
 					this.lightTimes.add(1);
 					this.currentColor = Color.RED;
 					this.timeUntilColorChange = this.timeAsRed;
-					addGreenTime();
+					addGreenTime(1);
 				}
 				else{
 					if(this.currentColor == Color.GREEN){
@@ -114,9 +114,12 @@ public class StopLight {
 		}
 	}
 	
-	public void addGreenTime(){
-		if(this.greenTimesEarned < this.MAX_EARNED_TIME){
-			greenTimesEarned++;
+	public void addGreenTime(int greens){
+		if(this.greenTimesEarned + greens < this.MAX_EARNED_TIME){
+			greenTimesEarned += greens;
+		}
+		else{
+			greenTimesEarned = MAX_EARNED_TIME;
 		}
 	}
 	
@@ -166,7 +169,7 @@ public class StopLight {
 				Outputter.getOutputter().addLightOutput(this);
 				//Call the algorithm on current cars to catch rounding errors on cars approaching the newly green light
 				if(phase.getPhase() > 0){
-					this.CallIntermediateAlgorithmOnAllCars(phase);
+//					this.CallIntermediateAlgorithmOnAllCars(phase); //TODO: Make this actually work! Currently broken because of faulty lane changes between lights
 				}
 			}
 		}
@@ -359,7 +362,7 @@ public class StopLight {
 					if(time - this.timeAsGreen < 0){
 						if(this.greenTimesEarned > 0){
 							lightTimes = appendTimes(lightTimes, redsToAdd, 1, greenLight);
-							time = -1;
+							//time = -1;
 							this.greenTimesEarned--;
 							return true;
 						}
@@ -370,7 +373,7 @@ public class StopLight {
 					}
 					else{
 						redsToAdd++;
-						addGreenTime();
+						//addGreenTime();
 						time -= this.timeAsRed;
 						if(time < 0){//our red interval is bigger than the green interval, so we need multiple greens here
 							//reverse what just happened
@@ -398,14 +401,37 @@ public class StopLight {
 			}
 			else{
 				if(!greenLight){
-					if(this.greenTimesEarned > 0){
-						this.greenTimesEarned--;
+					int greensNeeded = 0;
+					while(time < 0){
+						time += this.timeAsGreen;
+						greensNeeded++;
+					}
+					if(this.greenTimesEarned > greensNeeded){
+						this.greenTimesEarned -= greensNeeded;
 						int timeToSplit = this.lightTimes.get(i);
 						int timeFirst = timeToSplit - (timesUsedPerSection);
-						int timeAfter = timeToSplit - timeFirst;
-						lightTimes.set(i,timeFirst);
-						lightTimes.add(i+1, timeAfter);
-						lightTimes.add(i+1, 1);
+						int timeAfter = timeToSplit - (timeFirst + greensNeeded);
+						if(timeFirst > 0){
+							lightTimes.set(i,timeFirst);
+							if(timeAfter > 0){
+								lightTimes.add(i+1, timeAfter);
+								lightTimes.add(i+1, greensNeeded);
+							}
+							else{
+								lightTimes.set(i+1, lightTimes.get(i+1) + greensNeeded);
+							}
+						}
+						else{
+							if(timeAfter > 0){
+								lightTimes.set(i, timeAfter);
+							}
+							if(i > 0)
+								lightTimes.set(i-1, lightTimes.get(i-1) + greensNeeded);
+							else{
+								lightTimes.add(i, greensNeeded);
+								System.out.println("WHAAAAAAAT? THIS SHOULD NEVER HAPPEN!");
+							}
+						}
 //						int timeToSplit = tempArray.get(i);
 //						int timeFirst = timeToSplit - (timesUsedPerSection);
 //						int timeAfter = timeToSplit - timeFirst;
@@ -428,20 +454,29 @@ public class StopLight {
 	
 	public ArrayList<Integer> appendTimes(ArrayList<Integer> a, int reds, int greens, boolean lightStatus){
 		if(reds > 0){//there are reds to add
+			addGreenTime(reds);
 			if(lightStatus){//the last light was green, so we can just append the red and green
 				a.add(reds);
-				a.add(greens);
+				//a.add(greens);
 			}
 			else{//last light was red, so we need to add the new reds to the last value and append green
 				a.set(a.size()-1, a.get(a.size()-1)+reds);
-				a.add(greens);
+				//a.add(greens);
 			}
 		}
-		else{//just add green light
-			if(lightStatus){//last light was green, so add to last value
-				a.set(a.size()-1, a.get(a.size()-1)+1);
+//		else{//just add green light
+//			if(lightStatus){//last light was green, so add to last value
+//				a.set(a.size()-1, a.get(a.size()-1)+1);
+//			}
+//			else{//last light was red, so we can just append the new green
+//				a.add(greens);
+//			}
+//		}
+		if(greens > 0){
+			if(lightStatus){
+				a.set(a.size()-1, a.get(a.size()-1)+greens);
 			}
-			else{//last light was red, so we can just append the new green
+			else{
 				a.add(greens);
 			}
 		}
