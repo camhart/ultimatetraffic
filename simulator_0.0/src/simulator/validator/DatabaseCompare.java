@@ -70,7 +70,7 @@ public class DatabaseCompare {
 		boolean ret = true;
 		
 		for(int c = 0; c < db1Iterations; c++) {
-//			if(c % 100 == 0)
+			if(c % 100 == 0)
 				System.out.println(String.format("%d/%d", c, db1Iterations));
 			
 			
@@ -82,7 +82,7 @@ public class DatabaseCompare {
 				CarData cd1 = c1Map.get(key);
 				
 				if(!cd1.equals(c2Map.remove(key))) {
-					LOG.severe(String.format("car data mismatch: %s not found in db2", cd1));
+					LOG.severe(String.format("car data mismatch: %s not found in db2\n\tdb2=%s", cd1, c2Map));
 					ret = false;
 				}
 			}
