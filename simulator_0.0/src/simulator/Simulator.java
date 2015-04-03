@@ -3,7 +3,6 @@ package simulator;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -122,7 +121,12 @@ public class Simulator {
 			CarManager curCar = null;
 			ArrayList<CarManager> curList = null;
 			while(scanner.hasNextLine()) {
-				curCar = new CarManager(scanner.nextLine());
+				String nextLine = scanner.nextLine();
+				
+				if(nextLine.startsWith("//"))
+					continue;
+				
+				curCar = new CarManager(nextLine);
 
 				
 				int key = (int)(new BigDecimal(curCar.getArrivalTime()).setScale(precision, BigDecimal.ROUND_HALF_UP).doubleValue() / Simulator.TIME_PER_ITERATION);
