@@ -14,8 +14,8 @@ public class Validator {
 	public static final Logger LOG = Logger.getLogger(Simulator.class.getName());
 	
 	static {
-		LOG.addHandler(new ConsoleHandler());
 		LOG.setLevel(Level.SEVERE);
+		LOG.setUseParentHandlers(false);
 	}
 	
 	protected ArrayList<Validator> validators;
@@ -57,8 +57,9 @@ public class Validator {
 	
 	public static void main(String[] args) {
 		String databasePath = "db_phase_" + args[0] + ".sqlite";
+//		LOG.addHandler(new ConsoleHandler());
 		LOG.setLevel(Level.INFO);
-		LOG.setUseParentHandlers(false);
+//		LOG.setUseParentHandlers(false);
 		Validator validator = new Validator(databasePath);
 		validator.addValidator(new StopLightValidator(validator.getSQLiteAccessor()));
 		validator.addValidator(new CarValidator(validator.getSQLiteAccessor()));

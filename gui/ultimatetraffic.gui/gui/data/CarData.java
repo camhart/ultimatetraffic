@@ -1,6 +1,10 @@
 package gui.data;
 
 public class CarData {
+	
+	public static final int CarLength = 5;
+	public static final int CarHeight = 3;
+	
 	private int id;
 	private int iterationCount;
 	private double position;

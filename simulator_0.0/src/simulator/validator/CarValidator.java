@@ -20,6 +20,11 @@ public class CarValidator extends Validator {
 		int iteration = 0;
 		HashMap<Integer, CarData> carData = sqlite.getCarData(iteration++);
 		while(iteration < totalIterations) {
+			
+			StringBuilder output = new StringBuilder();
+			String initalString = String.format("Car validator failed: cars are ontop of each other\niteration: %d\n", iteration);
+			output.append(initalString);
+			
 			for(int c = 0; c < carData.values().size(); c++) {
 				CarData cd1 = (CarData) carData.values().toArray()[c];
 				
@@ -27,15 +32,15 @@ public class CarValidator extends Validator {
 					CarData cd2 = (CarData) carData.values().toArray()[d];
 				
 					if(cd1 != cd2 && cd1.getLane() == cd2.getLane()) {
-						if(Math.abs(cd1.getPosition() - cd2.getPosition()) < CarManager.CAR_CUSHION) {
+						if(Math.abs(cd1.getPosition() - cd2.getPosition()) < CarData.CarLength) { // divide by 2 just to leave wiggle room
 							//problems... cars hitting eachother
-							LOG.severe(String.format("Car validator failed:\n " +
-									"\titeration: %d car 1 position: %f car 2 position: %f difference: %f", iteration, cd1.getPosition(), cd2.getPosition(), Math.abs(cd1.getPosition() - cd2.getPosition())));
+							output.append(String.format("\tcar%dPosition: %f car%dPosition: %f difference: %f\n", cd1.getId(), cd1.getPosition(), cd2.getId(), cd2.getPosition(), Math.abs(cd1.getPosition() - cd2.getPosition())));
 						}
 					}
 				}
 			}
-			
+			if(output.length() > initalString.length())
+				LOG.severe(output.toString());
 			carData = sqlite.getCarData(iteration++);
 		}
 	}

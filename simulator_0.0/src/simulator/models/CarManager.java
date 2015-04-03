@@ -244,9 +244,9 @@ public class CarManager implements Comparable {
 //		assert Simulator.getSimulator().getPhase() == 0 : "Calling stop in something other than phase 0";
 		assert this.getLaneObject().getParentLight().getClass() == StopLight.class : "Calling stop in something other than phase 0";
 		
-		System.out.println(String.format("Iteration: %d, Car: %d (%.2f), Light %d (%.2f), TotalDistance: %f (%f)", Simulator.getSimulator().getCurrentIteration(), 
-				this.id, this.car.getPosition(), this.getLaneObject().getParentLight().getId(),
-				this.getLaneObject().getParentLight().getPosition() , distance, this.getLaneObject().getParentLight().getPosition() - this.car.getPosition()));
+//		System.out.println(String.format("Iteration: %d, Car: %d (%.2f), Light %d (%.2f), TotalDistance: %f (%f)", Simulator.getSimulator().getCurrentIteration(), 
+//				this.id, this.car.getPosition(), this.getLaneObject().getParentLight().getId(),
+//				this.getLaneObject().getParentLight().getPosition() , distance, this.getLaneObject().getParentLight().getPosition() - this.car.getPosition()));
 		this.car.giveStopCommand(distance);
 	}
 	

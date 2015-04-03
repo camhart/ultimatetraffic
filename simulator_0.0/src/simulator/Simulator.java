@@ -41,8 +41,11 @@ public class Simulator {
 	public static final Logger LOG = Logger.getLogger(Simulator.class.getName());
 	
 	static {
-		LOG.addHandler(new ConsoleHandler());
-		LOG.setLevel(Level.SEVERE);
+		LOG.setLevel(Level.ALL);
+		LOG.setUseParentHandlers(false);
+		ConsoleHandler ch = new ConsoleHandler();
+		ch.setLevel(Level.ALL);
+		LOG.addHandler(ch);
 	}
 	
 	
@@ -262,14 +265,13 @@ public class Simulator {
 
 				curLight = curLight.getPrevLight();
 			}
-			
 			//arriving cars
 			this.handleArrivingCars(currentIteration);
 			
 			//increment iteration
 			currentIteration++;
 			
-			LOG.info(String.format("%s (%.1f s), iteration %d / %d, cars left %d, cars finished %d",
+			LOG.severe(String.format("%s (%.1f s), iteration %d / %d, cars left %d, cars finished %d",
 					getTime(), currentIteration * Simulator.TIME_PER_ITERATION,
 					currentIteration, numberOfIterations, carsLeftToArrive,
 					this.finishedCars.size()));

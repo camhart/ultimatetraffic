@@ -8,7 +8,7 @@ import simulator.models.Lane;
 import simulator.outputter.Outputter;
 import simulator.phases.PhaseHandler;
 
-public class StopLight {
+public class StopLight implements Iterable<CarManager>{
 	protected StopLight nextLight;
 	protected StopLight prevLight;
 	
@@ -168,83 +168,18 @@ public class StopLight {
 		this.handleLightColors(timePerIteration, phase);
 		//TODO: Changed the .getIterable() to a ListIterator... so we can remove while traversing now.
 		//	Wait until after presentation to make change
-		Iterator<CarManager> lane1Iter = lane1.getIterable();
-		Iterator<CarManager> lane2Iter = lane2.getIterable();
-		CarManager lane1Car = null;
-		CarManager lane2Car = null;
+		
+		Iterator<CarManager> carIter = this.iterator();
+		CarManager curCar = null;
 		
 		ArrayList<CarManager> lane1Removes = new ArrayList<CarManager>();
 		ArrayList<CarManager> lane2Removes = new ArrayList<CarManager>();
 		
 		ArrayList<CarManager> finishingCars = new ArrayList<CarManager>();
 		
-		while(lane1Iter.hasNext() || lane2Iter.hasNext()) {
-			
-//			if(lane1Iter.hasNext()) {
-//				lane1Car = lane1Iter.next();
-//				handleCar(phase, lane1Car, lane1, lane1Removes, finishingCars);
-//			}
-//			
-//			if(lane2Iter.hasNext()) {
-//				lane2Car = lane2Iter.next();
-//				handleCar(phase, lane2Car, lane2, lane2Removes, finishingCars);
-//			}
-			
-			if(lane1Iter.hasNext()){
-				lane1Car = lane1Iter.next();
-			}
-			if(lane2Iter.hasNext()){
-				lane2Car = lane2Iter.next();
-			}
-			double car1Position = 0;
-			double car2Position = 0;
-			if(lane1Car != null && lane2Car != null){//there are cars in both lanes
-				car1Position = lane1Car.getPosition();
-				car2Position = lane2Car.getPosition();
-				while(car1Position > car2Position){
-					handleCar(phase, lane1Car, lane1, lane1Removes, finishingCars);
-					if(lane1Iter.hasNext()){
-						lane1Car = lane1Iter.next();
-						car1Position = lane1Car.getPosition();
-					}
-					else{
-						lane1Car = null;
-						car1Position = -1;
-					}
-				}
-				while(car2Position > car1Position){
-					handleCar(phase, lane2Car, lane2, lane2Removes, finishingCars);
-					if(lane2Iter.hasNext()){
-						lane2Car = lane2Iter.next();
-						car2Position = lane2Car.getPosition();
-					}
-					else{
-						lane2Car = null;
-						car2Position = -1;
-					}
-				}
-			}
-			else if(lane1Car != null){//we only have a car in lane 1
-				handleCar(phase, lane1Car, lane1, lane1Removes, finishingCars);
-				lane1Car = null;
-			}
-			else if(lane2Car != null){//we only have a car in lane 2
-				handleCar(phase, lane2Car, lane2, lane2Removes, finishingCars);
-				lane2Car = null;
-			}
-			
-			while(lane1Car != null || lane2Car != null){ //this means we picked up a car in the first 'if' that hasn't had an algorithm call
-				if(car1Position > car2Position){
-					handleCar(phase, lane1Car, lane1, lane1Removes, finishingCars);
-					car1Position = -1;
-					lane1Car = null;
-				}
-				else{
-					handleCar(phase, lane2Car, lane2, lane2Removes, finishingCars);
-					car2Position = -1;
-					lane2Car = null;
-				}
-			}
+		while(carIter.hasNext()) {
+			curCar = carIter.next();
+			handleCar(phase, curCar, curCar.getLaneObject(), curCar.getLane() == 1 ? lane1Removes : lane2Removes, finishingCars);
 		}
 		
 		for(CarManager c : finishingCars) {
@@ -266,6 +201,8 @@ public class StopLight {
 		phase.handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(car, this);
 		if(car.hasFinished()) {
 			finishingCars.add(car);
+			//do we need to add it to the remove list here?
+			//and then do we just want to return?
 		}
 //		phase.handlePotentialCarFinish(car, this, finishingCars);
 		
@@ -293,7 +230,8 @@ public class StopLight {
 	public void removeCarFromLane(CarManager car) {
 		assert car.getPosition() >= car.getDestination() : "Car hasn't finished traveling...";
 		
-		car.getLaneObject().removeCar(car);
+		if(!car.getLaneObject().removeCar(car))
+			throw new Error("couldn't remove car from lane after it had finished");
 	}
 	
 	private static class LightIdGenerator {
@@ -341,5 +279,64 @@ public class StopLight {
 	
 	public boolean justChangedRed() {
 		return this.timeUntilColorChange == this.timeAsRed;
+	}
+
+	/**
+	 * Iterator will (untested) iterate over all cars from both lanes within the StopLight
+	 * 	in order from lowest position to highest 
+	 */
+	@Override
+	public Iterator<CarManager> iterator() {
+		Iterator<CarManager> iter = new Iterator<CarManager>() {
+			private int count = 0;
+			private Iterator<CarManager> lane1Iter = lane1.getIterable();
+			private Iterator<CarManager> lane2Iter = lane2.getIterable();
+			private CarManager lane1CurCar = lane1Iter.hasNext() ? lane1Iter.next() : null;			
+			private CarManager lane2CurCar = lane2Iter.hasNext() ? lane2Iter.next() : null;
+			
+			private void updateLane1Car() {
+				if(lane1Iter.hasNext())
+					lane1CurCar = lane1Iter.next();
+				else 
+					lane1CurCar = null;
+			}
+			
+			private void updateLane2Car() {
+				if(lane2Iter.hasNext())
+					lane2CurCar = lane2Iter.next();
+				else
+					lane2CurCar = null;
+			}
+			
+			@Override
+			public boolean hasNext() {
+				return count < (lane1.getNumberCarsInLane() + lane2.getNumberCarsInLane());
+			}
+
+			@Override
+			public CarManager next() {
+				CarManager retCar = null;
+				count++;
+
+				if(lane1CurCar != null && lane2CurCar != null) { //both lanes have cars
+					if(lane1CurCar.getPosition() < lane2CurCar.getPosition()) {
+						retCar = lane1CurCar;
+						updateLane1Car();
+					} else {
+						retCar = lane2CurCar;
+						updateLane2Car();
+					}
+				} else if(lane1CurCar != null) { //ONLY lane1 has cars left
+					retCar = lane1CurCar;
+					updateLane1Car();
+				} else if(lane2CurCar != null) { //ONLY lane2 has cars left
+					retCar = lane2CurCar;
+					updateLane2Car();
+				}
+				return retCar;
+			}
+			
+		};
+		return iter;
 	}
 }
