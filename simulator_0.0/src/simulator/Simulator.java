@@ -139,6 +139,7 @@ public class Simulator {
 				carsLeftToArrive++;
 				curList.add(curCar);
 			}
+			scanner.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -166,8 +167,11 @@ public class Simulator {
 			Scanner scanner = new Scanner(lightsFile);
 			
 			while(scanner.hasNextLine()) {
-//				StopLight light = new StopLight(scanner.nextLine());
-				StopLight light = phase.buildStopLight(scanner.nextLine());
+				String nextLine = scanner.nextLine();
+				
+				if(nextLine.startsWith("//"))
+					continue;
+				StopLight light = phase.buildStopLight(nextLine);
 				lights.add(light);
 				Outputter.getOutputter().addLightOutput(light);
 			}
@@ -181,6 +185,7 @@ public class Simulator {
 				
 				lights.get(c).setNextLight(lights.get(c + 1));
 			}
+			scanner.close();
 			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
