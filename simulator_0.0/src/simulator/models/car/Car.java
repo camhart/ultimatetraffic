@@ -77,7 +77,12 @@ public class Car {
 		velocity_delayed = velocity;
 		acceleration_delayed = acceleration;
 		//Calculate the new acceleration based on the control
-		acceleration = (control-damping*velocity)/mass;
+		if(control == 0) {
+			acceleration = 0;
+		}
+		else {
+			acceleration = (control-damping*velocity)/mass;
+		}
 		//Integrate acceleration to get velocity and position
 		velocity = velocity + step / 2 * (acceleration + acceleration_delayed);
 		position = position + step / 2 * (velocity + velocity_delayed);
@@ -106,7 +111,7 @@ public class Car {
 	public void giveStopCommand(double distance){
 		this.command = Command.STOP;
 		stop_position = this.position + distance;
-		target_velocity = speed_limit;
+		//target_velocity = speed_limit;
 		speed_before_stop = velocity;
 		this.stopGiven = false;
 		stop();
