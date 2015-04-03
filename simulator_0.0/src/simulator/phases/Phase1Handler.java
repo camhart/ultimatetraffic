@@ -37,7 +37,7 @@ public class Phase1Handler extends PhaseHandler  {
 		
 		assert currentLight != null : "currentLight is null?";
 		
-		StopLight nextLight = currentLight.getNextLight();
+		Phase1StopLight nextLight = (Phase1StopLight)currentLight.getNextLight();
 		
 		if(nextLight == null) { //we just drove past the last light
 			car.giveChangeSpeedCommand(MAX_SPEED, Command.CHANGE_SPEED);
@@ -132,12 +132,15 @@ public class Phase1Handler extends PhaseHandler  {
 		car.giveChangeSpeedCommand(newSpeed, Command.CHANGE_SPEED);
 	}
 	
-	public void intermediateAlgorithm(CarManager car, StopLight currentLight){
+	public void intermediateAlgorithm(CarManager car, StopLight currentLightArg){
 		double newSpeed = MAX_SPEED;
 		
-		assert currentLight != null : "currentLight is null?";
+		assert currentLightArg != null : "currentLight is null?";
+		assert currentLightArg.getClass() == Phase1StopLight.class : "wrong light type";
 				
-		StopLight prevLight = currentLight.getPrevLight();
+		Phase1StopLight currentLight = (Phase1StopLight)currentLightArg;
+		
+		Phase1StopLight prevLight = (Phase1StopLight)currentLight.getPrevLight();
 		
 		double distanceToLight = currentLight.getPosition() - car.getPosition();
 		double theoreticalTimeToLight = car.getTimeTo(newSpeed, distanceToLight);
