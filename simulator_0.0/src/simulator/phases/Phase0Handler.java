@@ -36,10 +36,20 @@ public class Phase0Handler extends PhaseHandler {
 			//else run light
 			
 		} else if(car.getCar().getCommand() == Car.Command.STOP && 
-				light.getCurrentColor() == StopLight.Color.GREEN &&
-				light.justChangedGreen()) {
-			//the light is green and just changed
-			car.giveGoCommand();
+				light.getCurrentColor() == StopLight.Color.GREEN
+				//&& light.justChangedGreen()
+				) {
+			
+			CarManager nextCar = car.getLaneObject().getNextCar(car);
+			if(nextCar != null) {
+				if(nextCar.getCar().getCommand() == Car.Command.GO) {
+					//creates a slight delay between car's being given the go command
+					car.giveGoCommand();
+				}
+				//else wait
+			} else {
+				car.giveGoCommand();
+			}
 			//go!
 		}		
 		
