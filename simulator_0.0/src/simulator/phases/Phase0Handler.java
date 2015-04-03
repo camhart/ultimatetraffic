@@ -16,7 +16,9 @@ public class Phase0Handler extends PhaseHandler {
 			CarManager car, StopLight light) {
 		
 		car.moveCarForward(); //move car
-		
+		if(light.getCurrentColor() == StopLight.Color.RED) {
+			car.giveStopCommand(car.getStopDistance(light));
+		}
 		if(light.getCurrentColor() == StopLight.Color.GREEN &&
 				light.getTimeUntilChange() <= Phase0Handler.YELLOW_LIGHT_TIME_LEFT) {
 			//the light is green and about to change red (yellow).  Tell car to stop.
@@ -26,7 +28,7 @@ public class Phase0Handler extends PhaseHandler {
 //					((light.getPosition() - car.getPosition() > RUN_YELLOW_LIGHT_DISTANCE) || !car.canRunLight(light))) {
 			
 			
-			if(car.getCar().getCommand() == Car.Command.GO && car.getPosition() < light.getPosition() - RUN_YELLOW_LIGHT_DISTANCE &&
+			if(car.getCar().getCommand() == Car.Command.GO && car.getPosition() < (light.getPosition() - RUN_YELLOW_LIGHT_DISTANCE) &&
 					car.canRunLight(light)) {
 				//stop
 				car.giveStopCommand(car.getStopDistance(light));

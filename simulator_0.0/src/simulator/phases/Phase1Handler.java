@@ -161,9 +161,11 @@ public class Phase1Handler extends PhaseHandler  {
 		
 		int laneNum = car.getLane();
 		if(laneNum == 1){
+			currentLight.getLane1().addCar(car);
 			car.setLane(laneNum, currentLight.getLane1());
 		}
 		else{
+			currentLight.getLane2().addCar(car);
 			car.setLane(laneNum, currentLight.getLane2());
 		}
 		
@@ -172,13 +174,15 @@ public class Phase1Handler extends PhaseHandler  {
 			
 			boolean changedLanes = false;
 			if(car.getLane() == 1) {
-				if(currentLight.getLane2().canChangeLane(car) && prevLight.getLane1().canChangeLane(car)) {
+				if(currentLight.getLane2().canChangeLane(car) && prevLight.getLane2().canChangeLane(car)) {
 					//can change lanes
+					currentLight.getLane2().addCar(car);
 					car.setLane(otherLane, currentLight.getLane2());
 					changedLanes = true;
 				}
 			} else {
 				if(currentLight.getLane1().canChangeLane(car) && prevLight.getLane1().canChangeLane(car)) {
+					currentLight.getLane1().addCar(car);
 					car.setLane(otherLane, currentLight.getLane1());
 					changedLanes = true;
 				}
@@ -186,10 +190,14 @@ public class Phase1Handler extends PhaseHandler  {
 			
 			if(changedLanes) {
 				if(car.hitNextCar(theoreticalTimeToLight, currentLight.getPosition())){
-					if(otherLane == 1)
+					if(otherLane == 1){
+						currentLight.getLane2().addCar(car);
 						car.setLane(laneNum, currentLight.getLane2());
-					else
+					}
+					else{
+						currentLight.getLane1().addCar(car);
 						car.setLane(laneNum, currentLight.getLane1());
+					}
 					//These instances of setLane is called because changing lanes didn't work, so we switch back and reduce speed (and try it all again)
 					if(newSpeed > DECELERATION){
 						newSpeed -= DECELERATION;

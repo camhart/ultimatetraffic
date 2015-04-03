@@ -28,7 +28,24 @@ public class Lane {
 		//cars.add already adds to the end of this list
 		//according to http://docs.oracle.com/javase/7/docs/api/java/util/LinkedList.html#add(E)
 		// this will ALWAYS return true
-		return cars.add(car);
+		double position = car.getPosition();
+		int size = cars.size();
+		int i;
+		if(size > 0){
+			for(i = 0; i < size; i++){
+				if(cars.get(i).getPosition() < position){
+					cars.add(i, car); //add mid road
+				}
+			}
+		}
+		else{
+			cars.add(car);//add to be the only car
+		}
+		if(size == cars.size()){//the car hasn't been added, so now's the time
+			cars.add(car);
+		}
+		return true;
+//		return cars.add(car);
 	}
 	
 	/**

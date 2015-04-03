@@ -25,10 +25,9 @@ public class Phase1StopLight extends StopLight {
 				setTimeUntilColorChange();
 				Outputter.getOutputter().addLightOutput(this);
 				
-				//Call the algorithm on current cars to catch rounding errors on cars approaching the newly green light
-//				if(phase.getPhase() > 0){  //this will always be true
-//				this.CallIntermediateAlgorithmOnAllCars(phase); //TODO: Make this actually work! Currently broken because of faulty lane changes between lights
-//				}
+				//Call the algorithm on current cars to catch rounding errors on cars approaching the newly green light				
+				//this.CallIntermediateAlgorithmOnAllCars(phase); //TODO: Make this actually work! Currently broken because of faulty lane changes between lights
+
 			}
 		}
 	}
