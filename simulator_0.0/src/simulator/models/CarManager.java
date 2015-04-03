@@ -11,7 +11,6 @@ import simulator.phases.Phase0Handler;
 //import java.util.Comparator;
 //Comparator<Car>
 public class CarManager implements Comparable {
-	 
 	
 	public static final double CAR_CUSHION = 10.0; //in meters
 	public static final double CAR_STOP_CUSHION = 7.5; //in meters
@@ -256,7 +255,6 @@ public class CarManager implements Comparable {
 	 */
 	public void giveGoCommand() {
 		assert this.getLaneObject().getParentLight().getClass() == StopLight.class : "Calling stop in something other than phase 0";
-//		this.car.go();
 		this.car.giveGoCommand();
 	}
 

@@ -27,7 +27,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
 
-import org.jdesktop.xswingx.PromptSupport;
+//import org.jdesktop.xswingx.PromptSupport;
 
 public class ButtonBar extends JToolBar implements ActionListener {
 	
@@ -131,7 +131,7 @@ public class ButtonBar extends JToolBar implements ActionListener {
 		});
 		startIterationTextField.setDocument(doc1);
 		startIterationTextField.setText("0");
-		PromptSupport.setPrompt("Start iteration", startIterationTextField);
+//		PromptSupport.setPrompt("Start iteration", startIterationTextField);
 		
 		iterationTextField = new JTextField();
 
@@ -170,7 +170,7 @@ public class ButtonBar extends JToolBar implements ActionListener {
 		});
 		iterationTextField.setDocument(doc);
 		iterationTextField.setText("10000");
-		PromptSupport.setPrompt("Number of Iterations", iterationTextField);
+//		PromptSupport.setPrompt("Number of Iterations", iterationTextField);
 		
 		pauseButton = new JButton("Pause");
 		pauseButton.addActionListener(this);

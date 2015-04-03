@@ -17,6 +17,9 @@ import simulator.outputter.Outputter;
 import simulator.phases.Phase0Handler;
 import simulator.phases.Phase1Handler;
 import simulator.phases.PhaseHandler;
+import simulator.validator.CarValidator;
+import simulator.validator.StopLightValidator;
+import simulator.validator.Validator;
 import simulator.models.CarManager;
 import simulator.models.stoplights.StopLight;
 
@@ -230,6 +233,16 @@ public class Simulator {
 		}
 	}
 	
+	private Validator validator = null;
+	
+	public void setValidator(Validator v) {
+		this.validator = v;
+	}
+	
+	public Validator getValidator() {
+		return this.validator;
+	}
+	
 	/**
 	 * Runs the simulator for specified number of iterations.
 	 */
@@ -262,7 +275,13 @@ public class Simulator {
 					this.finishedCars.size()));
 		}
 		
+		//close the database (needs to happen before validator)
 		Outputter.getOutputter().close();
+		
+		//validate data if a validator is set
+		if(getValidator() != null) {
+			getValidator().validateData(currentIteration - 1);
+		}
 	}
 	
 	static SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("HH:mm:ss:SSS");
@@ -311,10 +330,20 @@ public class Simulator {
 		
 		int roadLength = 6000;
 		
-		Simulator.setOutputterConfig("db_phase_" + args[0] + ".sqlite", roadLength,
+		String databasePath = "db_phase_" + args[0] + ".sqlite";
+		
+		Simulator.setOutputterConfig(databasePath, roadLength,
 				Simulator.TIME_PER_ITERATION, "Some description");
 		
 		Simulator simulator = Simulator.getSimulator();
+		
+		Validator validator = new Validator(databasePath);
+
+		validator.addValidator(new StopLightValidator(validator.getSQLiteAccessor()));
+		validator.addValidator(new CarValidator(validator.getSQLiteAccessor()));
+
+		//sets the validator which validates data
+		simulator.setValidator(validator);
 		
 		simulator.setNumberOfIterations(iterationCount);
 		
@@ -324,10 +353,7 @@ public class Simulator {
 		simulator.loadCars(carsFile);
 		
 		
-		simulator.run();
-		
-		simulator.printStuff();
-		
+		simulator.run();		
 	}
 
 	private void printStuff() {
@@ -335,7 +361,7 @@ public class Simulator {
 		for(CarManager c : this.finishedCars) {
 			totalIterations += c.getIterations();
 		}
-		LOG.info(String.format("Total travel time: %.1f seconds (%s)", totalIterations * this.TIME_PER_ITERATION, Simulator.DATE_FORMATTER.format(totalIterations * this.TIME_PER_ITERATION * 1000)));
+		LOG.severe(String.format("Total travel time: %.1f seconds (%s)", totalIterations * this.TIME_PER_ITERATION, Simulator.DATE_FORMATTER.format(totalIterations * this.TIME_PER_ITERATION * 1000)));
 	}
 
 	public void finishCar(CarManager car) {

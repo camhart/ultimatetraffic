@@ -134,6 +134,25 @@ public class SQLiteAccessor {
 		return data;
 	}
 	
+	public int getTotalIteration() {
+		int result = -1;
+		Connection con = SQLite.getConnection();
+		try {
+			PreparedStatement ps = con.prepareStatement("SELECT MAX(iterationCount) FROM car_output;");
+			
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()) {
+//				System.out.println(rs.getInt(1));
+				result = rs.getInt(1);
+			}
+			ps.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
 	public ArrayList<LightData> getLightData(int iteration) {
 		ArrayList<LightData> data = new ArrayList<LightData>();
 		
