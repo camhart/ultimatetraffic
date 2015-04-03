@@ -14,7 +14,7 @@ public class Validator {
 	public static final Logger LOG = Logger.getLogger(Simulator.class.getName());
 	
 	static {
-		LOG.setLevel(Level.SEVERE);
+		LOG.setLevel(Level.INFO);
 		LOG.setUseParentHandlers(false);
 	}
 	

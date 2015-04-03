@@ -13,19 +13,25 @@ import java.util.HashMap;
 
 public class SQLiteAccessor {
 	
-	private static SQLiteAccessor SQLITE;
-	private static String DATABASE_NAME;
+	private SQLiteAccessor SQLITE;
+	private String DATABASE_NAME;
+	private SQLite sqlite;
 	
-	public static void setDataBaseName(String databaseName) {
+	public SQLiteAccessor() {
+		sqlite = new SQLite();
+	}
+	
+	public void setDataBaseName(String databaseName) {
 		
-		if(SQLiteAccessor.DATABASE_NAME != null && SQLiteAccessor.DATABASE_NAME != databaseName && SQLITE != null) {
+		if(DATABASE_NAME != null && DATABASE_NAME != databaseName && SQLITE != null) {
 			SQLITE.close();
 		}
-		SQLiteAccessor.DATABASE_NAME = databaseName;
+		DATABASE_NAME = databaseName;
 	}
 	
 	private static class Holder {
 		private static final SQLiteAccessor INSTANCE = new SQLiteAccessor();
+		private static final SQLiteAccessor INSTANCE2 = new SQLiteAccessor();
 	}
 	
 	public static SQLiteAccessor getSQLite() {
@@ -36,22 +42,30 @@ public class SQLiteAccessor {
 		return Holder.INSTANCE;
 	}
 	
+	public static SQLiteAccessor getSQLite2() {
+		//thread safe headache...
+//		if(SQLITE.DATABASE_NAME == null) {
+//			SQLITE.init(DATABASE_NAME);
+//		}
+		return Holder.INSTANCE2;
+	}
+	
 	static class SQLite {
 		private static final String JDBC_DRIVER = "org.sqlite.JDBC";;
 		private static final String DATABASE_PATH = "jdbc:sqlite:";
 		
-		private static Connection connection;
+		private Connection connection;
 		
-		private static String databaseName = "db.sqlite";
+		private String databaseName = "db.sqlite";
 		
-		public static void setDatabaseName(String newName) {
-			SQLite.databaseName = newName;
+		public void setDatabaseName(String newName) {
+			databaseName = newName;
 		}
-		public static String getDatabaseName() {
+		public String getDatabaseName() {
 			return databaseName;
 		}
 		
-		public static void initializeDatabase() {
+		public void initializeDatabase() {
 			try {
 				Class.forName(JDBC_DRIVER);
 			} catch(ClassNotFoundException e) {
@@ -59,11 +73,11 @@ public class SQLiteAccessor {
 			}		
 		}
 		
-		public static Connection getConnection() {
+		public Connection getConnection() {
 			return connection;
 		}	
 		
-		public static boolean startTransaction() {
+		public boolean startTransaction() {
 			try {
 				if (connection != null && !connection.isClosed()) {
 					connection.close();
@@ -78,7 +92,7 @@ public class SQLiteAccessor {
 			return false;
 		}
 		
-		public static void endTransaction() {
+		public void endTransaction() {
 			try {		
 				if (connection == null || connection.isClosed()) {
 					System.out.println("endTransaction null / is closed");
@@ -93,20 +107,19 @@ public class SQLiteAccessor {
 	}
 	
 	public void init(String databaseName) {
-		SQLite.setDatabaseName(databaseName);
-		SQLite.initializeDatabase();
-		SQLite.startTransaction();
-		
+		sqlite.setDatabaseName(databaseName);
+		sqlite.initializeDatabase();
+		sqlite.startTransaction();
 	}
 	
 	public void close() {
-		SQLite.endTransaction();
+		sqlite.endTransaction();
 	}
 	
 	public HashMap<Integer, CarData> getCarData(int iteration) {
 		HashMap<Integer, CarData> data = new HashMap<Integer, CarData>();
 		
-		Connection con = SQLite.getConnection();
+		Connection con = sqlite.getConnection();
 		try {
 			PreparedStatement ps = con.prepareStatement("SELECT * FROM car_output WHERE iterationCount = ?;");
 			
@@ -136,7 +149,7 @@ public class SQLiteAccessor {
 	
 	public int getTotalIteration() {
 		int result = -1;
-		Connection con = SQLite.getConnection();
+		Connection con = sqlite.getConnection();
 		try {
 			PreparedStatement ps = con.prepareStatement("SELECT MAX(iterationCount) FROM car_output;");
 			
@@ -156,7 +169,7 @@ public class SQLiteAccessor {
 	public ArrayList<LightData> getLightData(int iteration) {
 		ArrayList<LightData> data = new ArrayList<LightData>();
 		
-		Connection con = SQLite.getConnection();
+		Connection con = sqlite.getConnection();
 		try {
 			PreparedStatement ps = con.prepareStatement("SELECT * FROM light_output WHERE iterationCount = ?;");
 			
