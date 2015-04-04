@@ -130,4 +130,8 @@ public class Lane {
 	public StopLight getParentLight() {
 		return this.light;
 	}
+	
+	public LinkedList<CarManager> getCars() {
+		return this.cars;
+	}
 }

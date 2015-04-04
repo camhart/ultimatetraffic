@@ -19,22 +19,19 @@ import javax.swing.JPanel;
 import javax.swing.JRootPane;
 
 public class CanvasPanel extends JPanel implements DataListener, MouseListener {
-
-	static int CarLength = 5;
-	static int CarHeight = 3;
 	
 	public class Car {
 		
 		public int getY1() {
-			return getHeight() / 2 + ((this.lane == 1) ? -CarHeight * 2 : CarHeight);
+			return getHeight() / 2 + ((this.lane == 1) ? -CarData.CarHeight * 2 : CarData.CarHeight);
 		}
 		
 		public int getY2() {
-			return getHeight() / 2 + ((this.lane == 1) ? -CarHeight * 2 : CarHeight) + CarHeight / 2;
+			return getHeight() / 2 + ((this.lane == 1) ? -CarData.CarHeight * 2 : CarData.CarHeight) + CarData.CarHeight / 2;
 		}
 		
 		public int getY3() {
-			return getHeight() / 2 + ((this.lane == 1) ? -CarHeight * 2 : CarHeight) + CarHeight;
+			return getHeight() / 2 + ((this.lane == 1) ? -CarData.CarHeight * 2 : CarData.CarHeight) + CarData.CarHeight;
 		}
 		
 		public boolean clicked(int x, int y) {
@@ -48,8 +45,8 @@ public class CanvasPanel extends JPanel implements DataListener, MouseListener {
 			this.velocity = cd.getVelocity();
 			this.acceleration = cd.getAcceleration();
 			this.lightId = cd.getLightId();
-			this.x1 = (int) (this.position - CarLength / 2);
-			this.x2 = (int) (this.position + CarLength / 2);
+			this.x1 = (int) (this.position - CarData.CarLength / 2);
+			this.x2 = (int) (this.position + CarData.CarLength / 2);
 			
 			this.y1 = getY1();
 			this.y2 = getY2();
@@ -133,7 +130,7 @@ public class CanvasPanel extends JPanel implements DataListener, MouseListener {
 		
 		g.setColor(Color.BLACK);
 		
-		g.drawString(Integer.toString(car.id), (int) car.position, (car.lane == 1) ? car.y1 - (22 - CarHeight) : car.y2 + 25);
+		g.drawString(Integer.toString(car.id), (int) car.position, (car.lane == 1) ? car.y1 - (22 - CarData.CarHeight) : car.y2 + 25);
 		
 	}
 	

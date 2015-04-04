@@ -35,8 +35,9 @@ public class Phase2Handler extends PhaseHandler  {
 		double newSpeed = MAX_SPEED;
 		
 		assert currentLight != null : "currentLight is null?";
+		assert currentLight.getClass() == Phase2StopLight.class : "Wrong type of light";
 		
-		StopLight nextLight = currentLight.getNextLight();
+		Phase2StopLight nextLight = (Phase2StopLight)currentLight.getNextLight();
 		
 		if(nextLight == null) { //we just drove past the last light
 			car.giveChangeSpeedCommand(MAX_SPEED, Command.CHANGE_SPEED);
@@ -131,10 +132,12 @@ public class Phase2Handler extends PhaseHandler  {
 		car.giveChangeSpeedCommand(newSpeed, Command.CHANGE_SPEED);
 	}
 	
-	public void intermediateAlgorithm(CarManager car, StopLight currentLight){
+	public void intermediateAlgorithm(CarManager car, StopLight currentLightArg){
 		double newSpeed = MAX_SPEED;
 		
-		assert currentLight != null : "currentLight is null?";
+		assert currentLightArg != null : "currentLight is null?";
+		
+		Phase2StopLight currentLight = (Phase2StopLight)currentLightArg;
 				
 		StopLight prevLight = currentLight.getPrevLight();
 		
