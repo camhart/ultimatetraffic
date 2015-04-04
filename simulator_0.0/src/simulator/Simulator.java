@@ -3,7 +3,6 @@ package simulator;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +16,9 @@ import simulator.outputter.Outputter;
 import simulator.phases.Phase0Handler;
 import simulator.phases.Phase1Handler;
 import simulator.phases.PhaseHandler;
+import simulator.validator.CarValidator;
+import simulator.validator.StopLightValidator;
+import simulator.validator.Validator;
 import simulator.models.CarManager;
 import simulator.models.stoplights.StopLight;
 
@@ -38,8 +40,11 @@ public class Simulator {
 	public static final Logger LOG = Logger.getLogger(Simulator.class.getName());
 	
 	static {
-		LOG.addHandler(new ConsoleHandler());
-		LOG.setLevel(Level.SEVERE);
+		LOG.setLevel(Level.ALL);
+		LOG.setUseParentHandlers(false);
+		ConsoleHandler ch = new ConsoleHandler();
+		ch.setLevel(Level.ALL);
+		LOG.addHandler(ch);
 	}
 	
 	
@@ -116,7 +121,12 @@ public class Simulator {
 			CarManager curCar = null;
 			ArrayList<CarManager> curList = null;
 			while(scanner.hasNextLine()) {
-				curCar = new CarManager(scanner.nextLine());
+				String nextLine = scanner.nextLine();
+				
+				if(nextLine.startsWith("//"))
+					continue;
+				
+				curCar = new CarManager(nextLine);
 
 				
 				int key = (int)(new BigDecimal(curCar.getArrivalTime()).setScale(precision, BigDecimal.ROUND_HALF_UP).doubleValue() / Simulator.TIME_PER_ITERATION);
@@ -129,6 +139,7 @@ public class Simulator {
 				carsLeftToArrive++;
 				curList.add(curCar);
 			}
+			scanner.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -156,8 +167,11 @@ public class Simulator {
 			Scanner scanner = new Scanner(lightsFile);
 			
 			while(scanner.hasNextLine()) {
-//				StopLight light = new StopLight(scanner.nextLine());
-				StopLight light = phase.buildStopLight(scanner.nextLine());
+				String nextLine = scanner.nextLine();
+				
+				if(nextLine.startsWith("//"))
+					continue;
+				StopLight light = phase.buildStopLight(nextLine);
 				lights.add(light);
 				Outputter.getOutputter().addLightOutput(light);
 			}
@@ -171,6 +185,7 @@ public class Simulator {
 				
 				lights.get(c).setNextLight(lights.get(c + 1));
 			}
+			scanner.close();
 			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -230,6 +245,16 @@ public class Simulator {
 		}
 	}
 	
+	private Validator validator = null;
+	
+	public void setValidator(Validator v) {
+		this.validator = v;
+	}
+	
+	public Validator getValidator() {
+		return this.validator;
+	}
+	
 	/**
 	 * Runs the simulator for specified number of iterations.
 	 */
@@ -249,20 +274,25 @@ public class Simulator {
 
 				curLight = curLight.getPrevLight();
 			}
-			
 			//arriving cars
 			this.handleArrivingCars(currentIteration);
 			
 			//increment iteration
 			currentIteration++;
 			
-			LOG.info(String.format("%s (%.1f s), iteration %d / %d, cars left %d, cars finished %d",
+			LOG.severe(String.format("%s (%.1f s), iteration %d / %d, cars left %d, cars finished %d",
 					getTime(), currentIteration * Simulator.TIME_PER_ITERATION,
 					currentIteration, numberOfIterations, carsLeftToArrive,
 					this.finishedCars.size()));
 		}
 		
+		//close the database (needs to happen before validator)
 		Outputter.getOutputter().close();
+		
+		//validate data if a validator is set
+		if(getValidator() != null) {
+			getValidator().validateData(currentIteration - 1);
+		}
 	}
 	
 	static SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("HH:mm:ss:SSS");
@@ -311,10 +341,20 @@ public class Simulator {
 		
 		int roadLength = 6000;
 		
-		Simulator.setOutputterConfig("db_phase_" + args[0] + ".sqlite", roadLength,
+		String databasePath = "db_phase_" + args[0] + ".sqlite";
+		
+		Simulator.setOutputterConfig(databasePath, roadLength,
 				Simulator.TIME_PER_ITERATION, "Some description");
 		
 		Simulator simulator = Simulator.getSimulator();
+		
+		Validator validator = new Validator(databasePath);
+
+		validator.addValidator(new StopLightValidator(validator.getSQLiteAccessor()));
+		validator.addValidator(new CarValidator(validator.getSQLiteAccessor()));
+
+		//sets the validator which validates data
+		simulator.setValidator(validator);
 		
 		simulator.setNumberOfIterations(iterationCount);
 		
@@ -323,11 +363,7 @@ public class Simulator {
 		simulator.loadLights(stopLightFile, phase);
 		simulator.loadCars(carsFile);
 		
-		
-		simulator.run();
-		
-		simulator.printStuff();
-		
+		simulator.run();		
 	}
 
 	private void printStuff() {
@@ -335,7 +371,7 @@ public class Simulator {
 		for(CarManager c : this.finishedCars) {
 			totalIterations += c.getIterations();
 		}
-		LOG.info(String.format("Total travel time: %.1f seconds (%s)", totalIterations * this.TIME_PER_ITERATION, Simulator.DATE_FORMATTER.format(totalIterations * this.TIME_PER_ITERATION * 1000)));
+		LOG.severe(String.format("Total travel time: %.1f seconds (%s)", totalIterations * this.TIME_PER_ITERATION, Simulator.DATE_FORMATTER.format(totalIterations * this.TIME_PER_ITERATION * 1000)));
 	}
 
 	public void finishCar(CarManager car) {
