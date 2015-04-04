@@ -71,7 +71,7 @@ public class StateData {
 	public void iterate() {
 //		this.currentIteration++;
 		for(LightData l : this.lightData.values()) {
-			l.setTimeUntilChange(l.getTimeUntilChange() - 0.1);
+			l.setTimeUntilChange(l.getTimeUntilChange() - 0.1 * SimulatorGui.getInstance().getInfoBar().getIterateIncrementValue());
 		}
 	}
 	

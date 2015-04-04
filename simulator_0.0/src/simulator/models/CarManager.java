@@ -6,12 +6,11 @@ import simulator.Simulator;
 import simulator.models.car.Car;
 import simulator.models.car.Car.Command;
 import simulator.models.stoplights.StopLight;
-import simulator.phases.Phase0Handler;
 
 public class CarManager implements Comparable {
 	
 	public static final double CAR_CUSHION = 10.0; //in meters
-	public static final double CAR_STOP_CUSHION = 7.5; //in meters
+	public static final double CAR_STOP_CUSHION = 10.0; //in meters
 	public static final double TIME_CUSHION = 0.5;
 	public static final double ACCELERATION_DELAY_MIN = 0.2; //adjust this to change the minimum delay between cars accelerating for phase 0
 	public static final double ACCELERATION_DELAY_MAX = 1.0; //adjust this to change the maximum delay between cars accelerating for phase 1 
@@ -243,6 +242,7 @@ public class CarManager implements Comparable {
 	 * Should occur only with phase 0.
 	 */
 	public void giveStopCommand(double distance) {
+		System.out.println(String.format("id: %d, stop position: %f", getId(), getPosition() + distance));
 //		assert Simulator.getSimulator().getPhase() == 0 : "Calling stop in something other than phase 0";
 		assert this.getLaneObject().getParentLight().getClass() == StopLight.class : "Calling stop in something other than phase 0";
 		

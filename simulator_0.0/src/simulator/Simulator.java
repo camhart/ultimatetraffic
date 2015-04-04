@@ -280,7 +280,8 @@ public class Simulator {
 			//increment iteration
 			currentIteration++;
 			
-			LOG.severe(String.format("%s (%.1f s), iteration %d / %d, cars left %d, cars finished %d",
+			if(currentIteration % 100 == 0)
+				LOG.info(String.format("%s (%.1f s), iteration %d / %d, cars left %d, cars finished %d",
 					getTime(), currentIteration * Simulator.TIME_PER_ITERATION,
 					currentIteration, numberOfIterations, carsLeftToArrive,
 					this.finishedCars.size()));

@@ -157,7 +157,7 @@ public class SimulatorGui extends JFrame implements DataListener, PropertyChange
 	}
 	
 	public void incrementIterationCounter() {
-		this.currentIteration++;
+		this.currentIteration+=this.infoBar.getIterateIncrementValue();
 		this.infoBar.setIteration(this.currentIteration);
 	}
 
@@ -228,5 +228,9 @@ public class SimulatorGui extends JFrame implements DataListener, PropertyChange
 	
 	public void setScrollPosition(int position) {
 		this.scrollPane.getHorizontalScrollBar().setValue(position - getWidth() / 2);
+	}
+
+	public InfoBar getInfoBar() {
+		return this.infoBar;
 	}
 }
