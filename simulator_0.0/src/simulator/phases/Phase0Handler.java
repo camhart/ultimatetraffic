@@ -16,7 +16,7 @@ public class Phase0Handler extends PhaseHandler {
 			CarManager car, StopLight light) {
 
 		car.moveCarForward(); // move car
-		if (light.getCurrentColor() == StopLight.Color.RED) {
+		if (light.getCurrentColor() == StopLight.Color.RED && car.getCar().getCommand() != Car.Command.STOP) {
 			car.giveStopCommand(car.getStopDistance(light));
 		}
 		if (light.getCurrentColor() == StopLight.Color.GREEN

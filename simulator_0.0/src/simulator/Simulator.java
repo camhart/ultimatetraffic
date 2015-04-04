@@ -292,17 +292,17 @@ public class Simulator {
 		
 		//validate data if a validator is set
 		if(getValidator() != null) {
-			getValidator().validateData(currentIteration - 1);
+			getValidator().validateData();
 		}
 	}
 	
-	static SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("HH:mm:ss:SSS");
+	static SimpleDateFormat TIME_FORMATTER = new SimpleDateFormat("HH:mm:ss:SSS");
 	static {
-		DATE_FORMATTER.setTimeZone(TimeZone.getTimeZone("UTC"));
+		TIME_FORMATTER.setTimeZone(TimeZone.getTimeZone("UTC"));
 	}
 	
 	private String getTime() {
-  	    return DATE_FORMATTER.format(currentIteration * Simulator.TIME_PER_ITERATION * 1000);
+  	    return TIME_FORMATTER.format(currentIteration * Simulator.TIME_PER_ITERATION * 1000);
 	}
 	
 	/**
@@ -372,7 +372,7 @@ public class Simulator {
 		for(CarManager c : this.finishedCars) {
 			totalIterations += c.getIterations();
 		}
-		LOG.severe(String.format("Total travel time: %.1f seconds (%s)", totalIterations * this.TIME_PER_ITERATION, Simulator.DATE_FORMATTER.format(totalIterations * this.TIME_PER_ITERATION * 1000)));
+		LOG.severe(String.format("Total travel time: %.1f seconds (%s)", totalIterations * this.TIME_PER_ITERATION, Simulator.TIME_FORMATTER.format(totalIterations * this.TIME_PER_ITERATION * 1000)));
 	}
 
 	public void finishCar(CarManager car) {
