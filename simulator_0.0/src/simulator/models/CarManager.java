@@ -159,7 +159,7 @@ public class CarManager implements Comparable {
 		if(nextCar != null) {
 			//car in front of us
 			double nextCarsTimeToLight = nextCar.getTimeTo(nextCar.targetSpeed, lightPosition - nextCar.getPosition());
-			if(nextCarsTimeToLight > theoreticalTimeToLight - TIME_CUSHION) {
+			if(nextCarsTimeToLight > theoreticalTimeToLight + TIME_CUSHION) {
 				//we will hit them
 				return true;
 			}

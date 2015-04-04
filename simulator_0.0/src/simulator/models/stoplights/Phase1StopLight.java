@@ -60,33 +60,13 @@ public class Phase1StopLight extends StopLight {
 	public void CallIntermediateAlgorithmOnAllCars(PhaseHandler phase) {
 		
 		Iterator<CarManager> iter = this.iterator();
-		CarManager car = null;
-		
-		ArrayList<CarManager> needsRemovedFromOldLane = new ArrayList<CarManager>(); 
+		CarManager car = null; 
 		
 		while(iter.hasNext()) {
 			car = iter.next();
-			if(((Phase1Handler)phase).intermediateAlgorithm(car, this)) {
-				needsRemovedFromOldLane.add(car);
-			}
+			((Phase1Handler)phase).intermediateAlgorithm(car, this);
 		}
 		
-//		while(needsRemovedFromOldLane.size() > 0) {
-//			car = needsRemovedFromOldLane.remove(0);
-//			
-//			Lane addToLane, removeFromLane;
-//			if(car.getLane() == 1) {
-//				addToLane = getLane1();
-//				removeFromLane = getLane2();
-//			} else {
-//				addToLane = getLane2();
-//				removeFromLane = getLane1();				
-//			}
-//			
-//			addToLane.addCar(car);
-//			
-//			removeFromLane.removeCar(car);
-//		}
 		
 //		Iterator<CarManager> lane1Iter = lane1.getIterable();
 //		Iterator<CarManager> lane2Iter = lane2.getIterable();

@@ -121,9 +121,9 @@ public class Simulator {
 			CarManager curCar = null;
 			ArrayList<CarManager> curList = null;
 			while(scanner.hasNextLine()) {
-				String nextLine = scanner.nextLine();
+				String nextLine = scanner.nextLine().trim();
 				
-				if(nextLine.startsWith("//"))
+				if(nextLine.startsWith("//") || nextLine.length() == 0)
 					continue;
 				
 				curCar = new CarManager(nextLine);

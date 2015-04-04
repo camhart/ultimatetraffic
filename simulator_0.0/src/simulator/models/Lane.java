@@ -91,24 +91,21 @@ public class Lane {
 		
 		
 //		Iterator<CarManager> iter = cars.iterator();
-//		CarManager car = null;
+//		CarManager curCar = null;
 //		CarManager prevCar = null;
 //		
 //		//this should only be called on lanes that already have the current car in the lane
-//		assert this.cars.contains(curCar) : "Lane doesn't contain car";
+//		assert this.cars.contains(car) : "Lane doesn't contain car";
 //		
 //		while(iter.hasNext()){
-//			prevCar = car;
-//			car = iter.next();
-//			if(car == curCar) {
+//			prevCar = curCar;
+//			curCar = iter.next();
+//			if(car.getId() == curCar.getId()) {
 //				return prevCar;
-////				if(iter.hasNext())
-////					return iter.next();
-////				else return null;
 //			}
 //		}
 ////		throw new Error("This shouldn't be happening.... current car not found.");
-//		return car;
+//		return null;
 	}
 	
 	public boolean removeCar(CarManager car) {

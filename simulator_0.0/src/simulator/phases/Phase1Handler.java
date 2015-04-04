@@ -128,15 +128,13 @@ public class Phase1Handler extends PhaseHandler  {
 		return newSpeed;
 	}
 	
-	public boolean intermediateAlgorithm(CarManager car, StopLight currentLightArg){
+	public void intermediateAlgorithm(CarManager car, StopLight currentLightArg){
 		double newSpeed = MAX_SPEED;
 		
 		assert currentLightArg != null : "currentLight is null?";
 		assert currentLightArg.getClass() == Phase1StopLight.class : "wrong light type";
 				
 		Phase1StopLight currentLight = (Phase1StopLight)currentLightArg;
-		
-		Phase1StopLight prevLight = (Phase1StopLight)currentLight.getPrevLight();
 		
 		double distanceToLight = currentLight.getPosition() - car.getPosition();
 		double theoreticalTimeToLight = car.getTimeTo(newSpeed, distanceToLight);
@@ -149,14 +147,13 @@ public class Phase1Handler extends PhaseHandler  {
 		while(!currentLight.isLightGreenAtTime(theoreticalTimeToLight)){
 			newSpeed = getDeceleratedSpeed(newSpeed);
 			theoreticalTimeToLight = car.getTimeTo(newSpeed, distanceToLight);
-			
+			System.out.println("a");
 		}
 		
-		boolean changedLanes = false;
+//		boolean changedLanes = false;
 		
 		while(car.hitNextCar(theoreticalTimeToLight, currentLight.getPosition())) {
-			int otherLane = car.getOtherLane();
-			
+			System.out.println("b " + newSpeed + " car " + car.getId());
 //			if(car.getLane() == 1) {
 //				if(currentLight.getLane2().canChangeLane(car) && prevLight.getLane2().canChangeLane(car)) {
 //					//can change lanes
@@ -199,8 +196,6 @@ public class Phase1Handler extends PhaseHandler  {
 		}
 		
 		car.giveChangeSpeedCommand(newSpeed, Command.CHANGE_SPEED);
-		
-		return changedLanes;
 	}
 
 	@Override
