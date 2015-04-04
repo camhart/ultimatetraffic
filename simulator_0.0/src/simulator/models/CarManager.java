@@ -8,13 +8,13 @@ import simulator.models.car.Car.Command;
 import simulator.models.stoplights.StopLight;
 import simulator.phases.Phase0Handler;
 
-//import java.util.Comparator;
-//Comparator<Car>
 public class CarManager implements Comparable {
 	
 	public static final double CAR_CUSHION = 10.0; //in meters
 	public static final double CAR_STOP_CUSHION = 7.5; //in meters
 	public static final double TIME_CUSHION = 0.5;
+	public static final double ACCELERATION_DELAY_MIN = 0.2; //adjust this to change the minimum delay between cars accelerating for phase 0
+	public static final double ACCELERATION_DELAY_MAX = 1.0; //adjust this to change the maximum delay between cars accelerating for phase 1 
 	
 	private double arrivalTime;
 	private Car car;
@@ -28,6 +28,8 @@ public class CarManager implements Comparable {
 	private int id;
 	private double targetSpeed;
 	private int totalIterations = 0;
+	
+	private int accelerateDelay = 0;
 	
 	private static class CarIdGenerator {
 		private static int currentValue = 0;
@@ -247,6 +249,9 @@ public class CarManager implements Comparable {
 //		System.out.println(String.format("Iteration: %d, Car: %d (%.2f), Light %d (%.2f), TotalDistance: %f (%f)", Simulator.getSimulator().getCurrentIteration(), 
 //				this.id, this.car.getPosition(), this.getLaneObject().getParentLight().getId(),
 //				this.getLaneObject().getParentLight().getPosition() , distance, this.getLaneObject().getParentLight().getPosition() - this.car.getPosition()));
+		int min = (int) (ACCELERATION_DELAY_MIN / Simulator.TIME_PER_ITERATION);
+		int max = (int) (ACCELERATION_DELAY_MAX / Simulator.TIME_PER_ITERATION);
+		accelerateDelay = min + (int)(Math.random() * (max - min));
 		this.car.giveStopCommand(distance);
 	}
 	
@@ -255,7 +260,12 @@ public class CarManager implements Comparable {
 	 */
 	public void giveGoCommand() {
 		assert this.getLaneObject().getParentLight().getClass() == StopLight.class : "Calling stop in something other than phase 0";
-		this.car.giveGoCommand();
+		if(accelerateDelay <= 0) {
+			this.car.giveGoCommand();
+		}
+		else {
+			accelerateDelay--;
+		}
 	}
 
 }

@@ -14,57 +14,49 @@ public class Phase0Handler extends PhaseHandler {
 	@Override
 	public void handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(
 			CarManager car, StopLight light) {
-		
-		car.moveCarForward(); //move car
-		if(light.getCurrentColor() == StopLight.Color.RED) {
+
+		car.moveCarForward(); // move car
+		if (light.getCurrentColor() == StopLight.Color.RED) {
 			car.giveStopCommand(car.getStopDistance(light));
 		}
-		if(light.getCurrentColor() == StopLight.Color.GREEN &&
-				light.getTimeUntilChange() <= Phase0Handler.YELLOW_LIGHT_TIME_LEFT) {
-			//the light is green and about to change red (yellow).  Tell car to stop.
-			
-			//determine if GO or STOP according to my position and the light position?
-//			if(car.getCar().getCommand() == Car.Command.GO && car.getPosition() < light.getPosition() && 
-//					((light.getPosition() - car.getPosition() > RUN_YELLOW_LIGHT_DISTANCE) || !car.canRunLight(light))) {
-			
-			
-			if(car.getCar().getCommand() == Car.Command.GO && car.getPosition() < (light.getPosition() - RUN_YELLOW_LIGHT_DISTANCE) &&
-					car.canRunLight(light)) {
-				//stop
+		if (light.getCurrentColor() == StopLight.Color.GREEN
+				&& light.getTimeUntilChange() <= Phase0Handler.YELLOW_LIGHT_TIME_LEFT) {
+			// the light is green and about to change red (yellow). Tell car to
+			// stop.
+
+			if (car.getCar().getCommand() == Car.Command.GO
+					&& car.getPosition() < (light.getPosition() - RUN_YELLOW_LIGHT_DISTANCE)
+					&& car.canRunLight(light)) {
+				// stop
 				car.giveStopCommand(car.getStopDistance(light));
 			}
-			//else run light
-			
-		} else if(car.getCar().getCommand() == Car.Command.STOP && 
-				light.getCurrentColor() == StopLight.Color.GREEN
-				//&& light.justChangedGreen()
-				) {
-			
+			// else run light
+
+		} else if (car.getCar().getCommand() == Car.Command.STOP
+				&& light.getCurrentColor() == StopLight.Color.GREEN
+		// && light.justChangedGreen()
+		) {
+
 			CarManager nextCar = car.getLaneObject().getNextCar(car);
-			if(nextCar != null) {
-				if(nextCar.getCar().getCommand() == Car.Command.GO) {
-					//creates a slight delay between car's being given the go command
+			if (nextCar != null) {
+				if (nextCar.getCar().getCommand() == Car.Command.GO) {
+					// creates a slight delay between car's being given the go
+					// command
 					car.giveGoCommand();
 				}
-				//else wait
+				// else wait
 			} else {
 				car.giveGoCommand();
 			}
-			//go!
-		}		
-		
+			// go!
+		}
+
 		Outputter.getOutputter().addCarOutput(car);
 	}
 	
 	public void intermediateAlgorithm(CarManager car, StopLight light){
 		throw new Error("Phase0 is trying to call the algorithm!");
 	}
-
-//	@Override
-//	public int getPhase() {
-//		// TODO Auto-generated method stub
-//		return this.PHASE_NUMBER;
-//	}
 
 	@Override
 	public StopLight buildStopLight(String configString) {

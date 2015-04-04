@@ -354,7 +354,7 @@ public class Simulator {
 		validator.addValidator(new CarValidator(validator.getSQLiteAccessor()));
 
 		//sets the validator which validates data
-//		simulator.setValidator(validator);
+		simulator.setValidator(validator);
 		
 		simulator.setNumberOfIterations(iterationCount);
 		
