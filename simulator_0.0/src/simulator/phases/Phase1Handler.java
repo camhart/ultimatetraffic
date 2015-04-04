@@ -32,7 +32,7 @@ public class Phase1Handler extends PhaseHandler  {
 		Outputter.getOutputter().addCarOutput(car);
 	}
 	
-	public void algorithm(CarManager car, StopLight currentLight){
+	public boolean algorithm(CarManager car, StopLight currentLight){
 		double newSpeed = MAX_SPEED;
 		
 		assert currentLight != null : "currentLight is null?";
@@ -41,7 +41,7 @@ public class Phase1Handler extends PhaseHandler  {
 		
 		if(nextLight == null) { //we just drove past the last light
 			car.giveChangeSpeedCommand(MAX_SPEED, Command.CHANGE_SPEED);
-			return;
+			return false;
 		}
 		
 		StopLight prevLight = currentLight;
@@ -56,83 +56,79 @@ public class Phase1Handler extends PhaseHandler  {
 		assert theoreticalTimeToLight >= 0 : "theoreticalTimeToLight is < 0 (" + theoreticalTimeToLight + ")";
 		
 		while(!nextLight.isLightGreenAtTime(theoreticalTimeToLight)){
-			if(newSpeed > DECELERATION){
-				newSpeed -= DECELERATION;
-			}
-			else{
-				newSpeed = newSpeed*0.9;
-			}
+			newSpeed = getDeceleratedSpeed(newSpeed);
 			theoreticalTimeToLight = car.getTimeTo(newSpeed, distanceToLight);
 			
 		}
 		
-		int laneNum = car.getLane();
-		if(laneNum == 1){
-			car.setLane(laneNum, nextLight.getLane1());
-		}
-		else{
-			car.setLane(laneNum, nextLight.getLane2());
-		}
+		boolean changedLanes = false;
 		
 		while(car.hitNextCar(theoreticalTimeToLight, nextLight.getPosition())){	//TODO: Function must be created
-			int otherLane = car.getOtherLane();
 			
-			boolean changedLanes = false;
 			if(car.getLane() == 1) {
-				if(nextLight.getLane2().canChangeLane(car) && prevLight.getLane1().canChangeLane(car)) {
+				if(nextLight.getLane2().canChangeLane(car) && prevLight.getLane2().canChangeLane(car)) {
 					//can change lanes
-					car.setLane(otherLane, nextLight.getLane2());
+					car.setLane(2, nextLight.getLane2());
 					changedLanes = true;
 				}
 			} else {
 				if(nextLight.getLane1().canChangeLane(car) && prevLight.getLane1().canChangeLane(car)) {
-					car.setLane(otherLane, nextLight.getLane1());
+					car.setLane(1, nextLight.getLane1());
 					changedLanes = true;
 				}
 			}
 			
 			if(changedLanes) {
 				if(car.hitNextCar(theoreticalTimeToLight, nextLight.getPosition())){
-					if(otherLane == 1)
-						car.setLane(laneNum, nextLight.getLane2());
+					
+//					These instances of setLane is called because changing lanes
+//					didn't work, so we switch back and reduce speed (and try it all again)
+					if(car.getOtherLane() == 1)
+						car.setLane(2, nextLight.getLane2());
 					else
-						car.setLane(laneNum, nextLight.getLane1());
-					//These instances of setLane is called because changing lanes didn't work, so we switch back and reduce speed (and try it all again)
-					if(newSpeed > DECELERATION){
-						newSpeed -= DECELERATION;
-						if(newSpeed == 0.5){
-							System.out.println("WHAAAAAAAT? (1)");
-						}
-					}
-					else{
-						newSpeed = newSpeed*0.9;
-					}
+						car.setLane(1, nextLight.getLane1());
+					
+					
+					
+					newSpeed = getDeceleratedSpeed(newSpeed);
 					theoreticalTimeToLight = car.getTimeTo(newSpeed, distanceToLight);
-				}
-				else{break;}	//unneeded, but saves a function call
+					changedLanes = false;
+				} else {
+					//we're sticking with the lane change
+					break; //unneeded, but saves a function call
+				}	
 			} else {
 				
-				//if the car doesn't change lanes we still need to decelerate right?
+				//if the car doesn't change lanes we still need to decelerate
+				// because we're still hitting the next car
 				
-				if(newSpeed > DECELERATION){
-					newSpeed -= DECELERATION;
-					if(newSpeed == 0.5){
-						System.out.println("WHAAAAAAAT?");
-					}
-				}
-				else{
-					newSpeed = newSpeed*0.9;
-				}
+				newSpeed = getDeceleratedSpeed(newSpeed);
 				theoreticalTimeToLight = car.getTimeTo(newSpeed, distanceToLight);
-				
-				assert newSpeed != 0 : "We shouldn't ever be setting the speed to 0...";
-			}		
+			}
 		}
 		
 		car.giveChangeSpeedCommand(newSpeed, Command.CHANGE_SPEED);
+		
+		return changedLanes;
 	}
 	
-	public void intermediateAlgorithm(CarManager car, StopLight currentLightArg){
+	public double getDeceleratedSpeed(double newSpeed) {
+		if(newSpeed > DECELERATION){
+			newSpeed -= DECELERATION;
+			if(newSpeed <= DECELERATION){
+				
+				//force newSpeed to enter the else loop a few lines
+				//down the next time through this while loop
+				newSpeed = DECELERATION - 0.1;
+			}
+		}
+		else{
+			newSpeed = newSpeed*0.9;
+		}
+		return newSpeed;
+	}
+	
+	public boolean intermediateAlgorithm(CarManager car, StopLight currentLightArg){
 		double newSpeed = MAX_SPEED;
 		
 		assert currentLightArg != null : "currentLight is null?";
@@ -148,89 +144,63 @@ public class Phase1Handler extends PhaseHandler  {
 		assert distanceToLight >= 0 : "distanceToLight should be >= 0 (" + distanceToLight + ")";
 		assert theoreticalTimeToLight >= 0 : "theoreticalTimeToLight is < 0 (" + theoreticalTimeToLight + ")";
 		
+		
+		//find the proper speed and theoreticalTimeToLight
 		while(!currentLight.isLightGreenAtTime(theoreticalTimeToLight)){
-			if(newSpeed > DECELERATION){
-				newSpeed -= DECELERATION;
-			}
-			else{
-				newSpeed = newSpeed*0.9;
-			}
+			newSpeed = getDeceleratedSpeed(newSpeed);
 			theoreticalTimeToLight = car.getTimeTo(newSpeed, distanceToLight);
 			
 		}
 		
-		int laneNum = car.getLane();
-		if(laneNum == 1){
-			currentLight.getLane1().addCar(car);
-			car.setLane(laneNum, currentLight.getLane1());
-		}
-		else{
-			currentLight.getLane2().addCar(car);
-			car.setLane(laneNum, currentLight.getLane2());
-		}
+		boolean changedLanes = false;
 		
-		while(car.hitNextCar(theoreticalTimeToLight, currentLight.getPosition())){	//TODO: Function must be created
+		while(car.hitNextCar(theoreticalTimeToLight, currentLight.getPosition())) {
 			int otherLane = car.getOtherLane();
 			
-			boolean changedLanes = false;
-			if(car.getLane() == 1) {
-				if(currentLight.getLane2().canChangeLane(car) && prevLight.getLane2().canChangeLane(car)) {
-					//can change lanes
-					currentLight.getLane2().addCar(car);
-					car.setLane(otherLane, currentLight.getLane2());
-					changedLanes = true;
-				}
-			} else {
-				if(currentLight.getLane1().canChangeLane(car) && prevLight.getLane1().canChangeLane(car)) {
-					currentLight.getLane1().addCar(car);
-					car.setLane(otherLane, currentLight.getLane1());
-					changedLanes = true;
-				}
-			}
-			
-			if(changedLanes) {
-				if(car.hitNextCar(theoreticalTimeToLight, currentLight.getPosition())){
-					if(otherLane == 1){
-						currentLight.getLane2().addCar(car);
-						car.setLane(laneNum, currentLight.getLane2());
-					}
-					else{
-						currentLight.getLane1().addCar(car);
-						car.setLane(laneNum, currentLight.getLane1());
-					}
-					//These instances of setLane is called because changing lanes didn't work, so we switch back and reduce speed (and try it all again)
-					if(newSpeed > DECELERATION){
-						newSpeed -= DECELERATION;
-						if(newSpeed == 0.5){
-							System.out.println("WHAAAAAAAT? (1)");
-						}
-					}
-					else{
-						newSpeed = newSpeed*0.9;
-					}
-					theoreticalTimeToLight = car.getTimeTo(newSpeed, distanceToLight);
-				}
-				else{break;}	//unneeded, but saves a function call
-			} else {
+//			if(car.getLane() == 1) {
+//				if(currentLight.getLane2().canChangeLane(car) && prevLight.getLane2().canChangeLane(car)) {
+//					//can change lanes
+//					currentLight.getLane2().addCar(car);
+//					car.setLane(2, null);
+//					changedLanes = true;
+//				}
+//			} else {
+//				if(currentLight.getLane1().canChangeLane(car) && prevLight.getLane1().canChangeLane(car)) {
+//					currentLight.getLane1().addCar(car);
+//					car.setLane(1, null);
+//					changedLanes = true;
+//				}
+//			}
+//			
+//			if(changedLanes) {
+//				if(car.hitNextCar(theoreticalTimeToLight, currentLight.getPosition())){
+//					changedLanes = false;
+//					if(otherLane == 1){
+//						currentLight.getLane2().addCar(car);
+//						car.setLane(2, null);
+//					}
+//					else{
+//						currentLight.getLane1().addCar(car);
+//						car.setLane(1, null);
+//					}
+//					//These instances of setLane is called because changing lanes didn't work, so we switch back and reduce speed (and try it all again)
+//					newSpeed = getDeceleratedSpeed(newSpeed);
+//					theoreticalTimeToLight = car.getTimeTo(newSpeed, distanceToLight);
+//				} else{
+//					break;
+//				}	//unneeded, but saves a function call
+//			} else {
 				
 				//if the car doesn't change lanes we still need to decelerate right?
 				
-				if(newSpeed > DECELERATION){
-					newSpeed -= DECELERATION;
-					if(newSpeed == 0.5){
-						System.out.println("WHAAAAAAAT?");
-					}
-				}
-				else{
-					newSpeed = newSpeed*0.9;
-				}
+				newSpeed = getDeceleratedSpeed(newSpeed);
 				theoreticalTimeToLight = car.getTimeTo(newSpeed, distanceToLight);
-				
-				assert newSpeed != 0 : "We shouldn't ever be setting the speed to 0...";
-			}		
+//			}		
 		}
 		
 		car.giveChangeSpeedCommand(newSpeed, Command.CHANGE_SPEED);
+		
+		return changedLanes;
 	}
 
 	@Override

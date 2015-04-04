@@ -71,23 +71,44 @@ public class Lane {
 	 * @param curCar
 	 * @return
 	 */
-	public CarManager getNextCar(CarManager curCar){
-		Iterator<CarManager> iter = cars.iterator();
-		CarManager car = null;
-		CarManager prevCar = null;
-		//this should only be called on lanes that already have the current car in the lane
-		while(iter.hasNext()){
-			prevCar = car;
-			car = iter.next();
-			if(car == curCar) {
-				return prevCar;
-//				if(iter.hasNext())
-//					return iter.next();
-//				else return null;
+	public CarManager getNextCar(CarManager car){
+		
+		ListIterator<CarManager> iter = this.getReverseIterable(); //cars.listIterator(cars.size());
+		CarManager curCar;
+		while(iter.hasPrevious()) {
+			curCar = iter.previous();
+			if(curCar.getId() == car.getId()) {
+				if(iter.hasPrevious())
+					return iter.previous();
+				else
+					return null;
 			}
 		}
-//		throw new Error("This shouldn't be happening.... current car not found.");
-		return car;
+		
+		assert false : "This shouldn't be happening";
+		
+		return null;
+		
+		
+//		Iterator<CarManager> iter = cars.iterator();
+//		CarManager car = null;
+//		CarManager prevCar = null;
+//		
+//		//this should only be called on lanes that already have the current car in the lane
+//		assert this.cars.contains(curCar) : "Lane doesn't contain car";
+//		
+//		while(iter.hasNext()){
+//			prevCar = car;
+//			car = iter.next();
+//			if(car == curCar) {
+//				return prevCar;
+////				if(iter.hasNext())
+////					return iter.next();
+////				else return null;
+//			}
+//		}
+////		throw new Error("This shouldn't be happening.... current car not found.");
+//		return car;
 	}
 	
 	public boolean removeCar(CarManager car) {

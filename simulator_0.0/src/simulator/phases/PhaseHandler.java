@@ -46,7 +46,7 @@ public abstract class PhaseHandler {
 
 //	public abstract int getPhase();
 	
-	public abstract void intermediateAlgorithm(CarManager car, StopLight light);
+//	public abstract boolean intermediateAlgorithm(CarManager car, StopLight light);
 	
 	public abstract StopLight buildStopLight(String configString);
 }
