@@ -201,5 +201,17 @@ public class Car {
 		}
 		return this.position;
 	}
+
+	@Override
+	public String toString() {
+		return "Car [position=" + position + ", velocity=" + velocity
+				+ ", acceleration=" + acceleration + ", speed_limit="
+				+ speed_limit + ", energy_used=" + energy_used
+				+ ", target_velocity=" + target_velocity + ", stop_position="
+				+ stop_position + ", command=" + command + ", stopGiven="
+				+ stopGiven + "]";
+	}
+	
+	
 }
 

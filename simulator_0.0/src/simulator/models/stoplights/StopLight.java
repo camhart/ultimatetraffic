@@ -154,6 +154,8 @@ public class StopLight implements Iterable<CarManager>{
 			}
 		}
 	}
+	
+	
 
 	/**
 	 * This handles a single iteration.  It will take care of everything
@@ -163,7 +165,7 @@ public class StopLight implements Iterable<CarManager>{
 	 * @param phase
 	 * @param timePerIteration
 	 */
-	public final void iterate(PhaseHandler phase, double timePerIteration) {
+	public void iterate(PhaseHandler phase, double timePerIteration) {
 		
 		this.handleLightColors(timePerIteration, phase);
 		//TODO: Changed the .getIterable() to a ListIterator... so we can remove while traversing now.

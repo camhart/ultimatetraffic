@@ -11,7 +11,7 @@ public class CarManager implements Comparable {
 	
 	public static final double CAR_CUSHION = 10.0; //in meters
 	public static final double CAR_STOP_CUSHION = 10.0; //in meters
-	public static final double TIME_CUSHION = 0.5;
+	public static final double TIME_CUSHION = 3.0; // was 0.5
 	public static final double ACCELERATION_DELAY_MIN = 0.2; //adjust this to change the minimum delay between cars accelerating for phase 0
 	public static final double ACCELERATION_DELAY_MAX = 1.0; //adjust this to change the maximum delay between cars accelerating for phase 1 
 	
@@ -125,12 +125,13 @@ public class CarManager implements Comparable {
 		if(other == null )
 			return -1;
 		else if(other.getClass() != this.getClass())
-			return 1;
+			return -1;
 		else {
 			CarManager oCar = (CarManager)other;
-			if(this.getPosition() < oCar.getPosition())
+//			return Double.compare(oCar.getPosition(), this.getPosition());
+			if(this.getPosition() > oCar.getPosition())
 				return -1;
-			else if(this.getPosition() > oCar.getPosition())
+			else if(this.getPosition() < oCar.getPosition())
 				return 1;
 			else
 				return 0;
@@ -159,7 +160,7 @@ public class CarManager implements Comparable {
 		if(nextCar != null) {
 			//car in front of us
 			double nextCarsTimeToLight = nextCar.getTimeTo(nextCar.targetSpeed, lightPosition - nextCar.getPosition());
-			if(nextCarsTimeToLight > theoreticalTimeToLight + TIME_CUSHION) {
+			if(nextCarsTimeToLight > theoreticalTimeToLight - TIME_CUSHION) {
 				//we will hit them
 				return true;
 			}
@@ -223,15 +224,13 @@ public class CarManager implements Comparable {
 		}
 		
 		double value = ((light.getPosition() - (stoppingCarsInFrontOfMe * CarManager.CAR_STOP_CUSHION)) - this.getPosition());
-//		System.out.println(String.format("(%f - (%d * %f)) - %f = %f", light.getPosition(), stoppingCarsInFrontOfMe, CarManager.CAR_STOP_CUSHION, this.getPosition(), value));
 		assert value > 0 : "Crash! " + value + ((this.getLaneObject().getParentLight().getClass() == StopLight.class) ? "\n Consider adjusting Phase0Handler.RUN_YELLOW_LIGHT_DISTANCE" : " no clue what's going on...");
 		
 		// (light position - length of all cars stopped in front of me) - car position
 		return value - 1.0;		
 	}
 
-	public Car getCar() {
-		// TODO Auto-generated method stub
+	private Car getCar() {
 		return this.car;
 	}
 
@@ -243,13 +242,8 @@ public class CarManager implements Comparable {
 	 * Should occur only with phase 0.
 	 */
 	public void giveStopCommand(double distance) {
-		System.out.println(String.format("id: %d, stop position: %f", getId(), getPosition() + distance));
-//		assert Simulator.getSimulator().getPhase() == 0 : "Calling stop in something other than phase 0";
 		assert this.getLaneObject().getParentLight().getClass() == StopLight.class : "Calling stop in something other than phase 0";
 		
-//		System.out.println(String.format("Iteration: %d, Car: %d (%.2f), Light %d (%.2f), TotalDistance: %f (%f)", Simulator.getSimulator().getCurrentIteration(), 
-//				this.id, this.car.getPosition(), this.getLaneObject().getParentLight().getId(),
-//				this.getLaneObject().getParentLight().getPosition() , distance, this.getLaneObject().getParentLight().getPosition() - this.car.getPosition()));
 		int min = (int) (ACCELERATION_DELAY_MIN / Simulator.TIME_PER_ITERATION);
 		int max = (int) (ACCELERATION_DELAY_MAX / Simulator.TIME_PER_ITERATION);
 		accelerateDelay = min + (int)(Math.random() * (max - min));
@@ -268,5 +262,23 @@ public class CarManager implements Comparable {
 			accelerateDelay--;
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "CarManager [arrivalTime=" + arrivalTime + ", car=" + car
+				+ ", arrivalPosition=" + arrivalPosition + ", destination="
+				+ destination + ", currentLane=" + currentLane
+				+ ", currentSpeed=" + currentSpeed + ", direction=" + direction
+				+ ", currentLaneObj=" + currentLaneObj + ", id=" + id
+				+ ", targetSpeed=" + targetSpeed + ", totalIterations="
+				+ totalIterations + ", accelerateDelay=" + accelerateDelay
+				+ "]";
+	}
+
+	public Command getCommand() {
+		return this.car.getCommand();
+	}
+	
+	
 
 }

@@ -38,9 +38,11 @@ public class Validator {
 	}
 	
 	public void validateData(int totalIterations) {
+		LOG.info("Validation started...");
 		for(Validator v : validators) {
 			v.validateData(totalIterations);
 		}
+		LOG.info("Validation finished.");
 	}
 	
 	public void addValidator(Validator v) {
