@@ -114,7 +114,7 @@ public class Car {
 		//target_velocity = speed_limit;
 		speed_before_stop = velocity;
 		this.stopGiven = false;
-		stop();
+		//stop();
 	}
 	
 	/**
