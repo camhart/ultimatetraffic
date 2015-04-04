@@ -11,7 +11,6 @@ import simulator.phases.Phase0Handler;
 //import java.util.Comparator;
 //Comparator<Car>
 public class CarManager implements Comparable {
-	 
 	
 	public static final double CAR_CUSHION = 10.0; //in meters
 	public static final double CAR_STOP_CUSHION = 7.5; //in meters
@@ -245,9 +244,9 @@ public class CarManager implements Comparable {
 //		assert Simulator.getSimulator().getPhase() == 0 : "Calling stop in something other than phase 0";
 		assert this.getLaneObject().getParentLight().getClass() == StopLight.class : "Calling stop in something other than phase 0";
 		
-		System.out.println(String.format("Iteration: %d, Car: %d (%.2f), Light %d (%.2f), TotalDistance: %f (%f)", Simulator.getSimulator().getCurrentIteration(), 
-				this.id, this.car.getPosition(), this.getLaneObject().getParentLight().getId(),
-				this.getLaneObject().getParentLight().getPosition() , distance, this.getLaneObject().getParentLight().getPosition() - this.car.getPosition()));
+//		System.out.println(String.format("Iteration: %d, Car: %d (%.2f), Light %d (%.2f), TotalDistance: %f (%f)", Simulator.getSimulator().getCurrentIteration(), 
+//				this.id, this.car.getPosition(), this.getLaneObject().getParentLight().getId(),
+//				this.getLaneObject().getParentLight().getPosition() , distance, this.getLaneObject().getParentLight().getPosition() - this.car.getPosition()));
 		this.car.giveStopCommand(distance);
 	}
 	
@@ -256,7 +255,6 @@ public class CarManager implements Comparable {
 	 */
 	public void giveGoCommand() {
 		assert this.getLaneObject().getParentLight().getClass() == StopLight.class : "Calling stop in something other than phase 0";
-//		this.car.go();
 		this.car.giveGoCommand();
 	}
 

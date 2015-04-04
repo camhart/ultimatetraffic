@@ -1,5 +1,6 @@
 package simulator.models.stoplights;
 
+import simulator.models.stoplights.StopLight.Color;
 import simulator.outputter.Outputter;
 import simulator.phases.PhaseHandler;
 
@@ -29,6 +30,25 @@ public class Phase1StopLight extends StopLight {
 
 			}
 		}
+	}
+	
+	public boolean isLightGreenAtTime(double time) {
+		boolean willBeGreen = false;
+		if(this.currentColor == Color.GREEN){
+			willBeGreen = true;
+		}
+		double newTimeUntilChange = timeUntilColorChange;
+		while(time > newTimeUntilChange){
+			time -= newTimeUntilChange;
+			if(willBeGreen) {	//switch to red count
+				newTimeUntilChange = timeAsRed;
+			}
+			else{	//switch to green count
+				newTimeUntilChange = timeAsGreen;
+			}
+			willBeGreen = !willBeGreen;	//change future light state
+		}
+		return willBeGreen;
 	}
 
 }
