@@ -12,12 +12,14 @@ import simulator.models.stoplights.StopLight;
 public class Lane {
 	
 	public Lane otherLane;
+	private int laneNumber;
 	
 	private LinkedList<CarManager> cars;
 	private StopLight light;
-	public Lane(StopLight light) {
+	public Lane(StopLight light, int laneNumber) {
 		this.light = light;
 		cars = new LinkedList<CarManager>();
+		this.laneNumber = laneNumber;
 	}
 	
 	/**
@@ -95,37 +97,10 @@ public class Lane {
 	 */
 	public CarManager getNextCar(CarManager car){
 		
-		Collections.sort(this.cars);
+//		Collections.sort(this.cars);
 				
-//		ListIterator<CarManager> iter = this.cars.listIterator(); //cars.listIterator(cars.size());
-//		CarManager curCar;
-//		
-//		System.out.println("iteration: " + Simulator.getSimulator().getCurrentIteration());
-//		if(Simulator.getSimulator().getCurrentIteration() == 290) {
-//			System.out.println(cars);	
-//			System.out.println("size " + this.cars.size());
-//		}
-//		
-//		while(iter.hasNext()) {
-//			curCar = iter.next();
-//			if(curCar.getId() == car.getId()) {
-//				if(iter.hasNext())
-//					return iter.next();
-//				else
-//					return null;
-//			}
-//		}
-//		
-//		assert false : "This shouldn't be happening";
-//		
-//		return null;
-		
-		
 		ListIterator<CarManager> iter = this.getReverseIterable(); //cars.listIterator(cars.size());
 		CarManager curCar;
-		
-		
-//		this.printCarPositions();
 		
 		while(iter.hasPrevious()) {
 			curCar = iter.previous();
@@ -140,24 +115,6 @@ public class Lane {
 		assert false : "This shouldn't be happening";
 		
 		return null;
-		
-		
-//		Iterator<CarManager> iter = cars.iterator();
-//		CarManager curCar = null;
-//		CarManager prevCar = null;
-//		
-//		//this should only be called on lanes that already have the current car in the lane
-//		assert this.cars.contains(car) : "Lane doesn't contain car";
-//		
-//		while(iter.hasNext()){
-//			prevCar = curCar;
-//			curCar = iter.next();
-//			if(car.getId() == curCar.getId()) {
-//				return prevCar;
-//			}
-//		}
-////		throw new Error("This shouldn't be happening.... current car not found.");
-//		return null;
 	}
 	
 	public boolean removeCar(CarManager car) {
@@ -206,5 +163,27 @@ public class Lane {
 
 	public Lane getOtherLane() {
 		return this.otherLane;
+	}
+
+	public double getDistanceToNextCarFrom(double position) {
+		ListIterator<CarManager> iter = this.getReverseIterable();
+		CarManager curCar = null;
+		while(iter.hasPrevious()) {
+			curCar = iter.previous();
+			if(curCar.getPosition() > position) {
+				return curCar.getPosition() - position;
+			}
+		}
+		
+		StopLight nextLight = this.getParentLight().getNextLight();
+		if(nextLight != null) {
+			return nextLight.getLane(this.laneNumber).getDistanceToNextCarFrom(position);
+		}
+		
+		return Double.MAX_VALUE;
+	}
+
+	public int getLaneNumber() {
+		return this.laneNumber;
 	}
 }
