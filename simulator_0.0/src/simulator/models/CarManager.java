@@ -11,9 +11,9 @@ public class CarManager implements Comparable {
 	
 	public static final double CAR_CUSHION = 10.0; //in meters
 	public static final double CAR_STOP_CUSHION = 10.0; //in meters
-	public static final double TIME_CUSHION = 3.0; // was 0.5
-	public static final double ACCELERATION_DELAY_MIN = 0.2; //adjust this to change the minimum delay between cars accelerating for phase 0
-	public static final double ACCELERATION_DELAY_MAX = 1.0; //adjust this to change the maximum delay between cars accelerating for phase 1 
+	public static final double TIME_CUSHION = 1.5; // was 0.5
+	public static final double ACCELERATION_DELAY_MIN = 2.0; //adjust this to change the minimum delay between cars accelerating for phase 0
+	public static final double ACCELERATION_DELAY_MAX = 2.6; //adjust this to change the maximum delay between cars accelerating for phase 1 
 	
 	private double arrivalTime;
 	private Car car;
@@ -227,7 +227,7 @@ public class CarManager implements Comparable {
 		assert value > 0 : "Crash! " + value + ((this.getLaneObject().getParentLight().getClass() == StopLight.class) ? "\n Consider adjusting Phase0Handler.RUN_YELLOW_LIGHT_DISTANCE" : " no clue what's going on...");
 		
 		// (light position - length of all cars stopped in front of me) - car position
-		return value - 1.0;		
+		return value - 2.5;		
 	}
 
 	private Car getCar() {

@@ -176,42 +176,6 @@ public class StopLight implements Iterable<CarManager>{
 	private ArrayList<CarManager> lane1Removes;
 	private ArrayList<CarManager> lane2Removes;
 	
-	public void addCarToLaneRemove(int lane, CarManager car) {
-		if(lane == 1)
-			lane1Removes.add(car);
-		else
-			lane2Removes.add(car);
-	}
-	
-	public boolean handleLaneChange(CarManager car, Lane lane, Lane otherLane,
-			ListIterator<CarManager> laneIter, ListIterator<CarManager> otherLaneIter,
-			String remove, String add) {
-		
-		if(otherLane.canChangeLane(car)) {
-			
-			CarManager nextCar = lane.getNextCar(car);
-			
-			if(nextCar != null) {			
-				double distanceToNextCar = nextCar.getPosition();
-				double distanceToNextCarOther = otherLane.getDistanceToNextCarFrom(car.getPosition());
-				
-				if(distanceToNextCar >= distanceToNextCarOther) {
-					
-					System.out.println(remove);
-					System.out.println(add);
-					
-					otherLaneIter.add(car);
-					
-					laneIter.remove();
-					
-					car.setLane(otherLane.getLaneNumber(), otherLane);
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
 	public boolean greaterCarPosition(CarManager c1, CarManager c2) {
 		assert c1 != null || c2 != null : "what to do here?";
 		
@@ -220,65 +184,6 @@ public class StopLight implements Iterable<CarManager>{
 		if(c2 == null)
 			return true;
 		return c1.getPosition() >= c2.getPosition();
-	}
-	
-	public boolean changedALane(CarManager car1, CarManager car2, ListIterator<CarManager> lane1Iter, ListIterator<CarManager> lane2Iter) {
-		while(lane1Iter.hasNext() || lane2Iter.hasNext()) {
-			boolean changedLanes1 = false;
-			boolean changedLanes2 = false;
-			if(greaterCarPosition(car1, car2)) {
-				System.out.println("1");
-				changedLanes1 = handleLaneChange(car1, getLane1(), getLane2(), lane1Iter, lane2Iter, "lane1Iter.remove", "lane2Iter.add");
-				
-				if(lane1Iter.hasNext()) {
-					car1 = lane1Iter.next();
-					System.out.println("car1.nextB");
-				}
-				else car1 = null;
-				
-				if(changedLanes1)
-					return true;
-			}
-			
-			
-			if(greaterCarPosition(car2, car1)) {
-				System.out.println("2");
-				changedLanes2 = handleLaneChange(car2, getLane2(), getLane1(), lane2Iter, lane1Iter, "lane2Iter.remove", "lane1Iter.add");
-				
-				if(lane2Iter.hasNext()) {
-					car2 = lane2Iter.next();
-					System.out.println("car2.nextB");
-				}
-				else car2 = null;
-				
-				if(changedLanes2)
-					return true;
-			}
-		}	
-		return false;
-	}
-	
-	public void handleLaneChanges() {
-		while(true) {
-			ListIterator<CarManager> lane1Iter = this.getLane1().getIterable();
-			ListIterator<CarManager> lane2Iter = this.getLane2().getIterable();
-			CarManager car1 = null;
-			CarManager car2 = null;
-			
-			if(lane1Iter.hasNext()) {
-				car1 = lane1Iter.next();
-				System.out.println("car1.next");
-			}
-	
-			if(lane2Iter.hasNext()) {
-				car2 = lane2Iter.next();
-				System.out.println("car2.next");
-			}
-			
-			if(!changedALane(car1, car2, lane1Iter, lane2Iter))
-				break;
-		}
-		System.out.println("done");
 	}
 	
 	public void optimizeLanes() {
