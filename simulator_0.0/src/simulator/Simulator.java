@@ -287,6 +287,11 @@ public class Simulator {
 					this.finishedCars.size()));
 		}
 		
+		LOG.info(String.format("%s (%.1f s), iteration %d / %d, cars left %d, cars finished %d",
+				getTime(), currentIteration * Simulator.TIME_PER_ITERATION,
+				currentIteration, numberOfIterations, carsLeftToArrive,
+				this.finishedCars.size()));
+		
 		//close the database (needs to happen before validator)
 		Outputter.getOutputter().close();
 		
