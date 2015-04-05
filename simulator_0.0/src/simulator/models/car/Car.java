@@ -86,6 +86,8 @@ public class Car {
 		//Integrate acceleration to get velocity and position
 		velocity = velocity + step / 2 * (acceleration + acceleration_delayed);
 		position = position + step / 2 * (velocity + velocity_delayed);
+		
+		assert velocity >= 0 : "we don't go in reverse...";
 	}
 	
 	/**
@@ -162,6 +164,7 @@ public class Car {
 		return result;
 	}
 	public double getTimeTo(double newSpeed, double distanceToLight) {
+		System.out.println(velocity + " - " + newSpeed);
 		Pair inputPair = new Pair(roundDown(velocity), roundUp(newSpeed));
 		Pair info = map.getAccelerationInfo(inputPair);
 		double time = info.getFirst();//Time to accelerate to newSpeed

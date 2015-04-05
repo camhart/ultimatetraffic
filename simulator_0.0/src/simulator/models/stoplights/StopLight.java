@@ -3,6 +3,7 @@ package simulator.models.stoplights;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import simulator.Simulator;
 import simulator.models.CarManager;
 import simulator.models.Lane;
 import simulator.outputter.Outputter;
@@ -155,6 +156,15 @@ public class StopLight implements Iterable<CarManager>{
 		}
 	}
 	
+	private ArrayList<CarManager> lane1Removes;
+	private ArrayList<CarManager> lane2Removes;
+	
+	public void addCarToLaneRemove(int lane, CarManager car) {
+		if(lane == 1)
+			lane1Removes.add(car);
+		else
+			lane2Removes.add(car);
+	}
 	
 
 	/**
@@ -174,14 +184,19 @@ public class StopLight implements Iterable<CarManager>{
 		Iterator<CarManager> carIter = this.iterator();
 		CarManager curCar = null;
 		
-		ArrayList<CarManager> lane1Removes = new ArrayList<CarManager>();
-		ArrayList<CarManager> lane2Removes = new ArrayList<CarManager>();
+		lane1Removes = new ArrayList<CarManager>();
+		lane2Removes = new ArrayList<CarManager>();
 		
 		ArrayList<CarManager> finishingCars = new ArrayList<CarManager>();
 		
 		while(carIter.hasNext()) {
 			curCar = carIter.next();
-			handleCar(phase, curCar, curCar.getLaneObject(), curCar.getLane() == 1 ? lane1Removes : lane2Removes, finishingCars);
+			
+			
+			if(phase == null || curCar == null || lane1Removes == null || lane2Removes == null || finishingCars == null)
+				System.out.println("A");
+			if(curCar != null)
+				handleCar(phase, curCar, curCar.getLaneObject(), lane1Removes, lane2Removes, finishingCars);
 		}
 		
 		for(CarManager c : finishingCars) {
@@ -199,29 +214,31 @@ public class StopLight implements Iterable<CarManager>{
 		}
 	}
 	
-	public void handleCar(PhaseHandler phase, CarManager car, Lane lane, ArrayList<CarManager> removeList, ArrayList<CarManager> finishingCars) {
+	public void moveCarToNextLight(CarManager car, ArrayList<CarManager> removeList) {
+		//add the car to the next lane 
+		// 	phase handler might have changed the lane so we need to check
+		if(car.getLane() == 1) {
+			nextLight.getLane1().addCar(car);
+			car.setLane(1, nextLight.getLane1());
+		} else if(car.getLane() == 2) {
+			nextLight.getLane2().addCar(car);
+			car.setLane(2, nextLight.getLane2());
+		}
+		
+		//add the car to the remove list
+		removeList.add(car);
+	}
+	
+	public void handleCar(PhaseHandler phase, CarManager car, Lane lane, ArrayList<CarManager> lane1RemoveList, ArrayList<CarManager> lane2RemoveList, ArrayList<CarManager> finishingCars) {
 		phase.handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(car, this);
 		if(car.hasFinished()) {
 			finishingCars.add(car);
 			//do we need to add it to the remove list here?
 			//and then do we just want to return?
 		}
-//		phase.handlePotentialCarFinish(car, this, finishingCars);
-		
-		if(nextLight != null && !car.hasFinished() && car.getPosition() >= getPosition()) {
 
-			//add the car to the next lane 
-			// 	phase handler might have changed the lane so we need to check
-			if(car.getLane() == 1) {
-				nextLight.getLane1().addCar(car);
-				car.setLane(1, nextLight.getLane1());
-			} else if(car.getLane() == 2) {
-				nextLight.getLane2().addCar(car);
-				car.setLane(2, nextLight.getLane2());
-			}
-			
-			//add the car to the remove list
-			removeList.add(car);
+		if(nextLight != null && !car.hasFinished() && car.getPosition() >= getPosition()) {
+			moveCarToNextLight(car, car.getLane() == 1 ? lane1RemoveList : lane2RemoveList);
 		}
 	}
 

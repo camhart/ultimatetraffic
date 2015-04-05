@@ -1,15 +1,5 @@
 package simulator.models.stoplights;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import simulator.models.CarManager;
-import simulator.models.Lane;
-import simulator.models.stoplights.StopLight.Color;
-import simulator.outputter.Outputter;
-import simulator.phases.PhaseHandler;
-import simulator.phases.Phase1Handler;
-
 public class Phase1StopLight extends StopLight {
 
 	public Phase1StopLight(String configString) {

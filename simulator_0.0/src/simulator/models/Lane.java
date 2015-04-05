@@ -80,13 +80,13 @@ public class Lane {
 		return true;
 	}
 	
-	private void printCarPositions() {
-		for(CarManager cara : cars) {
-			System.out.print(cara.getPosition());
-			System.out.print(", ");
-		}
-		System.out.println("");
-	}
+//	private void printCarPositions() {
+//		for(CarManager cara : cars) {
+//			System.out.print(cara.getPosition());
+//			System.out.print(", ");
+//		}
+//		System.out.println("");
+//	}
 	
 	/**
 	 * returns null if no other car in front
@@ -203,8 +203,8 @@ public class Lane {
 	public StopLight getParentLight() {
 		return this.light;
 	}
-	
-//	public LinkedList<CarManager> getCars() {
-//		return this.cars;
-//	}
+
+	public Lane getOtherLane() {
+		return this.otherLane;
+	}
 }
