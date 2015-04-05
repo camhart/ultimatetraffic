@@ -229,9 +229,10 @@ public class StopLight implements Iterable<CarManager>{
 		}
 		
 		while(lane1Iter.hasNext() || lane2Iter.hasNext()) {
-			
+			boolean changedLanes1 = false;
+			boolean changedLanes2 = false;
 			if(greaterCarPosition(car1, car2)) {
-				boolean changedLanes = handleLaneChange(car1, getLane1(), getLane2(), lane1Iter, lane2Iter, "lane1Iter.remove", "lane2Iter.add");
+				changedLanes1 = handleLaneChange(car1, getLane1(), getLane2(), lane1Iter, lane2Iter, "lane1Iter.remove", "lane2Iter.add");
 				if(lane1Iter.hasNext()) {
 					car1 = lane1Iter.next();
 					System.out.println("car1.nextB");
@@ -240,8 +241,8 @@ public class StopLight implements Iterable<CarManager>{
 			}
 			
 			if(greaterCarPosition(car2, car1)) {
-				handleLaneChange(car2, getLane2(), getLane1(), lane2Iter, lane1Iter, "lane2Iter.remove", "lane1Iter.add");
-				if(lane2Iter.hasNext()) {
+				changedLanes2 = handleLaneChange(car2, getLane2(), getLane1(), lane2Iter, lane1Iter, "lane2Iter.remove", "lane1Iter.add");
+				if(lane2Iter.hasNext() && changedLanes2) {
 					car2 = lane2Iter.next();
 					System.out.println("car2.nextB");
 				}
