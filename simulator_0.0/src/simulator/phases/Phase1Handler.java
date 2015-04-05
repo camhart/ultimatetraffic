@@ -33,8 +33,6 @@ public class Phase1Handler extends PhaseHandler  {
 	public void algorithm(CarManager car, StopLight currentLight){
 		double newSpeed = MAX_SPEED;
 		
-		System.out.println("wtf");
-		
 		assert currentLight != null : "currentLight is null?";
 		
 		Phase1StopLight nextLight = (Phase1StopLight)currentLight.getNextLight();

@@ -290,6 +290,8 @@ public class Simulator {
 		//close the database (needs to happen before validator)
 		Outputter.getOutputter().close();
 		
+		printStuff();
+		
 		//validate data if a validator is set
 		if(getValidator() != null) {
 			getValidator().validateData();
@@ -355,7 +357,7 @@ public class Simulator {
 		validator.addValidator(new CarValidator(validator.getSQLiteAccessor()));
 
 		//sets the validator which validates data
-		simulator.setValidator(validator);
+//		simulator.setValidator(validator);
 		
 		simulator.setNumberOfIterations(iterationCount);
 		
@@ -365,6 +367,7 @@ public class Simulator {
 		simulator.loadCars(carsFile);
 		
 		simulator.run();		
+		
 	}
 
 	private void printStuff() {
