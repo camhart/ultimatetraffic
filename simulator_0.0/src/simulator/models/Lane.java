@@ -98,6 +98,8 @@ public class Lane {
 	public CarManager getNextCar(CarManager car){
 		
 //		Collections.sort(this.cars);
+		
+//		System.out.println("looking for: " + car + "\n\tin: " + this.cars);
 				
 		ListIterator<CarManager> iter = this.getReverseIterable(); //cars.listIterator(cars.size());
 		CarManager curCar;
@@ -111,6 +113,8 @@ public class Lane {
 					return null;
 			}
 		}
+		
+//		System.out.println("other lane: " + this.getOtherLane().cars);
 		
 		assert false : "This shouldn't be happening";
 		
@@ -175,10 +179,10 @@ public class Lane {
 			}
 		}
 		
-		StopLight nextLight = this.getParentLight().getNextLight();
-		if(nextLight != null) {
-			return nextLight.getLane(this.laneNumber).getDistanceToNextCarFrom(position);
-		}
+//		StopLight nextLight = this.getParentLight().getNextLight();
+//		if(nextLight != null) {
+//			return nextLight.getLane(this.laneNumber).getDistanceToNextCarFrom(position);
+//		}
 		
 		return Double.MAX_VALUE;
 	}

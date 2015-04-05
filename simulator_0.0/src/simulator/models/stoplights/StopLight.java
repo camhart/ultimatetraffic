@@ -143,6 +143,14 @@ public class StopLight implements Iterable<CarManager>{
 		}
 	}
 	
+	public Lane getOtherLane(int lane) {
+		if(lane == 2) {
+			return getLane1();
+		} else {
+			return getLane2();
+		}
+	}
+	
 
 	/**
 	 * This handles all of the timing portions of the stoplight.
@@ -205,6 +213,8 @@ public class StopLight implements Iterable<CarManager>{
 	}
 	
 	public boolean greaterCarPosition(CarManager c1, CarManager c2) {
+		assert c1 != null || c2 != null : "what to do here?";
+		
 		if(c1 == null)
 			return false;
 		if(c2 == null)
@@ -212,45 +222,129 @@ public class StopLight implements Iterable<CarManager>{
 		return c1.getPosition() >= c2.getPosition();
 	}
 	
-	public void handleLaneChanges() {
-		ListIterator<CarManager> lane1Iter = this.getLane1().getIterable();
-		ListIterator<CarManager> lane2Iter = this.getLane2().getIterable();
-		CarManager car1 = null;
-		CarManager car2 = null;
-		
-		if(lane1Iter.hasNext()) {
-			car1 = lane1Iter.next();
-			System.out.println("car1.next");
-		}
-
-		if(lane2Iter.hasNext()) {
-			car2 = lane2Iter.next();
-			System.out.println("car2.next");
-		}
-		
+	public boolean changedALane(CarManager car1, CarManager car2, ListIterator<CarManager> lane1Iter, ListIterator<CarManager> lane2Iter) {
 		while(lane1Iter.hasNext() || lane2Iter.hasNext()) {
 			boolean changedLanes1 = false;
 			boolean changedLanes2 = false;
 			if(greaterCarPosition(car1, car2)) {
+				System.out.println("1");
 				changedLanes1 = handleLaneChange(car1, getLane1(), getLane2(), lane1Iter, lane2Iter, "lane1Iter.remove", "lane2Iter.add");
+				
 				if(lane1Iter.hasNext()) {
 					car1 = lane1Iter.next();
 					System.out.println("car1.nextB");
 				}
 				else car1 = null;
+				
+				if(changedLanes1)
+					return true;
 			}
 			
+			
 			if(greaterCarPosition(car2, car1)) {
+				System.out.println("2");
 				changedLanes2 = handleLaneChange(car2, getLane2(), getLane1(), lane2Iter, lane1Iter, "lane2Iter.remove", "lane1Iter.add");
-				if(lane2Iter.hasNext() && changedLanes2) {
+				
+				if(lane2Iter.hasNext()) {
 					car2 = lane2Iter.next();
 					System.out.println("car2.nextB");
 				}
 				else car2 = null;
+				
+				if(changedLanes2)
+					return true;
+			}
+		}	
+		return false;
+	}
+	
+	public void handleLaneChanges() {
+		while(true) {
+			ListIterator<CarManager> lane1Iter = this.getLane1().getIterable();
+			ListIterator<CarManager> lane2Iter = this.getLane2().getIterable();
+			CarManager car1 = null;
+			CarManager car2 = null;
+			
+			if(lane1Iter.hasNext()) {
+				car1 = lane1Iter.next();
+				System.out.println("car1.next");
+			}
+	
+			if(lane2Iter.hasNext()) {
+				car2 = lane2Iter.next();
+				System.out.println("car2.next");
 			}
 			
-		}		
+			if(!changedALane(car1, car2, lane1Iter, lane2Iter))
+				break;
+		}
 		System.out.println("done");
+	}
+	
+	public void optimizeLanes() {
+		boolean laneChangeOccured = true;
+		while(laneChangeOccured) {
+			
+			laneChangeOccured = false;
+			ListIterator<CarManager> lane1Iter = this.getLane1().getIterable();
+			ListIterator<CarManager> lane2Iter = this.getLane2().getIterable();
+			
+			CarManager car1 = null;
+			CarManager car2 = null;
+			
+			if(lane1Iter.hasNext())
+				car1 = lane1Iter.next();
+			
+			if(lane2Iter.hasNext())
+				car2 = lane2Iter.next();
+			
+			while(!laneChangeOccured && (lane1Iter.hasNext() || lane2Iter.hasNext()) && (car1 != null || car2 != null)) {
+				
+				if(greaterCarPosition(car1, car2)) {
+					if(getOtherLane(car1.getLane()).canChangeLane(car1)) {						
+						CarManager nextCar = this.getLane(car1.getLane()).getNextCar(car1);						
+						if(nextCar != null) {
+							double distanceToNextCar = nextCar.getPosition() - car1.getPosition();
+							double distanceToNextCarOther = getOtherLane(car1.getLane()).getDistanceToNextCarFrom(car1.getPosition());
+							
+							if(distanceToNextCarOther > distanceToNextCar) {
+								//change lanes
+								getLane1().removeCar(car1);
+								car1.setLane(2, getLane2());
+								getLane2().addCar(car1);
+								laneChangeOccured = true;
+							}	
+						}
+					}	
+					if(!laneChangeOccured) {
+						if(lane1Iter.hasNext()) {
+							car1 = lane1Iter.next();
+						} else car1 = null;
+					}
+				} else {
+					if(getOtherLane(car2.getLane()).canChangeLane(car2)) {					
+						CarManager nextCar = this.getLane(car2.getLane()).getNextCar(car2);						
+						if(nextCar != null) {			
+							double distanceToNextCar = nextCar.getPosition() - car2.getPosition();
+							double distanceToNextCarOther = getOtherLane(car2.getLane()).getDistanceToNextCarFrom(car2.getPosition());
+							
+							if(distanceToNextCarOther > distanceToNextCar) {
+								//change lanes
+								getLane2().removeCar(car2);
+								car2.setLane(1, getLane1());
+								getLane1().addCar(car2);
+								laneChangeOccured = true;
+							}							
+						}
+					}
+					if(!laneChangeOccured) {
+						if(lane2Iter.hasNext()) {
+							car2 = lane2Iter.next();
+						} else car2 = null;
+					}
+				}
+			}
+		}
 	}
 	
 
@@ -266,7 +360,9 @@ public class StopLight implements Iterable<CarManager>{
 		
 		this.handleLightColors(timePerIteration, phase);
 		
-		handleLaneChanges();
+//		handleLaneChanges();
+		optimizeLanes();
+		
 		
 		Iterator<CarManager> carIter = this.iterator();
 		CarManager curCar = null;
@@ -318,12 +414,11 @@ public class StopLight implements Iterable<CarManager>{
 	
 	public void handleCar(PhaseHandler phase, CarManager car, Lane lane, ArrayList<CarManager> lane1RemoveList, ArrayList<CarManager> lane2RemoveList, ArrayList<CarManager> finishingCars) {
 		phase.handleEverythingWithCarsAndStoppingAndGoingAndTargetSpeedAndEverything(car, this);
+		
 		if(car.hasFinished()) {
 			finishingCars.add(car);
-			//do we need to add it to the remove list here?
-			//and then do we just want to return?
 		}
-
+		
 		if(nextLight != null && !car.hasFinished() && car.getPosition() >= getPosition()) {
 			moveCarToNextLight(car, car.getLane() == 1 ? lane1RemoveList : lane2RemoveList);
 		}
@@ -392,13 +487,14 @@ public class StopLight implements Iterable<CarManager>{
 	 * 	in order from lowest position to highest 
 	 */
 	@Override
-	public Iterator<CarManager> iterator() {
-		Iterator<CarManager> iter = new Iterator<CarManager>() {
+	public ListIterator<CarManager> iterator() {
+		ListIterator<CarManager> iter = new ListIterator<CarManager>() {
 			private int count = 0;
 			private Iterator<CarManager> lane1Iter = lane1.getIterable();
 			private Iterator<CarManager> lane2Iter = lane2.getIterable();
 			private CarManager lane1CurCar = lane1Iter.hasNext() ? lane1Iter.next() : null;			
 			private CarManager lane2CurCar = lane2Iter.hasNext() ? lane2Iter.next() : null;
+			private Iterator<CarManager> lastIteratorUsed = null;
 			
 			private void updateLane1Car() {
 				if(lane1Iter.hasNext())
@@ -427,19 +523,58 @@ public class StopLight implements Iterable<CarManager>{
 				if(lane1CurCar != null && lane2CurCar != null) { //both lanes have cars
 					if(lane1CurCar.getPosition() < lane2CurCar.getPosition()) {
 						retCar = lane1CurCar;
+						lastIteratorUsed = lane1Iter;
 						updateLane1Car();
 					} else {
 						retCar = lane2CurCar;
+						lastIteratorUsed = lane2Iter;
 						updateLane2Car();
 					}
 				} else if(lane1CurCar != null) { //ONLY lane1 has cars left
 					retCar = lane1CurCar;
+					lastIteratorUsed = lane1Iter;
 					updateLane1Car();
 				} else if(lane2CurCar != null) { //ONLY lane2 has cars left
 					retCar = lane2CurCar;
+					lastIteratorUsed = lane2Iter;
 					updateLane2Car();
 				}
 				return retCar;
+			}
+
+			@Override
+			public boolean hasPrevious() {
+				throw new Error("not implemented");
+			}
+
+			@Override
+			public CarManager previous() {
+				throw new Error("not implemented");
+			}
+
+			@Override
+			public int nextIndex() {
+				throw new Error("not implemented");
+			}
+
+			@Override
+			public int previousIndex() {
+				throw new Error("not implemented");
+			}
+
+			@Override
+			public void remove() {
+				this.lastIteratorUsed.remove();
+			}
+
+			@Override
+			public void set(CarManager e) {
+				throw new Error("not implemented");
+			}
+
+			@Override
+			public void add(CarManager e) {
+				throw new Error("not implemented");
 			}
 			
 		};
