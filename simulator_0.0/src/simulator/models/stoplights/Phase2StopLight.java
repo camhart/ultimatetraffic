@@ -33,6 +33,7 @@ public class Phase2StopLight extends Phase1StopLight {
 		}
 	}
 
+	@Override
 	protected void setTimeUntilColorChange() {
 		lightTimes.set(0, lightTimes.get(0)-1);
 		if(lightTimes.get(0) <= 0){//change color
@@ -65,7 +66,7 @@ public class Phase2StopLight extends Phase1StopLight {
 	}
 	
 	public void addGreenTime(int greens){
-		if(this.greenTimesEarned + greens < this.MAX_EARNED_TIME){
+		if(this.greenTimesEarned + greens < StopLight.MAX_EARNED_TIME){
 			greenTimesEarned += greens;
 		}
 		else{

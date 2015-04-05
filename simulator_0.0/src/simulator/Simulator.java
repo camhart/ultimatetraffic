@@ -13,8 +13,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import simulator.outputter.Outputter;
-import simulator.phases.Phase0Handler;
-import simulator.phases.Phase1Handler;
 import simulator.phases.PhaseHandler;
 import simulator.validator.CarValidator;
 import simulator.validator.StopLightValidator;
@@ -377,10 +375,19 @@ public class Simulator {
 
 	private void printStuff() {
 		long totalIterations = 0;
+		double totalEnergy = 0.0;
+		
 		for(CarManager c : this.finishedCars) {
 			totalIterations += c.getIterations();
+			totalEnergy += c.getTotalEnergyUsed();
 		}
-		LOG.severe(String.format("Total travel time: %.1f seconds (%s)", totalIterations * this.TIME_PER_ITERATION, Simulator.TIME_FORMATTER.format(totalIterations * this.TIME_PER_ITERATION * 1000)));
+		
+		LOG.severe(String.format("Total travel time: %.1f seconds (%s)\n" +
+				"\tTotal energy used: %f",
+				totalIterations * Simulator.TIME_PER_ITERATION,
+				Simulator.TIME_FORMATTER.format(totalIterations * Simulator.TIME_PER_ITERATION * 1000),
+				totalEnergy
+		));
 	}
 
 	public void finishCar(CarManager car) {

@@ -14,7 +14,6 @@ import javax.swing.SwingWorker;
 
 import gui.components.ButtonBar;
 import gui.components.CanvasPanel;
-import gui.components.CanvasPanel.Car;
 import gui.components.CarDebugPanel;
 import gui.components.InfoBar;
 import gui.data.CarData;
@@ -47,7 +46,7 @@ public class SimulatorGui extends JFrame implements DataListener, PropertyChange
 	}	
 	
 	private SimulatorGui() {
-		this.stateData = new StateData();
+		SimulatorGui.stateData = new StateData();
 		this.dataListeners = new ArrayList<DataListener>();
 		this.dataListeners.add(this);
 		this.workerDone = true;
@@ -126,6 +125,7 @@ public class SimulatorGui extends JFrame implements DataListener, PropertyChange
 	
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				SimulatorGui sg = SimulatorGui.getInstance();
 				sg.setTitle("Ultimate Traffic Simulator GUI");
@@ -137,7 +137,8 @@ public class SimulatorGui extends JFrame implements DataListener, PropertyChange
 
 
 	public static void setState(StateData stateData) {
-		SimulatorGui.getInstance().stateData = stateData;
+		SimulatorGui.getInstance();
+		SimulatorGui.stateData = stateData;
 		SimulatorGui.getInstance().notifyDataListeners();
 	}
 	
@@ -153,7 +154,7 @@ public class SimulatorGui extends JFrame implements DataListener, PropertyChange
 	}
 
 	public StateData getStateData() {
-		return this.stateData;
+		return SimulatorGui.stateData;
 	}
 	
 	public void incrementIterationCounter() {

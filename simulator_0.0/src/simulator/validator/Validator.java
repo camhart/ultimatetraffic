@@ -3,7 +3,6 @@ package simulator.validator;
 import gui.sqlite.SQLiteAccessor;
 
 import java.util.ArrayList;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

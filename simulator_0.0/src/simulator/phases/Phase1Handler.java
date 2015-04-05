@@ -1,8 +1,6 @@
 package simulator.phases;
 
-import simulator.Simulator;
 import simulator.models.CarManager;
-import simulator.models.Lane;
 import simulator.models.car.Car.Command;
 import simulator.models.stoplights.Phase1StopLight;
 import simulator.models.stoplights.StopLight;

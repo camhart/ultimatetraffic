@@ -4,10 +4,6 @@ import gui.data.CarData;
 import gui.sqlite.SQLiteAccessor;
 
 import java.util.HashMap;
-import java.util.Iterator;
-
-import simulator.Simulator;
-import simulator.models.CarManager;
 
 public class CarValidator extends Validator {
 	

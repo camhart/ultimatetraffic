@@ -3,19 +3,18 @@ package gui.components;
 import gui.SimulatorGui;
 
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -65,15 +64,14 @@ public class InfoBar extends JPanel implements MouseMotionListener {
 		
 		iterationsPerIteration = new JLabel("Iterations per iteration: 1");
 		
-		slider = new JSlider(JSlider.HORIZONTAL, 1, 10, 1);
+		slider = new JSlider(SwingConstants.HORIZONTAL, 1, 10, 1);
 		
 		slider.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				incrementValue = (int)((JSlider)e.getSource()).getValue();
+				incrementValue = ((JSlider)e.getSource()).getValue();
 				iterationsPerIteration.setText(String.format("Iterations per iteration: %d", incrementValue));
 			}
-			
 		});
 		
 		

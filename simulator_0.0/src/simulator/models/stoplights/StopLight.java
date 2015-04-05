@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
 
-import simulator.Simulator;
 import simulator.models.CarManager;
 import simulator.models.Lane;
 import simulator.outputter.Outputter;

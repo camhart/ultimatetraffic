@@ -279,6 +279,9 @@ public class CarManager implements Comparable {
 		return this.car.getCommand();
 	}
 	
+	public double getTotalEnergyUsed() {
+		return this.car.getEnergyUsed();
+	}
 	
 
 }

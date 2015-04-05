@@ -16,7 +16,6 @@ import gui.data.StateData;
 import gui.listeners.DataListener;
 
 import javax.swing.JPanel;
-import javax.swing.JRootPane;
 
 public class CanvasPanel extends JPanel implements DataListener, MouseListener {
 	
