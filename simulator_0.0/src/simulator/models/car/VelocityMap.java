@@ -6,6 +6,15 @@ import java.util.HashMap;
 
 public class VelocityMap {
 	
+	private static class SingletonHolder {
+		private static final VelocityMap INSTANCE = new VelocityMap("config/carTable.txt");
+	}
+	
+	public static VelocityMap getInstance() {
+		return SingletonHolder.INSTANCE;
+	}
+	
+	
 	//Pair<initial velocity,target velocity> <==> Pair<distance, time>
 	private HashMap<Pair, Pair> map;
 	
@@ -31,7 +40,7 @@ public class VelocityMap {
 		}
 	}
 	
-	public VelocityMap(String filename) {
+	private VelocityMap(String filename) {
 		map = new HashMap<Pair, Pair>();
 		load(filename);
 	}

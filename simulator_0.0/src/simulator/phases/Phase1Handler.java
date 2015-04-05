@@ -21,7 +21,8 @@ public class Phase1Handler extends PhaseHandler  {
 		
 		if(car.getPosition() >= light.getPosition()){
 			algorithm(car, light);
-		} else {
+		}	
+		else {
 			this.intermediateAlgorithm(car, light);
 		}
 		

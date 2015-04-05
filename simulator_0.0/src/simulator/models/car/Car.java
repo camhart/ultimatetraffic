@@ -40,7 +40,7 @@ public class Car {
 		energy_used = 0;
 		target_velocity = velocity;
 		stop_position = 0;
-		map = new VelocityMap("config/carTable.txt");
+		map = VelocityMap.getInstance();
 	}
 	
 	/*
