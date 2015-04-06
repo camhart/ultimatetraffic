@@ -164,12 +164,13 @@ public class StopLight implements Iterable<CarManager>{
 		if(timeUntilColorChange < 0) {
 			if(this.currentColor == Color.GREEN) {
 				setTimeUntilColorChange();
-				Outputter.getOutputter().addLightOutput(this);
+//				Outputter.getOutputter().addLightOutput(this);
 			} else {
 				setTimeUntilColorChange();
-				Outputter.getOutputter().addLightOutput(this);
+//				Outputter.getOutputter().addLightOutput(this);
 			}
 		}
+		Outputter.getOutputter().addLightOutput(this);
 	}
 	
 	private ArrayList<CarManager> lane1Removes;

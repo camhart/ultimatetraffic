@@ -20,17 +20,18 @@ public class Phase2StopLight extends Phase1StopLight {
 				//this.currentColor = Color.RED;
 				//this.timeUntilColorChange = this.timeAsRed;
 				setTimeUntilColorChange();
-				Outputter.getOutputter().addLightOutput(this);
+//				Outputter.getOutputter().addLightOutput(this);
 			} else {
 				//this.currentColor = Color.GREEN;
 				//this.timeUntilColorChange = this.timeAsGreen;
 				setTimeUntilColorChange();
-				Outputter.getOutputter().addLightOutput(this);
+//				Outputter.getOutputter().addLightOutput(this);
 				
 				//Call the algorithm on current cars to catch rounding errors on cars approaching the newly green light
 //				this.CallIntermediateAlgorithmOnAllCars(phase); //TODO: Make this actually work! Currently broken because of faulty lane changes between lights
 			}
 		}
+		Outputter.getOutputter().addLightOutput(this);
 	}
 
 	@Override
