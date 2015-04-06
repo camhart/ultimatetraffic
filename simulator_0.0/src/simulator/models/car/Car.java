@@ -40,7 +40,7 @@ public class Car {
 		energy_used = 0;
 		target_velocity = velocity;
 		stop_position = 0;
-		map = new VelocityMap("config/carTable.txt");
+		map = VelocityMap.getInstance();
 	}
 	
 	/*
@@ -85,7 +85,12 @@ public class Car {
 		}
 		//Integrate acceleration to get velocity and position
 		velocity = velocity + step / 2 * (acceleration + acceleration_delayed);
+		if(velocity < 0) {
+			velocity = 0;
+		}
 		position = position + step / 2 * (velocity + velocity_delayed);
+		
+		assert velocity >= 0 : "we don't go in reverse... target_velocity = " + this.target_velocity + " acceleration=" + acceleration ;
 	}
 	
 	/**
@@ -114,7 +119,7 @@ public class Car {
 		//target_velocity = speed_limit;
 		speed_before_stop = velocity;
 		this.stopGiven = false;
-		stop();
+		//stop();
 	}
 	
 	/**
@@ -162,7 +167,7 @@ public class Car {
 		return result;
 	}
 	public double getTimeTo(double newSpeed, double distanceToLight) {
-		Pair inputPair = new Pair(roundDown(velocity), newSpeed);
+		Pair inputPair = new Pair(roundDown(velocity), roundUp(newSpeed));
 		Pair info = map.getAccelerationInfo(inputPair);
 		double time = info.getFirst();//Time to accelerate to newSpeed
 		//(distanceToLight - distance to accelerate) / the current speed 
@@ -201,5 +206,25 @@ public class Car {
 		}
 		return this.position;
 	}
+
+	@Override
+	public String toString() {
+		return "Car [position=" + position + ", velocity=" + velocity
+				+ ", acceleration=" + acceleration + ", speed_limit="
+				+ speed_limit + ", energy_used=" + energy_used
+				+ ", target_velocity=" + target_velocity + ", stop_position="
+				+ stop_position + ", command=" + command + ", stopGiven="
+				+ stopGiven + "]";
+	}
+
+	public double getStopPosition() {
+		return stop_position;
+	}
+
+	public double getTargetVelocity() {
+		return this.target_velocity;
+	}
+	
+	
 }
 

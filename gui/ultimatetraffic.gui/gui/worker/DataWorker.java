@@ -1,10 +1,8 @@
 package gui.worker;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import gui.SimulatorGui;
-import gui.data.LightData;
 import gui.data.StateData;
 import gui.sqlite.SQLiteAccessor;
 

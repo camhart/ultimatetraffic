@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.TimeZone;
@@ -13,8 +14,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import simulator.outputter.Outputter;
-import simulator.phases.Phase0Handler;
-import simulator.phases.Phase1Handler;
 import simulator.phases.PhaseHandler;
 import simulator.validator.CarValidator;
 import simulator.validator.StopLightValidator;
@@ -121,9 +120,9 @@ public class Simulator {
 			CarManager curCar = null;
 			ArrayList<CarManager> curList = null;
 			while(scanner.hasNextLine()) {
-				String nextLine = scanner.nextLine();
+				String nextLine = scanner.nextLine().trim();
 				
-				if(nextLine.startsWith("//"))
+				if(nextLine.startsWith("//") || nextLine.length() == 0)
 					continue;
 				
 				curCar = new CarManager(nextLine);
@@ -274,34 +273,65 @@ public class Simulator {
 
 				curLight = curLight.getPrevLight();
 			}
+			
+			//sort lanes
+			curLight = this.lastLight;
+			while(curLight != null) {
+				curLight.getLane1().sort();
+				curLight.getLane2().sort();
+				curLight = curLight.getPrevLight();
+			}
+			
+			curLight = this.lastLight;			
+			while(curLight != null) {
+				curLight.optimizeLanes();
+				curLight = curLight.getPrevLight();
+			}
+			
+			//sort lanes
+			curLight = this.lastLight;
+			while(curLight != null) {
+				curLight.getLane1().sort();
+				curLight.getLane2().sort();
+				curLight = curLight.getPrevLight();
+			}
+			
 			//arriving cars
 			this.handleArrivingCars(currentIteration);
 			
 			//increment iteration
 			currentIteration++;
 			
-			LOG.severe(String.format("%s (%.1f s), iteration %d / %d, cars left %d, cars finished %d",
+//			if(currentIteration % 100 == 0)
+				LOG.info(String.format("%s (%.1f s), iteration %d / %d, cars left %d, cars finished %d",
 					getTime(), currentIteration * Simulator.TIME_PER_ITERATION,
 					currentIteration, numberOfIterations, carsLeftToArrive,
 					this.finishedCars.size()));
 		}
 		
+		LOG.info(String.format("%s (%.1f s), iteration %d / %d, cars left %d, cars finished %d",
+				getTime(), currentIteration * Simulator.TIME_PER_ITERATION,
+				currentIteration, numberOfIterations, carsLeftToArrive,
+				this.finishedCars.size()));
+		
 		//close the database (needs to happen before validator)
 		Outputter.getOutputter().close();
 		
+		printStuff();
+		
 		//validate data if a validator is set
 		if(getValidator() != null) {
-			getValidator().validateData(currentIteration - 1);
+			getValidator().validateData();
 		}
 	}
 	
-	static SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("HH:mm:ss:SSS");
+	static SimpleDateFormat TIME_FORMATTER = new SimpleDateFormat("HH:mm:ss:SSS");
 	static {
-		DATE_FORMATTER.setTimeZone(TimeZone.getTimeZone("UTC"));
+		TIME_FORMATTER.setTimeZone(TimeZone.getTimeZone("UTC"));
 	}
 	
 	private String getTime() {
-  	    return DATE_FORMATTER.format(currentIteration * Simulator.TIME_PER_ITERATION * 1000);
+  	    return TIME_FORMATTER.format(currentIteration * Simulator.TIME_PER_ITERATION * 1000);
 	}
 	
 	/**
@@ -363,15 +393,31 @@ public class Simulator {
 		simulator.loadLights(stopLightFile, phase);
 		simulator.loadCars(carsFile);
 		
-		simulator.run();		
+		try {
+			simulator.run();
+		}
+		catch(Exception e) {
+			Outputter.getOutputter().close();
+			throw e;
+		}
+		
 	}
 
 	private void printStuff() {
 		long totalIterations = 0;
+		double totalEnergy = 0.0;
+		
 		for(CarManager c : this.finishedCars) {
 			totalIterations += c.getIterations();
+			totalEnergy += c.getTotalEnergyUsed();
 		}
-		LOG.severe(String.format("Total travel time: %.1f seconds (%s)", totalIterations * this.TIME_PER_ITERATION, Simulator.DATE_FORMATTER.format(totalIterations * this.TIME_PER_ITERATION * 1000)));
+		
+		LOG.severe(String.format("Total travel time: %.1f seconds (%s)\n" +
+				"\tTotal energy used: %f",
+				totalIterations * Simulator.TIME_PER_ITERATION,
+				Simulator.TIME_FORMATTER.format(totalIterations * Simulator.TIME_PER_ITERATION * 1000),
+				totalEnergy
+		));
 	}
 
 	public void finishCar(CarManager car) {

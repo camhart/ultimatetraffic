@@ -16,7 +16,6 @@ public class DatabaseCompare {
 	
 	static {
 		LOG.setLevel(Level.ALL);
-//		LOG.setUseParentHandlers(false);
 	}
 	
 	private SQLiteAccessor db1;
@@ -73,7 +72,6 @@ public class DatabaseCompare {
 			if(c % 100 == 0)
 				System.out.println(String.format("%d/%d", c, db1Iterations));
 			
-			
 			HashMap<Integer, CarData> c1Map = db1.getCarData(c);
 			Set<Integer> keySet =  c1Map.keySet();
 			HashMap<Integer, CarData> c2Map = db2.getCarData(c);
@@ -103,5 +101,4 @@ public class DatabaseCompare {
 		DatabaseCompare dc = new DatabaseCompare(db1, db2);
 		dc.compare();
 	}
-
 }

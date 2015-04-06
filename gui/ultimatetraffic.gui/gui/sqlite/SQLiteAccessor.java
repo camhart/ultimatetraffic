@@ -23,7 +23,7 @@ public class SQLiteAccessor {
 	
 	public void setDataBaseName(String databaseName) {
 		
-		if(DATABASE_NAME != null && DATABASE_NAME != databaseName && SQLITE != null) {
+		if(DATABASE_NAME != null && !DATABASE_NAME.equals(databaseName) && SQLITE != null) {
 			SQLITE.close();
 		}
 		DATABASE_NAME = databaseName;

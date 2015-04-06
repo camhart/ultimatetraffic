@@ -16,7 +16,6 @@ import gui.data.StateData;
 import gui.listeners.DataListener;
 
 import javax.swing.JPanel;
-import javax.swing.JRootPane;
 
 public class CanvasPanel extends JPanel implements DataListener, MouseListener {
 	
@@ -123,7 +122,7 @@ public class CanvasPanel extends JPanel implements DataListener, MouseListener {
 	}	
 	
 	private void drawCar(Car car, Graphics2D g) {
-		Color carColor = car.acceleration > 0.001 ? Color.GREEN : ((car.acceleration < -0.001) ? Color.RED : Color.YELLOW);
+		Color carColor = car.acceleration > 0.25 ? Color.GREEN : ((car.acceleration < -0.25) ? Color.RED : Color.YELLOW);
 		g.setColor(carColor);
 		
 		g.fillPolygon(new int[]{car.x1, car.x2, car.x1}, new int[]{car.y1, car.y2, car.y3}, 3);

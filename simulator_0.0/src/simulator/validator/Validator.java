@@ -3,7 +3,6 @@ package simulator.validator;
 import gui.sqlite.SQLiteAccessor;
 
 import java.util.ArrayList;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,9 +37,11 @@ public class Validator {
 	}
 	
 	public void validateData(int totalIterations) {
+		LOG.info("Validation started...");
 		for(Validator v : validators) {
 			v.validateData(totalIterations);
 		}
+		LOG.info("Validation finished.");
 	}
 	
 	public void addValidator(Validator v) {
