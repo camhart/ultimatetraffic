@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.TimeZone;
@@ -272,13 +273,36 @@ public class Simulator {
 
 				curLight = curLight.getPrevLight();
 			}
+			
+			//sort lanes
+			curLight = this.lastLight;
+			while(curLight != null) {
+				curLight.getLane1().sort();
+				curLight.getLane2().sort();
+				curLight = curLight.getPrevLight();
+			}
+			
+			curLight = this.lastLight;			
+			while(curLight != null) {
+				curLight.optimizeLanes();
+				curLight = curLight.getPrevLight();
+			}
+			
+			//sort lanes
+			curLight = this.lastLight;
+			while(curLight != null) {
+				curLight.getLane1().sort();
+				curLight.getLane2().sort();
+				curLight = curLight.getPrevLight();
+			}
+			
 			//arriving cars
 			this.handleArrivingCars(currentIteration);
 			
 			//increment iteration
 			currentIteration++;
 			
-			if(currentIteration % 100 == 0)
+//			if(currentIteration % 100 == 0)
 				LOG.info(String.format("%s (%.1f s), iteration %d / %d, cars left %d, cars finished %d",
 					getTime(), currentIteration * Simulator.TIME_PER_ITERATION,
 					currentIteration, numberOfIterations, carsLeftToArrive,
@@ -369,7 +393,13 @@ public class Simulator {
 		simulator.loadLights(stopLightFile, phase);
 		simulator.loadCars(carsFile);
 		
-		simulator.run();		
+		try {
+			simulator.run();
+		}
+		catch(Exception e) {
+			Outputter.getOutputter().close();
+			throw e;
+		}
 		
 	}
 

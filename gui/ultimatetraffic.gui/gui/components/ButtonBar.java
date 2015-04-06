@@ -291,6 +291,7 @@ public class ButtonBar extends JToolBar implements ActionListener {
 				channel.disconnect();
 			} else {
 				try {
+					this.useChannel = !this.useChannel;
 					if(channel == null)
 						channel = new JChannel();
 					ButtonBar.channel.connect("simulator_gui");
@@ -309,7 +310,6 @@ public class ButtonBar extends JToolBar implements ActionListener {
 							}
 						}
 					});
-					this.useChannel = true;
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

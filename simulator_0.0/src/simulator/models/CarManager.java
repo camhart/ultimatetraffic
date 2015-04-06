@@ -10,7 +10,7 @@ import simulator.models.stoplights.StopLight;
 public class CarManager implements Comparable {
 	
 	public static final double CAR_CUSHION = 10.0; //in meters
-	public static final double CAR_STOP_CUSHION = 10.0; //in meters
+	public static final double CAR_STOP_CUSHION = 7.0; //in meters
 	public static final double TIME_CUSHION = 1.5; // was 0.5
 	public static final double ACCELERATION_DELAY_MIN = 2.0; //adjust this to change the minimum delay between cars accelerating for phase 0
 	public static final double ACCELERATION_DELAY_MAX = 2.6; //adjust this to change the maximum delay between cars accelerating for phase 1 
@@ -169,6 +169,15 @@ public class CarManager implements Comparable {
 		return false;
 	}
 
+	public void giveDelayedChangeSpeedCommand(double newSpeed, Command command) {
+		if(accelerateDelay <= 0) {
+			this.car.giveChangeSpeedCommand(newSpeed, command);
+			targetSpeed = newSpeed;
+		}
+		else {
+			accelerateDelay--;
+		}
+	}
 
 	public void giveChangeSpeedCommand(double newSpeed, Command command) {
 		this.car.giveChangeSpeedCommand(newSpeed, command);
@@ -201,6 +210,10 @@ public class CarManager implements Comparable {
 	public double getStopDistance(StopLight light) {
 		
 		assert (this.getLane() == 1 ? light.getLane1() : light.getLane2()) == this.getLaneObject() : "Lane objects don't match";
+		
+		if(this.getPosition() >= light.getPosition())
+			return Double.MAX_VALUE;
+		
 		assert (this.getPosition() < light.getPosition()) : "Car is ahead of light";
 		
 		int stoppingCarsInFrontOfMe = 0;
@@ -222,12 +235,16 @@ public class CarManager implements Comparable {
 //					car not stopping
 			}			
 		}
-		
+
 		double value = ((light.getPosition() - (stoppingCarsInFrontOfMe * CarManager.CAR_STOP_CUSHION)) - this.getPosition());
-		assert value > 0 : "Crash! " + value + ((this.getLaneObject().getParentLight().getClass() == StopLight.class) ? "\n Consider adjusting Phase0Handler.RUN_YELLOW_LIGHT_DISTANCE" : " no clue what's going on...");
+//		value = value - 1.0;
+//		assert value > -2.5 : "Crash! car: " + this.getId() + " " + value + ((this.getLaneObject().getParentLight().getClass() == StopLight.class) ? "\n Consider adjusting Phase0Handler.RUN_YELLOW_LIGHT_DISTANCE" : " no clue what's going on...");
+		
+		if(value < 0)
+			value = 0;
 		
 		// (light position - length of all cars stopped in front of me) - car position
-		return value - 2.5;		
+		return value;		
 	}
 
 	private Car getCar() {
@@ -243,11 +260,16 @@ public class CarManager implements Comparable {
 	 */
 	public void giveStopCommand(double distance) {
 		assert this.getLaneObject().getParentLight().getClass() == StopLight.class : "Calling stop in something other than phase 0";
+		assert distance >= 0 : "telling us to stop behind us";
 		
-		int min = (int) (ACCELERATION_DELAY_MIN / Simulator.TIME_PER_ITERATION);
-		int max = (int) (ACCELERATION_DELAY_MAX / Simulator.TIME_PER_ITERATION);
-		accelerateDelay = min + (int)(Math.random() * (max - min));
+		resetAccelerationDelay();
+		
 		this.car.giveStopCommand(distance);
+	}
+	
+	public double getStopPosition() {
+		assert this.getCommand() == Command.STOP : "getting the stop position when we aren't stopped";
+		return car.getStopPosition();
 	}
 	
 	/**
@@ -281,6 +303,18 @@ public class CarManager implements Comparable {
 	
 	public double getTotalEnergyUsed() {
 		return this.car.getEnergyUsed();
+	}
+
+	public double getTargetVelocity() {
+		// TODO Auto-generated method stub
+		return car.getTargetVelocity();
+	}
+
+	public void resetAccelerationDelay() {
+		int min = (int) (ACCELERATION_DELAY_MIN / Simulator.TIME_PER_ITERATION);
+		int max = (int) (ACCELERATION_DELAY_MAX / Simulator.TIME_PER_ITERATION);
+		
+		accelerateDelay = min + (int)(Math.random() * (max - min));
 	}
 	
 

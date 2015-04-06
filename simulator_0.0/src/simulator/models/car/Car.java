@@ -216,6 +216,14 @@ public class Car {
 				+ stop_position + ", command=" + command + ", stopGiven="
 				+ stopGiven + "]";
 	}
+
+	public double getStopPosition() {
+		return stop_position;
+	}
+
+	public double getTargetVelocity() {
+		return this.target_velocity;
+	}
 	
 	
 }

@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import simulator.models.stoplights.StopLight;
+import simulator.phases.Phase0Handler;
 
 public class Lane {
 	
@@ -71,6 +72,20 @@ public class Lane {
 	 */
 	public boolean canChangeLane(CarManager car) {
 		Iterator<CarManager> iter = cars.iterator();
+		
+//		CarManager nextCar = this.getNextCarFromPosition(car.getPosition());
+//		CarManager prevCar = this.getPrevCarFromPosition(car.getPosition());
+//		
+//		double timeUntilNextCarCollision = Phase0Handler.getTimeUntilCollision(car,  nextCar);
+//		double timeUntilPrevCarCollision = Phase0Handler.getTimeUntilCollision(prevCar,  car);
+//		
+//		if(timeUntilNextCarCollision < Phase0Handler.CAR_SPACING || 
+//				timeUntilPrevCarCollision < Phase0Handler.CAR_SPACING ||
+//				(nextCar == null || Math.abs(nextCar.getPosition() - car.getPosition()) < CarManager.CAR_CUSHION) ||
+//				(prevCar == null || Math.abs(prevCar.getPosition() - car.getPosition()) < CarManager.CAR_CUSHION))
+//					return false;
+//		return true;
+		
 		CarManager curCar = null;
 		while(iter.hasNext()) {
 			curCar = iter.next();
@@ -89,6 +104,36 @@ public class Lane {
 //		System.out.println("");
 //	}
 	
+	private CarManager getPrevCarFromPosition(double position) {
+		assert position < this.getParentLight().getPosition() && position > this.getParentLight().getPrevLight().getPosition() : "bad position for lane";
+		
+		ListIterator<CarManager> iter = this.getReverseIterable(); //cars.listIterator(cars.size());
+		CarManager curCar;
+		
+		while(iter.hasPrevious()) {
+			curCar = iter.previous();
+			if(curCar.getPosition() < position) {
+				return curCar;
+			}
+		}
+		return null;
+	}
+	
+	private CarManager getNextCarFromPosition(double position) {
+//		assert position < this.getParentLight().getPosition() && position > this.getParentLight().getPrevLight().getPosition() : "bad position for lane";
+		
+		ListIterator<CarManager> iter = this.getIterable(); //cars.listIterator(cars.size());
+		CarManager curCar;
+		
+		while(iter.hasNext()) {
+			curCar = iter.next();
+			if(curCar.getPosition() > position) {
+				return curCar;
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * returns null if no other car in front
 	 * @param curCar
@@ -188,5 +233,9 @@ public class Lane {
 
 	public int getLaneNumber() {
 		return this.laneNumber;
+	}
+
+	public void sort() {
+		Collections.sort(this.cars);
 	}
 }

@@ -185,7 +185,18 @@ public class StopLight implements Iterable<CarManager>{
 		return c1.getPosition() >= c2.getPosition();
 	}
 	
+//	public boolean canOptimizeCar(CarManager car, ArrayList<Double> list) {
+//		for(Double d : list) {
+//			if(Math.abs(car.getPosition() - d) < 6.0) {
+//				return false;
+//			}
+//		}
+//		return true;
+//	}
+	
 	public void optimizeLanes() {
+//		ArrayList<Double> positionsThatChangedLanes = new ArrayList<Double>();
+		
 		boolean laneChangeOccured = true;
 		while(laneChangeOccured) {
 			
@@ -211,12 +222,14 @@ public class StopLight implements Iterable<CarManager>{
 							double distanceToNextCar = nextCar.getPosition() - car1.getPosition();
 							double distanceToNextCarOther = getOtherLane(car1.getLane()).getDistanceToNextCarFrom(car1.getPosition());
 							
+//							if(distanceToNextCarOther > distanceToNextCar && canOptimizeCar(car1, positionsThatChangedLanes)) {
 							if(distanceToNextCarOther > distanceToNextCar) {
 								//change lanes
 								getLane1().removeCar(car1);
 								car1.setLane(2, getLane2());
 								getLane2().addCar(car1);
 								laneChangeOccured = true;
+//								positionsThatChangedLanes.add(car1.getPosition());
 							}	
 						}
 					}	
@@ -265,7 +278,7 @@ public class StopLight implements Iterable<CarManager>{
 		this.handleLightColors(timePerIteration, phase);
 		
 //		handleLaneChanges();
-		optimizeLanes();
+
 		
 		
 		Iterator<CarManager> carIter = this.iterator();
