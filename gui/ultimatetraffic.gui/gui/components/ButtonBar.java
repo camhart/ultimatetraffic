@@ -12,6 +12,7 @@ import java.io.File;
 
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -24,6 +25,10 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
 
+import org.jgroups.JChannel;
+import org.jgroups.Message;
+import org.jgroups.ReceiverAdapter;
+
 //import org.jdesktop.xswingx.PromptSupport;
 
 public class ButtonBar extends JToolBar implements ActionListener {
@@ -35,13 +40,19 @@ public class ButtonBar extends JToolBar implements ActionListener {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	
+	private static JChannel channel;
+	
+	private static boolean useChannel = false;
 	private int iterationCountValue = 0;
 	private int startIterationCountValue = 0;
 	private DataWorker dataWorker;
+	private boolean justSent;
 	
 	JFileChooser fileChooser;
 	JButton setDatabaseButton;
 	JButton runButton;
+	JCheckBox controlAllGuis;
 	JTextField iterationTextField;
 	JTextField startIterationTextField;
 
@@ -56,6 +67,8 @@ public class ButtonBar extends JToolBar implements ActionListener {
 
 	public ButtonBar() {
 		super();
+
+		
 		this.paused = false;
 		this.workerDone = true;
 		this.databaseSet = false;
@@ -177,6 +190,10 @@ public class ButtonBar extends JToolBar implements ActionListener {
 		cancelButton = new JButton("Cancel run");
 		cancelButton.addActionListener(this);
 		
+		controlAllGuis = new JCheckBox("Control all GUIs");
+		
+		controlAllGuis.addActionListener(this);
+		
 		
 		this.add(setDatabaseButton);
 		this.add(resetDatabaseButton);	
@@ -185,8 +202,9 @@ public class ButtonBar extends JToolBar implements ActionListener {
 		this.add(runButton);
 		this.add(pauseButton);
 		this.add(cancelButton);
+		this.add(controlAllGuis);
 		
-		this.add(Box.createRigidArea(new Dimension(500,0)));
+		this.add(Box.createRigidArea(new Dimension(400,0)));
 		
 		this.add(new JLabel("Start at iteration: "));
 		this.add(startIterationTextField);
@@ -203,6 +221,19 @@ public class ButtonBar extends JToolBar implements ActionListener {
 			SQLiteAccessor.getSQLite().init(fileChooser.getSelectedFile().getAbsolutePath());
 			this.databaseSet = true;
 		}
+		updateButtons();
+	}
+	
+	public void runSimulator() {
+		dataWorker = new DataWorker(this.iterationCountValue);
+		dataWorker.execute();
+		updateButtons();
+	}
+	
+	public void togglePause() {
+		this.paused = !this.paused;
+		dataWorker.setPause(this.paused);
+		pauseButton.setText((this.paused == true) ? "Unpause" : " Pause ");
 		updateButtons();
 	}
 
@@ -222,16 +253,29 @@ public class ButtonBar extends JToolBar implements ActionListener {
 			updateButtons();
 			break;
 		case "Run":
-			dataWorker = new DataWorker(this.iterationCountValue);
-			dataWorker.execute();
-			updateButtons();
+			if(this.useChannel) {
+				try {
+					this.justSent = true;
+					channel.send(new Message(null, "run"));
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			this.runSimulator();
 			break;
 		case "Unpause":
 		case " Pause ":
-			this.paused = !this.paused;
-			dataWorker.setPause(this.paused);
-			pauseButton.setText((this.paused == true) ? "Unpause" : " Pause ");
-			updateButtons();
+			if(this.useChannel) {
+				try {
+					this.justSent = true;
+					channel.send(new Message(null, "pause"));
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			this.togglePause();
 			break;
 		case "Cancel run":
 			this.paused = false;
@@ -241,6 +285,36 @@ public class ButtonBar extends JToolBar implements ActionListener {
 			SimulatorGui.getInstance().setCurrentIteration(this.startIterationCountValue);
 			SimulatorGui.getInstance().getCanvas().clearData();
 			updateButtons();
+			break;
+		case "Control all GUIs":
+			if(channel != null && channel.isConnected() || this.useChannel) {
+				channel.disconnect();
+			} else {
+				try {
+					if(channel == null)
+						channel = new JChannel();
+					ButtonBar.channel.connect("simulator_gui");
+					ButtonBar.channel.setReceiver(new ReceiverAdapter() {
+						@Override
+						public void receive(Message msg) {
+							if(justSent) {
+								justSent = false;
+								return;
+							}
+							System.out.println("recieved: " + msg.getObject());
+							if(((String)msg.getObject()).equals("run")) {
+								runSimulator();
+							} else if(((String)msg.getObject()).equals("pause")) {
+								togglePause();
+							}
+						}
+					});
+					this.useChannel = true;
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}			
+			}
 			break;
 		case "":
 			break;
@@ -273,5 +347,9 @@ public class ButtonBar extends JToolBar implements ActionListener {
 		
 		pauseButton.setEnabled(!this.workerDone && dataWorker != null && !dataWorker.isDone() && !dataWorker.isCancelled());
 		pauseButton.setText((paused == true) ? "Unpause" : " Pause ");
+	}
+
+	public static boolean messageServerRunning() {
+		return useChannel;
 	}
 }

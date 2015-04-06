@@ -234,4 +234,8 @@ public class SimulatorGui extends JFrame implements DataListener, PropertyChange
 	public InfoBar getInfoBar() {
 		return this.infoBar;
 	}
+	
+	public ButtonBar getButtonBar() {
+		return this.buttonBar;
+	}
 }
