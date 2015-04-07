@@ -136,6 +136,8 @@ public class SQLiteAccessor {
 				car.setAcceleration(rs.getDouble(6));
 				//simulationId
 				car.setLightId(rs.getInt(8));
+				car.setCommand(rs.getString(9));
+				car.setStopPosition(rs.getDouble(10));
 			
 				data.put(car.getId(), car);
 			}

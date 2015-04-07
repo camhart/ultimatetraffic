@@ -6,6 +6,7 @@ import java.util.ListIterator;
 
 import simulator.models.CarManager;
 import simulator.models.Lane;
+import simulator.models.car.Car.Command;
 import simulator.outputter.Outputter;
 import simulator.phases.PhaseHandler;
 
@@ -220,18 +221,21 @@ public class StopLight implements Iterable<CarManager>{
 					if(getOtherLane(car1.getLane()).canChangeLane(car1)) {						
 						CarManager nextCar = this.getLane(car1.getLane()).getNextCar(car1);						
 						if(nextCar != null) {
-							double distanceToNextCar = nextCar.getPosition() - car1.getPosition();
-							double distanceToNextCarOther = getOtherLane(car1.getLane()).getDistanceToNextCarFrom(car1.getPosition());
 							
-//							if(distanceToNextCarOther > distanceToNextCar && canOptimizeCar(car1, positionsThatChangedLanes)) {
-							if(distanceToNextCarOther > distanceToNextCar) {
-								//change lanes
-								getLane1().removeCar(car1);
-								car1.setLane(2, getLane2());
-								getLane2().addCar(car1);
-								laneChangeOccured = true;
-//								positionsThatChangedLanes.add(car1.getPosition());
-							}	
+							if(car1.getCommand() == Command.GO || car1.getCommand() == Command.CHANGE_SPEED) {
+								double distanceToNextCar = nextCar.getPosition() - car1.getPosition();
+								double distanceToNextCarOther = getOtherLane(car1.getLane()).getDistanceToNextCarFrom(car1.getPosition());
+								
+	//							if(distanceToNextCarOther > distanceToNextCar && canOptimizeCar(car1, positionsThatChangedLanes)) {
+								if(distanceToNextCarOther > distanceToNextCar) {
+									//change lanes
+									getLane1().removeCar(car1);
+									car1.setLane(2, getLane2());
+									getLane2().addCar(car1);
+									laneChangeOccured = true;
+	//								positionsThatChangedLanes.add(car1.getPosition());
+								}	
+							}
 						}
 					}	
 					if(!laneChangeOccured) {

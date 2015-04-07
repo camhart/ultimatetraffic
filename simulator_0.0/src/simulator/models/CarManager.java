@@ -268,7 +268,7 @@ public class CarManager implements Comparable {
 	}
 	
 	public double getStopPosition() {
-		assert this.getCommand() == Command.STOP : "getting the stop position when we aren't stopped";
+		//assert this.getCommand() == Command.STOP : "getting the stop position when we aren't stopped";
 		return car.getStopPosition();
 	}
 	

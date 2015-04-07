@@ -39,7 +39,9 @@ public class CarDebugPanel extends JPanel {
 				{"Velocity", ""},
 				{"Acceleration", ""},
 				{"Lane", ""},
-				{"LightId", ""}
+				{"LightId", ""},
+				{"Command", ""},
+				{"Stop Position", ""}
 		}, new Object[]{"Car Property", "Value"});
 		
 		table = new JTable(7, 2);
@@ -101,6 +103,8 @@ public class CarDebugPanel extends JPanel {
 		tableModel.setValueAt(String.format("%.5f", c.acceleration), 3, 1);
 		tableModel.setValueAt(Integer.toString(c.lane), 4, 1);
 		tableModel.setValueAt(Integer.toString(c.lightId), 5, 1);
+		tableModel.setValueAt(c.command, 6, 1);
+		tableModel.setValueAt(String.format("%.5f", c.stopPosition), 7,  1);
 		this.setVisible(true);
 		this.setPreferredSize(new Dimension(200, 0));
 	}

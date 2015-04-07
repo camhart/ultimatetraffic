@@ -21,6 +21,7 @@ public class CanvasPanel extends JPanel implements DataListener, MouseListener {
 	
 	public class Car {
 		
+		String command;
 		public int getY1() {
 			return getHeight() / 2 + ((this.lane == 1) ? -CarData.CarHeight * 2 : CarData.CarHeight);
 		}
@@ -44,6 +45,8 @@ public class CanvasPanel extends JPanel implements DataListener, MouseListener {
 			this.velocity = cd.getVelocity();
 			this.acceleration = cd.getAcceleration();
 			this.lightId = cd.getLightId();
+			this.command = cd.getCommand();
+			this.stopPosition = cd.getStopPosition();
 			this.x1 = (int) (this.position - CarData.CarLength / 2);
 			this.x2 = (int) (this.position + CarData.CarLength / 2);
 			
@@ -67,6 +70,7 @@ public class CanvasPanel extends JPanel implements DataListener, MouseListener {
 		double velocity;
 		double acceleration;
 		int lightId;
+		double stopPosition;
 	}
 	
 	class Light {

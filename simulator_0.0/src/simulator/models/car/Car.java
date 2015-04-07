@@ -59,7 +59,7 @@ public class Car {
 	public void giveChangeSpeedCommand(double target, Command command){
 		this.command  = command;
 		target_velocity = target;
-		calculateEnergyUsed(velocity, target_velocity);
+		//calculateEnergyUsed(velocity, target_velocity);
 //		changeSpeed(); //should this be commented out?
 	}
 	/**
@@ -89,7 +89,7 @@ public class Car {
 			velocity = 0;
 		}
 		position = position + step / 2 * (velocity + velocity_delayed);
-		
+		this.energy_used += Math.abs(step / 2 * (velocity + velocity_delayed) * control);
 		assert velocity >= 0 : "we don't go in reverse... target_velocity = " + this.target_velocity + " acceleration=" + acceleration ;
 	}
 	
@@ -99,7 +99,7 @@ public class Car {
 	public void giveGoCommand(){
 		command = Command.GO;
 		target_velocity = speed_limit;
-		calculateEnergyUsed(velocity, target_velocity);
+		//calculateEnergyUsed(velocity, target_velocity);
 //		changeSpeed();
 	}
 	
@@ -128,7 +128,7 @@ public class Car {
 	private void stop(){
 		Pair stop_info = map.getAccelerationInfo(new Pair(roundUp(velocity), 0));
 		if(roundDown(stop_info.getSecond()) >= roundDown(stop_position) - roundUp(position) && !this.stopGiven){
-			calculateEnergyUsed(speed_before_stop, velocity);
+			//calculateEnergyUsed(speed_before_stop, velocity);
 			giveChangeSpeedCommand(0, Command.STOP);
 			this.stopGiven = true;
 		}

@@ -85,7 +85,7 @@ class SQLiteOutputter implements OutputterInterface{
 	public void addCarOutput(CarManager car) {
 		Connection con = SQLite.getConnection();
 		try {
-			PreparedStatement ps = con.prepareStatement("INSERT INTO car_output (id, iterationCount, position, lane, velocity, acceleration, simulationId, lightId) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
+			PreparedStatement ps = con.prepareStatement("INSERT INTO car_output (id, iterationCount, position, lane, velocity, acceleration, simulationId, lightId, command, stop_position) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 			
 			ps.setInt(1, car.getId());
 			ps.setInt(2,  Simulator.getSimulator().getCurrentIteration());
@@ -95,6 +95,8 @@ class SQLiteOutputter implements OutputterInterface{
 			ps.setDouble(6,  car.getAcceleration());
 			ps.setInt(7, simulationId);
 			ps.setInt(8,  car.getLaneObject().getParentLight().getId());
+			ps.setString(9,  car.getCommand().toString());
+			ps.setDouble(10, car.getStopPosition());
 			
 			ps.execute();
 			
@@ -154,6 +156,8 @@ class SQLiteOutputter implements OutputterInterface{
 				"acceleration REAL not NULL," +
 				"simulationId INTEGER not NULL," +
 				"lightId INTEGER not NULL," +
+				"command VARCHAR(10) not NULL," +
+				"stop_position REAL not NULL," +
 				"FOREIGN KEY(simulationId) REFERENCES simulation(id)" + 
 			");";
 		

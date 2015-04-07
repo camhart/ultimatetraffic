@@ -12,7 +12,15 @@ public class CarData {
 	private double velocity;
 	private double acceleration;
 	private int lightId;
+	private String command;
+	private double stopPosition;
 	
+	public double getStopPosition() {
+		return stopPosition;
+	}
+	public void setStopPosition(double stop_position) {
+		this.stopPosition = stop_position;
+	}
 	public int getId() {
 		return id;
 	}
@@ -110,5 +118,11 @@ public class CarData {
 				+ ", position=" + position + ", lane=" + lane + ", velocity="
 				+ velocity + ", acceleration=" + acceleration + ", lightId="
 				+ lightId + "]";
+	}
+	public void setCommand(String string) {
+		this.command = string;
+	}
+	public String getCommand() {
+		return this.command;
 	}
 }

@@ -20,6 +20,7 @@ public class Phase0Handler extends PhaseHandler {
 		if(c2 == null || c1 == null || c2.getTargetVelocity() > c1.getTargetVelocity()) {
 			return Double.MAX_VALUE;
 		}
+		
 		double p1 = c1.getPosition();
 		double p2 = c2.getPosition();
 		double v1 = c1.getTargetVelocity();
@@ -80,6 +81,17 @@ public class Phase0Handler extends PhaseHandler {
 			CarManager car, StopLight light) {
 
 		car.moveCarForward(); // move car
+		
+		CarManager nextCar = car.getLaneObject().getNextCar(car);
+		double timeUntilHitCar = getTimeUntilCollision(car, nextCar);
+		
+		int nextCarId = nextCar == null ? -1 : nextCar.getId();
+		double nextCarVelocity = nextCar == null ? -1 : nextCar.getTargetVelocity();
+		double nextCarPosition = nextCar == null ? -1 : nextCar.getPosition();
+		
+		if(Simulator.getSimulator().getCurrentIteration() == 4701 && car.getId() == 65)
+			System.out.println("jere");
+	
 		if (light.getCurrentColor() == StopLight.Color.RED && car.getCommand() != Car.Command.STOP) {
 			car.giveStopCommand(car.getStopDistance(light));
 		}
@@ -99,7 +111,7 @@ public class Phase0Handler extends PhaseHandler {
 		} else if (car.getCommand() == Car.Command.STOP
 				&& light.getCurrentColor() == StopLight.Color.GREEN) {
 
-			CarManager nextCar = car.getLaneObject().getNextCar(car);
+//			CarManager nextCar = car.getLaneObject().getNextCar(car);
 			if (nextCar != null) {
 				if (nextCar.getCommand() == Car.Command.GO) {
 					// creates a slight delay between car's being given the go
@@ -112,6 +124,28 @@ public class Phase0Handler extends PhaseHandler {
 			}
 			// go!
 		}
+		
+
+//		double asdf = -1;
+//		if(nextCar != null)
+//			asdf = nextCar.getStopPosition() - CarManager.CAR_STOP_CUSHION;
+		
+//		if((car.getCommand() == Command.GO || (nextCar != null && nextCar.getCommand() == Command.STOP && car.getStopPosition() > nextCar.getStopPosition() - CarManager.CAR_STOP_CUSHION)) && timeUntilHitCar < 3.0) {
+//
+////			System.out.println(String.format("%d | Car1: %d p: %.2f v: %.2f, Car2: %d p: %.2f v: %.2f, Time: %f",
+////					Simulator.getSimulator().getCurrentIteration(),
+////					car.getId(),
+////					car.getPosition(),
+////					car.getVelocity(),
+////					nextCarId,
+////					nextCarPosition,
+////					nextCarVelocity,
+////					timeUntilHitCar));
+//			double position = Math.min(nextCar.getStopPosition() - CarManager.CAR_STOP_CUSHION,
+//					nextCar.getPosition() - CarManager.CAR_STOP_CUSHION);
+//			
+//			car.giveStopCommand(position);
+//		}
 
 		Outputter.getOutputter().addCarOutput(car);
 	}
