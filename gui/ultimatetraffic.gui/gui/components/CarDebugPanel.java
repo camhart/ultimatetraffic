@@ -124,6 +124,10 @@ public class CarDebugPanel extends JPanel {
 		return this.snapToCar.isSelected();
 	}
 	
+	public void unFollowCar() {
+		this.snapToCar.setSelected(false);
+	}
+	
 	public boolean updatingCarData() {
 		return this.updateData.isSelected() && this.isVisible();
 	}
