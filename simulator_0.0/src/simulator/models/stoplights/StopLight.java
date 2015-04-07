@@ -28,6 +28,7 @@ public class StopLight implements Iterable<CarManager>{
 	protected double initialOffset;
 	protected int id;
 	protected int greenTimesEarned;
+	protected double greenTimeEarned;
 	//private int[] lightTimes;
 	protected ArrayList<Integer> lightTimes;
 	
@@ -54,6 +55,7 @@ public class StopLight implements Iterable<CarManager>{
 		lane2.otherLane = lane1;
 		
 		this.greenTimesEarned = 3;
+		this.greenTimeEarned = 30;
 		this.lightTimes = new ArrayList<Integer>();
 		this.lightTimes.add(1);
 		

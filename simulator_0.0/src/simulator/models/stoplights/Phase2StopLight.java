@@ -232,6 +232,7 @@ public class Phase2StopLight extends Phase1StopLight {
 		}
 		return greenLight;
 	}
+
 	
 	public double getTimeChunk(boolean greenLight){
 		if(greenLight){
