@@ -197,7 +197,8 @@ public class Phase2StopLight extends Phase1StopLight {
 								lightTimes.add(i+1, greensNeeded);
 							}
 							else{
-								lightTimes.set(i+1, lightTimes.get(i+1) + greensNeeded);
+								lightTimes.add(greensNeeded);
+								//lightTimes.set(i+1, lightTimes.get(i+1) + greensNeeded);
 							}
 						}
 						else{
