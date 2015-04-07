@@ -28,6 +28,8 @@ public class CarManager implements Comparable {
 	private double targetSpeed;
 	private int totalIterations = 0;
 	
+	private int lastLaneChangeIteration = -1;
+	
 	private int accelerateDelay = 0;
 	
 	private static class CarIdGenerator {
@@ -237,7 +239,7 @@ public class CarManager implements Comparable {
 		}
 
 		double value = ((light.getPosition() - (stoppingCarsInFrontOfMe * CarManager.CAR_STOP_CUSHION)) - this.getPosition());
-//		value = value - 1.0;
+		value = value - 1.0;
 //		assert value > -2.5 : "Crash! car: " + this.getId() + " " + value + ((this.getLaneObject().getParentLight().getClass() == StopLight.class) ? "\n Consider adjusting Phase0Handler.RUN_YELLOW_LIGHT_DISTANCE" : " no clue what's going on...");
 		
 		if(value < 0)
@@ -315,6 +317,10 @@ public class CarManager implements Comparable {
 		int max = (int) (ACCELERATION_DELAY_MAX / Simulator.TIME_PER_ITERATION);
 		
 		accelerateDelay = min + (int)(Math.random() * (max - min));
+	}
+	
+	public void setLastLaneChangeIteration(int amt) {
+		this.lastLaneChangeIteration = amt;
 	}
 	
 

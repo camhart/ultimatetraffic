@@ -90,6 +90,11 @@ public class CanvasPanel extends JPanel implements DataListener, MouseListener {
 		public double getTimeUntilChange() {
 			return this.timeUntilChange;
 		}
+
+
+		public boolean clicked(int x, int y) {			
+			return x >= position - lightSize && x <= position + lightSize && y >= lightY - lightSize && y <= lightY + lightSize;
+		}
 	}
 	
 	HashMap<Integer, Light> lights;
@@ -139,7 +144,11 @@ public class CanvasPanel extends JPanel implements DataListener, MouseListener {
 	
 	private static int lightSize = 10;
 	
+	private static int lightY = 0;
+	
+	
 	private void drawLight(Light l, Graphics2D g) {
+		lightY = this.getHeight() / 2 + 35;
 		Color lightColor;
 		if(l.getTimeUntilChange() < 5.0 && l.color.toString().equals("GREEN")) {
 			lightColor = Color.YELLOW;
@@ -149,16 +158,15 @@ public class CanvasPanel extends JPanel implements DataListener, MouseListener {
 		
 		g.setColor(lightColor);
 		
-		int y = this.getHeight() / 2 + 35;
 		
-		g.fillOval((int) l.position,  y, lightSize, lightSize);
+		g.fillOval((int) l.position,  lightY, lightSize, lightSize);
 		
 		g.setColor(Color.BLACK);
 		
-		g.drawString(String.format("Id: %d", l.id), (int) (l.position - 31),  y + 10);
+		g.drawString(String.format("Id: %d", l.id), (int) (l.position - 31),  lightY + 10);
 		
 		//keep "0.0 +" in there, it prevents it frome showing up as negative zero (-0.0)
-		g.drawString(String.format("%.2f s", 0.0 + (l.getTimeUntilChange() - SimulatorGui.getInstance().getState())), (int) ((int) l.position + lightSize * 1.5), y + 10);
+		g.drawString(String.format("%.2f s", 0.0 + (l.getTimeUntilChange() - SimulatorGui.getInstance().getState())), (int) ((int) l.position + lightSize * 1.5), lightY + 10);
 		
 	}
 	
@@ -188,32 +196,31 @@ public class CanvasPanel extends JPanel implements DataListener, MouseListener {
 		for(Car c : cars) {
 			if(c.clicked(e.getX(), e.getY())) {
 				SimulatorGui.getInstance().getCarDebugPanel().setCar(c);
-				break;
+				return;
+			}
+		}
+		for(Light l : this.lights.values()) {
+			if(l.clicked(e.getX(), e.getY())) {
+				SimulatorGui.getInstance().getCarDebugPanel().unFollowCar();
+				SimulatorGui.getInstance().setScrollPosition((int)l.position);
+				return;
 			}
 		}
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 }

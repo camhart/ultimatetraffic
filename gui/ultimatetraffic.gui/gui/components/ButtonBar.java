@@ -179,7 +179,7 @@ public class ButtonBar extends JToolBar implements ActionListener {
 			}			
 		});
 		iterationTextField.setDocument(doc);
-		iterationTextField.setText("10000");
+		iterationTextField.setText("15000");
 //		PromptSupport.setPrompt("Number of Iterations", iterationTextField);
 		
 		pauseButton = new JButton("Pause");

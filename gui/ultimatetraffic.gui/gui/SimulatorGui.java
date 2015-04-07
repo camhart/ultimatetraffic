@@ -89,11 +89,12 @@ public class SimulatorGui extends JFrame implements DataListener, PropertyChange
 	protected void createAndShow(int roadLength) {
 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setSize(1200,  600);
+		
+		this.setSize((int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().getWidth(), 350);
 		
 		this.getContentPane().setLayout(new BorderLayout());
 		
-		canvasPanel = new CanvasPanel(roadLength, 400);
+		canvasPanel = new CanvasPanel(roadLength, 200);
 		this.addDataListener(canvasPanel);
 		scrollPane = new JScrollPane(canvasPanel);
 		
