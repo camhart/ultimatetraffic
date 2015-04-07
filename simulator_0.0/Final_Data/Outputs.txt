@@ -1,0 +1,122 @@
+SINGLE CAR
+PHASE 0
+SEVERE: Total travel time: 455.5 seconds (00:07:35:500)
+	Total energy used: 5765814.572988
+PHASE 1
+SEVERE: Total travel time: 450.8 seconds (00:07:30:800)
+	Total energy used: 38632802.471897
+
+PHASE 1.5
+SEVERE: Total travel time: 270.8 seconds (00:04:30:800)
+	Total energy used: 0.000000
+
+PHASE 2
+SEVERE: Total travel time: 270.8 seconds (00:04:30:800)
+	Total energy used: 0.000000
+
+10 CARS
+PHASE 0
+SEVERE: Total travel time: 4501.2 seconds (01:15:01:200)
+	Total energy used: 48857213.993400
+7.50 minute average
+
+PHASE 1
+SEVERE: Total travel time: 4436.5 seconds (01:13:56:500)
+	Total energy used: 420861150.990634
+7.39 minute average
+
+PHASE 1.5
+SEVERE: Total travel time: 2708.0 seconds (00:45:08:000)
+	Total energy used: 29909.435433
+4.51 minute average
+
+PHASE 2
+SEVERE: Total travel time: 2708.0 seconds (00:45:08:000)
+	Total energy used: 29909.435433
+4.51 minute average
+
+
+LIGHT TRAFFIC (83 cars)
+PHASE 0
+SEVERE: Total travel time: 42303.7 seconds (11:45:03:700)
+	Total energy used: 354609999.528121
+8.50 minute average
+
+PHASE 1
+SEVERE: Total travel time: 38832.3 seconds (10:47:12:300)
+	Total energy used: 167853482.092886
+7.80 minute average
+
+PHASE 1.5
+SEVERE: Total travel time: 26929.3 seconds (07:28:49:300)
+	Total energy used: 78795089.187047
+5.41 minute average
+
+PHASE 2
+SEVERE: Total travel time: 25052.6 seconds (06:57:32:600)
+	Total energy used: 85191976.713086
+5.03 minute average
+
+MODERATE TRAFFIC (125 cars)
+PHASE 0
+SEVERE: Total travel time: 65501.4 seconds (18:11:41:400)
+	Total energy used: 614764464.904312
+8.734 minute average
+
+PHASE 1
+SEVERE: Total travel time: 59958.6 seconds (16:39:18:600)
+	Total energy used: 5828551104.099601
+7.99 minute average
+
+PHASE 1.5
+SEVERE: Total travel time: 40510.4 seconds (11:15:10:400)
+	Total energy used: 2499647548.775341
+5.40 minute average
+
+PHASE 2
+SEVERE: Total travel time: 38019.7 seconds (10:33:39:700)
+	Total energy used: 3063295731.009862
+5.07 minute average
+
+HEAVY TRAFFIC (153 cars)
+PHASE 0
+SEVERE: Total travel time: 85898.8 seconds (23:51:38:800)
+	Total energy used: 762231584.294761
+9.36 minute average
+
+PHASE 1
+SEVERE: Total travel time: 74249.4 seconds (20:37:29:400)
+	Total energy used: 7507546631.475299
+8.09 minute average
+
+PHASE 1.5
+SEVERE: Total travel time: 50335.4 seconds (13:58:55:400)
+	Total energy used: 3354183655.932945
+5.48 minute average
+
+PHASE 2
+SEVERE: Total travel time: 46636.4 seconds (12:57:16:400)
+	Total energy used: 4065760524.825051
+5.08 minute average
+
+CRAZY TRAFFIC (179 cars)
+PHASE 0
+SEVERE: Total travel time: 119164.0 seconds (09:06:04:000)
+	Total energy used: 826957484.393616
+11.10 minute average
+
+PHASE 1
+SEVERE: Total travel time: 89530.1 seconds (00:52:10:100)
+	Total energy used: 444426961.345152
+8.34 minute average
+
+PHASE 1.5
+SEVERE: Total travel time: 69408.5 seconds (19:16:48:500)
+	Total energy used: 312187171.972403
+6.46 minute average
+
+PHASE 2
+SEVERE: Total travel time: 55032.8 seconds (15:17:12:800)
+	Total energy used: 247327426.029513
+5.12 minute average
+
