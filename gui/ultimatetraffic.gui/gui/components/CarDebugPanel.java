@@ -116,6 +116,8 @@ public class CarDebugPanel extends JPanel {
 		tableModel.setValueAt(String.format("%.5f", c.getAcceleration()), 3, 1);
 		tableModel.setValueAt(Integer.toString(c.getLane()), 4, 1);
 		tableModel.setValueAt(Integer.toString(c.getLightId()), 5, 1);
+		tableModel.setValueAt(c.getCommand(), 6, 1);
+		tableModel.setValueAt(String.format("%.5f", c.getStopPosition()), 7,  1);
 		this.setVisible(true);
 		this.setPreferredSize(new Dimension(200, 0));
 	}

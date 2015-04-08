@@ -90,7 +90,7 @@ public class SimulatorGui extends JFrame implements DataListener, PropertyChange
 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		this.setSize((int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().getWidth(), 350);
+		this.setSize((int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().getWidth(), 400);
 		
 		this.getContentPane().setLayout(new BorderLayout());
 		
